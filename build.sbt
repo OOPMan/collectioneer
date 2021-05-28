@@ -47,9 +47,10 @@ lazy val core = project
     libraryDependencies ++= Seq(
       "org.flywaydb"            % "flyway-core"       % "6.3.0",
       "com.h2database"          % "h2"                % "1.4.200"  % "test",
-      "org.tpolecat"            %% "doobie-core"      % "0.13.3",
-      "org.tpolecat"            %% "doobie-h2"        % "0.13.3",          // H2 extensions support
-      "org.tpolecat"            %% "doobie-hikari"    % "0.13.3",          // HikariCP transactor.
+      "org.tpolecat"            %% "doobie-core"      % "0.13.4",
+      "org.tpolecat"            %% "doobie-h2"        % "0.13.4",          // H2 extensions support
+      "org.tpolecat"            %% "doobie-hikari"    % "0.13.4",          // HikariCP transactor
+      "org.tpolecat"            %% "doobie-munit"     % "0.13.4" % "test", // MUnit
     )
   )
 
