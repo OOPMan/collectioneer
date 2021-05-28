@@ -2,7 +2,7 @@ create table collections
 (
     id identity not null,
     name varchar not null,
-    description clob(1048576) null,
+    description varchar null,
     virtual boolean not null default false,
     deleted boolean not null default false,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
@@ -10,6 +10,9 @@ create table collections
     constraint collections_pk
         primary key (id)
 );
+create index collections_name_idx ON collections(name);
+create index collections_virtual_idx ON collections(virtual);
+create index collections_deleted_idx ON collections(deleted);
 
 create table collections_source_collections_assn
 (
@@ -29,7 +32,7 @@ create table items
 (
     id identity not null,
     name varchar not null,
-    description clob(1048576) null,
+    description varchar null,
     virtual boolean not null default false,
     deleted boolean not null default false,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
@@ -65,7 +68,7 @@ create table items_item_types_assn
         foreign key (item_type_id) references items(id)
 );
 
-create table properties
+create table item_properties
 (
     id identity not null,
     item_id bigint not null,
@@ -91,4 +94,32 @@ create table properties
         foreign key (item_id) references items(id),
     constraint properties_item_id_name_uk
         unique (item_id, name)
+);
+
+create table collection_properties
+(
+    id identity not null,
+    collection_id bigint not null,
+    name varchar not null,
+    deleted boolean not null default false,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
+    string_value varchar null,
+    bigint_value bigint null,
+    double_value double null,
+    bool_value boolean null,
+    clob_value clob null,
+    blob_value blob null,
+    uuid_value uuid null,
+    array_value array null,
+    array_type enum('string', 'bigint', 'double', 'bool', 'timestamp') null,
+    json_value json null,
+    timestamp_value timestamp with time zone null,
+    constraint properties_pk
+        primary key (id),
+    constraint properties_item_id_fk
+        foreign key (collection_id) references collections(id),
+    constraint properties_item_id_name_uk
+        unique (collection_id, name)
 );
