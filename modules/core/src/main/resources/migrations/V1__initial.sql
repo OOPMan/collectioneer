@@ -40,20 +40,23 @@ create table items
     constraint items_pk
         primary key (id)
 );
+create index items_name_idx ON items(name);
+create index items_virtual_idx ON items(virtual);
+create index items_deleted_idx ON items(deleted);
 
 create table items_collections_assn
 (
     item_id bigint not null,
     collection_id bigint not null,
-    quantity bigint not null default 1,
+    index int not null default 0,
     assn_type enum('COLLECTION_OF', 'INSTANCE_OF') not null default 'COLLECTION_OF',
-    constraint items_collections_assn_pk
-        primary key (item_id, collection_id),
     constraint items_collections_assn_item_id_fk
         foreign key (item_id) references items(id),
     constraint items_collections_assn_collection_id_fk
         foreign key (collection_id) references collections(id)
 );
+create index items_collections_assn_idx1
+    on items_collections_assn(item_id, collection_id);
 
 create table items_item_types_assn
 (
@@ -70,7 +73,6 @@ create table items_item_types_assn
 
 create table item_properties
 (
-    id identity not null,
     item_id bigint not null,
     name varchar not null,
     deleted boolean not null default false,
@@ -89,16 +91,13 @@ create table item_properties
     json_value json null,
     timestamp_value timestamp with time zone null,
     constraint properties_pk
-        primary key (id),
+        primary key (item_id, name),
     constraint properties_item_id_fk
-        foreign key (item_id) references items(id),
-    constraint properties_item_id_name_uk
-        unique (item_id, name)
+        foreign key (item_id) references items(id)
 );
 
 create table collection_properties
 (
-    id identity not null,
     collection_id bigint not null,
     name varchar not null,
     deleted boolean not null default false,
@@ -117,9 +116,7 @@ create table collection_properties
     json_value json null,
     timestamp_value timestamp with time zone null,
     constraint properties_pk
-        primary key (id),
+        primary key (collection_id, name),
     constraint properties_item_id_fk
-        foreign key (collection_id) references collections(id),
-    constraint properties_item_id_name_uk
-        unique (collection_id, name)
+        foreign key (collection_id) references collections(id)
 );
