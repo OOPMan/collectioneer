@@ -75,10 +75,10 @@ create table item_properties
 (
     item_id bigint not null,
     name varchar not null,
-    deleted boolean not null default false,
+    version bigint not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
+    property_type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
     string_value varchar null,
     bigint_value bigint null,
     double_value double null,
@@ -91,7 +91,7 @@ create table item_properties
     json_value json null,
     timestamp_value timestamp with time zone null,
     constraint properties_pk
-        primary key (item_id, name),
+        primary key (item_id, name, version),
     constraint properties_item_id_fk
         foreign key (item_id) references items(id)
 );
@@ -100,10 +100,10 @@ create table collection_properties
 (
     collection_id bigint not null,
     name varchar not null,
-    deleted boolean not null default false,
+    version bigint not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
+    property_type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
     string_value varchar null,
     bigint_value bigint null,
     double_value double null,
@@ -115,8 +115,8 @@ create table collection_properties
     array_type enum('string', 'bigint', 'double', 'bool', 'timestamp') null,
     json_value json null,
     timestamp_value timestamp with time zone null,
-    constraint properties_pk
-        primary key (collection_id, name),
-    constraint properties_item_id_fk
+    constraint collection_properties_pk
+        primary key (collection_id, name, version),
+    constraint collection_properties_item_id_fk
         foreign key (collection_id) references collections(id)
 );
