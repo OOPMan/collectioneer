@@ -1,13 +1,14 @@
-lazy val scala213Version      = "2.13.5"
+lazy val scala213Version      = "2.13.7"
 lazy val scala30Version       = "3.0.0"
 
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala30Version,
-  crossScalaVersions := Seq(scala213Version, scala30Version),
+//  crossScalaVersions := Seq(scala213Version, scala30Version),
+  crossScalaVersions := Seq(scala30Version, scala213Version),
   libraryDependencies ++= Seq(
     "com.novocode"  % "junit-interface" % "0.11" % "test",
-    "com.lihaoyi" % "ammonite" % "2.3.8-124-2da846d2" % "test" cross CrossVersion.for3Use2_13With("", ".5")
+    "com.lihaoyi" % "ammonite" % "2.5.0" cross CrossVersion.full
   ),
   Test / sourceGenerators += Def.task {
     val file = (Test / sourceManaged).value / "amm.scala"
@@ -71,7 +72,7 @@ lazy val repl = project
   .settings(
     name:= "Collectioneer REPL",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "ammonite-terminal" % "2.3.8-124-2da846d2" cross CrossVersion.for3Use2_13
+      "com.lihaoyi" % "ammonite" % "2.5.0" cross CrossVersion.full
     )
   )
 
