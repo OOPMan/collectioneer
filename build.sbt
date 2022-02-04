@@ -1,14 +1,13 @@
 lazy val scala213Version      = "2.13.7"
-lazy val scala30Version       = "3.0.0"
+lazy val scala30Version       = "3.1.0"
 
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala30Version,
-//  crossScalaVersions := Seq(scala213Version, scala30Version),
-  crossScalaVersions := Seq(scala30Version, scala213Version),
+  crossScalaVersions := Seq(scala213Version, scala30Version),
   libraryDependencies ++= Seq(
     "com.novocode"  % "junit-interface" % "0.11" % "test",
-    "com.lihaoyi" % "ammonite" % "2.5.0" cross CrossVersion.full
+//    "com.lihaoyi" % "ammonite" % "2.5.2" cross CrossVersion.full
   ),
   Test / sourceGenerators += Def.task {
     val file = (Test / sourceManaged).value / "amm.scala"
@@ -72,7 +71,7 @@ lazy val repl = project
   .settings(
     name:= "Collectioneer REPL",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" % "ammonite" % "2.5.0" cross CrossVersion.full
+//      "com.lihaoyi" % "ammonite" % "2.5.2" cross CrossVersion.full
     )
   )
 
@@ -94,10 +93,10 @@ lazy val gui = project
     fork := true,
     mainClass := Some("ScalaFXHelloWorld"),
     libraryDependencies ++= Seq(
-      "org.scalafx"             %% "scalafx"          % "16.0.0-R24",
+      "org.scalafx"             %% "scalafx"          % "17.0.1-R26",
     ),
     libraryDependencies ++= javaFXModules.map(m =>
-      "org.openjfx" % s"javafx-$m" % "16" classifier osName
+      "org.openjfx" % s"javafx-$m" % "17.0.1" classifier osName
     )
   )
   .dependsOn(core)
