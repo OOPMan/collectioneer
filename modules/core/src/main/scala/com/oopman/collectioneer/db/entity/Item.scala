@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.lowlevel
+package com.oopman.collectioneer.db.entity
 
 import java.time.ZonedDateTime
 
