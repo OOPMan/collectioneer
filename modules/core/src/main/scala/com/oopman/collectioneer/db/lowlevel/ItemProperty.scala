@@ -1,15 +1,15 @@
-package com.oopman.collectioneer.db
+package com.oopman.collectioneer.db.lowlevel
 
 import java.time.ZonedDateTime
 
-case class CollectionProperty
+case class ItemProperty
 (
-  collectionId: Long,
+  itemId: Long,
   name: String,
   version: Long,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyType: Option[String] = None,
+  propertyType: String = "string",
   stringValue: Option[String] = None,
   bigIntValue: Option[Long] = None,
   doubleValue: Option[Float] = None,
