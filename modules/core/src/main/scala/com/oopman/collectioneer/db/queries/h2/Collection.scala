@@ -1,5 +1,6 @@
-package com.oopman.collectioneer.db
+package com.oopman.collectioneer.db.queries.h2
 
+import com.oopman.collectioneer.db.entity.Collection
 import doobie._
 import doobie.implicits._
 import doobie.util.fragments
@@ -13,17 +14,6 @@ import doobie.h2.implicits.*
 import org.h2.api.TimestampWithTimeZone
 import java.time.ZonedDateTime
 
-
-case class Collection
-(
-  id: Long,
-  name: String,
-  description: Option[String],
-  virtual: Boolean = false,
-  deleted: Boolean = false,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
-)
 
 def retrieveCollectionById(id: Long): Query0[Collection] =
   sql"""SELECT id, name, description, virtual, deleted, created, modified
@@ -63,12 +53,3 @@ def deleteCollection(id: Long): Update0 =
   sql"""UPDATE collections
        |SET deleted = true, modified = CURRENT_TIMESTAMP()
        |WHERE id = $id""".stripMargin.update
-
-
-def test() = {
-  import cats.effect.unsafe.implicits.global
-  val xa = Transactor.fromDriverManager[IO](
-    "org.postgresql.Driver", "jdbc:postgresql:world", "postgres", ""
-  )
-  retrieveCollectionsByDeleted(true).option.transact(xa).unsafeRunSync()
-}
