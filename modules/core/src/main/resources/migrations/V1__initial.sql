@@ -71,52 +71,192 @@ create table items_item_types_assn
         foreign key (item_type_id) references items(id)
 );
 
-create table item_properties
+create table properties
 (
-    item_id bigint not null,
+    property_id identity not null,
     name varchar not null,
-    version bigint not null default 0,
+    property_type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'json') not null,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    property_type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
-    string_value varchar null,
-    bigint_value bigint null,
-    double_value double null,
-    bool_value boolean null,
-    clob_value clob null,
-    blob_value blob null,
-    uuid_value uuid null,
-    array_value array null,
-    array_type enum('string', 'bigint', 'double', 'bool', 'timestamp') null,
-    json_value json null,
-    timestamp_value timestamp with time zone null,
-    constraint properties_pk
-        primary key (item_id, name, version),
-    constraint properties_item_id_fk
-        foreign key (item_id) references items(id)
+    modified timestamp with time zone not null default CURRENT_TIMESTAMP()
 );
 
-create table collection_properties
+create table properties_items_assn
 (
-    collection_id bigint not null,
-    name varchar not null,
-    version bigint not null default 0,
+    property_id bigint not null,
+    item_id bigint not null,
+    index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    property_type enum('string', 'bigint', 'double', 'bool', 'timestamp', 'clob', 'blob', 'uuid', 'array', 'json') not null,
-    string_value varchar null,
-    bigint_value bigint null,
-    double_value double null,
-    bool_value boolean null,
-    clob_value clob null,
-    blob_value blob null,
-    uuid_value uuid null,
-    array_value array null,
-    array_type enum('string', 'bigint', 'double', 'bool', 'timestamp') null,
-    json_value json null,
-    timestamp_value timestamp with time zone null,
-    constraint collection_properties_pk
-        primary key (collection_id, name, version),
-    constraint collection_properties_item_id_fk
+    constraint properties_items_assn_property_id_fk
+        foreign key (property_id) references properties(property_id),
+    constraint properties_items_assn_item_id_fk
+        foreign key (item_id) references items(id)
+);
+create unique index properties_items_assn_property_id_unique_index
+    on properties_items_assn(property_id);
+
+create table properties_collections_assn
+(
+    property_id bigint not null,
+    collection_id bigint not null,
+    index int not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint properties_collections_assn_property_id_fk
+        foreign key (property_id) references properties(property_id),
+    constraint properties_collections_assn_collection_id_fk
         foreign key (collection_id) references collections(id)
 );
+create unique index properties_collections_assn_property_id_unique_index
+    on properties_collections_assn(property_id);
+
+create table property_value_strings
+(
+    property_id bigint not null,
+    property_value varchar not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_string_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_strings_idx1
+    on property_value_strings(property_id, version);
+create index property_value_strings_idx2
+    on property_value_strings(property_id, index);
+create index property_value_strings_idx3
+    on property_value_strings(property_id, created);
+
+create table property_value_bigints
+(
+    property_id bigint not null,
+    property_value bigint not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_bigint_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_bigints_idx1
+    on property_value_bigints(property_id, version);
+create index property_value_bigints_idx2
+    on property_value_bigints(property_id, index);
+create index property_value_bigints_idx3
+    on property_value_bigints(property_id, created);
+
+create table property_value_doubles
+(
+    property_id bigint not null,
+    property_value double precision not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_double_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_doubles_idx1
+    on property_value_doubles(property_id, version);
+create index property_value_doubles_idx2
+    on property_value_doubles(property_id, index);
+create index property_value_doubles_idx3
+    on property_value_doubles(property_id, created);
+
+create table property_value_bools
+(
+    property_id bigint not null,
+    property_value boolean not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_bool_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_bools_idx1
+    on property_value_bools(property_id, version);
+create index property_value_bools_idx2
+    on property_value_bools(property_id, index);
+create index property_value_bools_idx3
+    on property_value_bools(property_id, created);
+
+create table property_value_timestamps
+(
+    property_id bigint not null,
+    property_value timestamp with time zone not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_timestamp_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_timestamps_idx1
+    on property_value_timestamps(property_id, version);
+create index property_value_timestamps_idx2
+    on property_value_timestamps(property_id, index);
+create index property_value_timestamps_idx3
+    on property_value_timestamps(property_id, created);
+
+create table property_value_clobs
+(
+    property_id bigint not null,
+    property_value clob not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_clob_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_clobs_idx1
+    on property_value_clobs(property_id, version);
+create index property_value_clobs_idx2
+    on property_value_clobs(property_id, index);
+create index property_value_clobs_idx3
+    on property_value_clobs(property_id, created);
+
+create table property_value_blobs
+(
+    property_id bigint not null,
+    property_value blob not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_blob_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_blobs_idx1
+    on property_value_blobs(property_id, version);
+create index property_value_blobs_idx2
+    on property_value_blobs(property_id, index);
+create index property_value_blobs_idx3
+    on property_value_blobs(property_id, created);
+
+create table property_value_uuids
+(
+    property_id bigint not null,
+    property_value uuid not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_uuid_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_uuids_idx1
+    on property_value_uuids(property_id, version);
+create index property_value_uuids_idx2
+    on property_value_uuids(property_id, index);
+create index property_value_uuids_idx3
+    on property_value_uuids(property_id, created);
+
+create table property_value_json
+(
+    property_id bigint not null,
+    property_value json not null,
+    index int not null default 0,
+    version bigint not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_json_property_id_fk
+        foreign key (property_id) references properties(property_id)
+);
+create index property_value_json_idx1
+    on property_value_json(property_id, version);
+create index property_value_json_idx2
+    on property_value_json(property_id, index);
+create index property_value_json_idx3
+    on property_value_json(property_id, created);
