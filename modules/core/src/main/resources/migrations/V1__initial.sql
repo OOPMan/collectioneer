@@ -10,21 +10,21 @@ create table collections
     constraint collections_pk
         primary key (id)
 );
-create index collections_name_idx ON collections(name);
-create index collections_virtual_idx ON collections(virtual);
-create index collections_deleted_idx ON collections(deleted);
+create index collections_idx1 ON collections(name);
+create index collections_idx2 ON collections(virtual);
+create index collections_idx3 ON collections(deleted);
 
-create table collections_source_collections_assn
+create table collections__source_collections
 (
     collection_id bigint not null,
     source_collection_id bigint not null,
     index int not null default 0,
     source_type enum('ITEMS', 'ITEM_TYPES') not null default 'ITEMS',
-    constraint collections_source_collections_assn_pk
+    constraint collections__source_collections__pk
         primary key (collection_id, source_collection_id),
-    constraint collections_source_collections_assn_collection_id_fk
+    constraint collections__source_collections__collection_id_fk
         foreign key (collection_id) references collections(id),
-    constraint collections_source_collections_assn_source_collection_id_fk
+    constraint collections__source_collections__source_collection_id_fk
         foreign key (source_collection_id) references collections(id)
 );
 
@@ -40,35 +40,35 @@ create table items
     constraint items_pk
         primary key (id)
 );
-create index items_name_idx ON items(name);
-create index items_virtual_idx ON items(virtual);
-create index items_deleted_idx ON items(deleted);
+create index items_idx1 ON items(name);
+create index items_idx2 ON items(virtual);
+create index items_idx3 ON items(deleted);
 
-create table items_collections_assn
+create table items__collections
 (
     id identity not null,
     item_id bigint not null,
     collection_id bigint not null,
     index int not null default 0,
     assn_type enum('COLLECTION_OF', 'INSTANCE_OF') not null default 'COLLECTION_OF',
-    constraint items_collections_assn_item_id_fk
+    constraint items__collections__item_id_fk
         foreign key (item_id) references items(id),
-    constraint items_collections_assn_collection_id_fk
+    constraint items__collections__collection_id_fk
         foreign key (collection_id) references collections(id)
 );
-create index items_collections_assn_idx1
-    on items_collections_assn(item_id, collection_id);
+create index items__collections__idx1
+    on items__collections(item_id, collection_id);
 
-create table items_item_types_assn
+create table items__item_types
 (
     item_id bigint not null,
     item_type_id bigint not null,
     index int not null default 0,
-    constraint item_item_types_assn_pk
+    constraint items__item_types__pk
         primary key (item_id, item_type_id),
-    constraint item_item_types_assn_item_id_fk
+    constraint items__item_types__item_id_fk
         foreign key (item_id) references items(id),
-    constraint item_item_types_assn_item_type_id_fk
+    constraint items__item_types__item_type_id_fk
         foreign key (item_type_id) references items(id)
 );
 
@@ -81,47 +81,47 @@ create table properties
     modified timestamp with time zone not null default CURRENT_TIMESTAMP()
 );
 
-create table properties_items_collections_assn_assn
+create table properties__items__collections
 (
     property_id bigint not null,
-    items_collections_assn_id bigint not null,
+    items__collections__id bigint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint properties_items_collections_assn_assn_property_id_fk
+    constraint properties__items__collections__property_id_fk
         foreign key (property_id) references properties(id),
-    constraint properties_items_collections_assn_assn_items_collections_assn_id_fk
-        foreign key (items_collections_assn_id) references items_collections_assn(id)
+    constraint properties__items__collections__items__collections__id_fk
+        foreign key (items__collections__id) references items__collections(id)
 );
-create unique index properties_items_collections_assn_assn_property_id_unique_index
-    on properties_items_collections_assn_assn(property_id, items_collections_assn_id);
+create unique index properties__items__collections__uq1
+    on properties__items__collections(property_id, items__collections__id);
 
-create table properties_items_assn
+create table properties__items
 (
     property_id bigint not null,
     item_id bigint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint properties_items_assn_property_id_fk
+    constraint properties__items__property_id_fk
         foreign key (property_id) references properties(id),
-    constraint properties_items_assn_item_id_fk
+    constraint properties__items__item_id_fk
         foreign key (item_id) references items(id)
 );
-create unique index properties_items_assn_property_id_unique_index
-    on properties_items_assn(property_id);
+create unique index properties__items__uq1
+    on properties__items(property_id);
 
-create table properties_collections_assn
+create table properties__collections
 (
     property_id bigint not null,
     collection_id bigint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint properties_collections_assn_property_id_fk
+    constraint properties__collections__property_id_fk
         foreign key (property_id) references properties(id),
-    constraint properties_collections_assn_collection_id_fk
+    constraint properties__collections__collection_id_fk
         foreign key (collection_id) references collections(id)
 );
-create unique index properties_collections_assn_property_id_unique_index
-    on properties_collections_assn(property_id);
+create unique index properties__collections__uq1
+    on properties__collections(property_id);
 
 create table property_value_strings
 (
