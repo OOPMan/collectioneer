@@ -1,3 +1,23 @@
+/*
+ The collections table models the concept of a Collection of Items. A Collection has the following attributes:
+
+ * ID
+ * Name
+ * Optional Description
+ * Virtual state flag
+ * Deleted state flag
+ * Creation Timestamp
+ * Modification Timestamp
+
+ The Virtual state flag deserves additional information. This flag is used to denote whether the Collection can
+ be said to exist in the real world (E.g. Your MTG deck, a boardgame on your shelf) or be virtual in the sense
+ that the items which comprise the collection may be conceptually real but don't actually exist in the real world
+ (E.g. A MTG deck you are planning to build but haven't actually put together yet, a boardgame in the store which, in
+ theory, has an unlimited supply of said game).
+
+ Collectioneer uses the virtual flag to determine whether item quantity checking logic and other similar concepts
+ should be executed against a Collection and the Items associated with it.
+ */
 create table collections
 (
     id identity not null,
@@ -14,6 +34,21 @@ create index collections_idx1 ON collections(name);
 create index collections_idx2 ON collections(virtual);
 create index collections_idx3 ON collections(deleted);
 
+/**
+  The collections__source_collections table is used to configure application logic whereby a Collection sources
+  its the Items that can be included it from one or more other Collections.
+
+  Ordinarily, a Collection can have Items added to it with no restrictions. The Items added can be any of those defined
+  in the items table and new Items can even be created on the fly and added to the Collection.
+
+  However, in many scenarios this freedom is not desired. For example, if one is creating a Collection that represents
+  the physical collection of MTG cards that you own then it is desirable that it only be possible to add Items to this
+  Collection that are actually MTG cards. This desire is achieved by associating the Collection with one or more
+  other "Source" Collections that contain Items that are available to be included in the Collection.
+
+  A Source Collection be function either as a source of Items or as a source of Item Types.
+
+ */
 create table collections__source_collections
 (
     collection_id bigint not null,
@@ -50,6 +85,7 @@ create table items__collections
     item_id bigint not null,
     collection_id bigint not null,
     index int not null default 0,
+    quantity int not null default 1,
     assn_type enum('COLLECTION_OF', 'INSTANCE_OF') not null default 'COLLECTION_OF',
     constraint items__collections__item_id_fk
         foreign key (item_id) references items(id),
@@ -125,6 +161,7 @@ create unique index properties__collections__uq1
 
 create table property_value_strings
 (
+    id identity not null,
     property_id bigint not null,
     property_value varchar not null,
     index int not null default 0,
@@ -140,8 +177,25 @@ create index property_value_strings_idx2
 create index property_value_strings_idx3
     on property_value_strings(property_id, created);
 
+create table property_value_strings__properties__collections
+(
+    property_value_strings_id bigint not null,
+    property_id bigint not null,
+    collection_id bigint null,
+    item_id bigint null,
+    items__collections_id bigint null,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_strings_id_fk
+        foreign key (property_value_strings_id) references property_value_strings(id),
+    constraint properties__id_fk
+        foreign key (property_id) references properties(id),
+    constraint collections___id_fk
+        foreign key (collection_id) references collections(id)
+);
+
 create table property_value_bigints
 (
+    id identity not null,
     property_id bigint not null,
     property_value bigint not null,
     index int not null default 0,
@@ -159,6 +213,7 @@ create index property_value_bigints_idx3
 
 create table property_value_doubles
 (
+    id identity not null,
     property_id bigint not null,
     property_value double precision not null,
     index int not null default 0,
@@ -176,6 +231,7 @@ create index property_value_doubles_idx3
 
 create table property_value_bools
 (
+    id identity not null,
     property_id bigint not null,
     property_value boolean not null,
     index int not null default 0,
@@ -193,6 +249,7 @@ create index property_value_bools_idx3
 
 create table property_value_timestamps
 (
+    id identity not null,
     property_id bigint not null,
     property_value timestamp with time zone not null,
     index int not null default 0,
@@ -210,6 +267,7 @@ create index property_value_timestamps_idx3
 
 create table property_value_clobs
 (
+    id identity not null,
     property_id bigint not null,
     property_value clob not null,
     index int not null default 0,
@@ -227,6 +285,7 @@ create index property_value_clobs_idx3
 
 create table property_value_blobs
 (
+    id identity not null,
     property_id bigint not null,
     property_value blob not null,
     index int not null default 0,
@@ -244,6 +303,7 @@ create index property_value_blobs_idx3
 
 create table property_value_uuids
 (
+    id identity not null,
     property_id bigint not null,
     property_value uuid not null,
     index int not null default 0,
@@ -261,6 +321,7 @@ create index property_value_uuids_idx3
 
 create table property_value_json
 (
+    id identity not null,
     property_id bigint not null,
     property_value json not null,
     index int not null default 0,
