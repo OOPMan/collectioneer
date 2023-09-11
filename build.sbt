@@ -1,23 +1,23 @@
-lazy val scala213Version      = "2.13.7"
-lazy val scala30Version       = "3.1.0"
+lazy val scala213Version      = "2.13.10"
+lazy val scala3Version       = "3.2.2"
 
 lazy val commonSettings = Seq(
   version := "0.1.0",
-  scalaVersion := scala30Version,
-  crossScalaVersions := Seq(scala213Version, scala30Version),
+  scalaVersion := scala3Version,
+  crossScalaVersions := Seq(scala213Version, scala3Version),
   libraryDependencies ++= Seq(
     "com.novocode"  % "junit-interface" % "0.11" % "test",
-//    "com.lihaoyi" % "ammonite" % "2.5.2" cross CrossVersion.full
+//    "com.lihaoyi" % "ammonite" % "2.5.3" cross CrossVersion.full
   ),
-  Test / sourceGenerators += Def.task {
-    val file = (Test / sourceManaged).value / "amm.scala"
-    IO.write(file,
-      """object amm {
-        |   def main(args: Array[String]) = ammonite.Main.main(args)
-        |}""".stripMargin
-    )
-    Seq(file)
-  }.taskValue,
+//  Test / sourceGenerators += Def.task {
+//    val file = (Test / sourceManaged).value / "amm.scala"
+//    IO.write(file,
+//      """object amm {
+//        |   def main(args: Array[String]) = ammonite.Main.main(args)
+//        |}""".stripMargin
+//    )
+//    Seq(file)
+//  }.taskValue,
   Test / fullClasspath ++= {
     (Test / updateClassifiers).value
       .configurations
@@ -45,12 +45,14 @@ lazy val core = project
   .settings(
     name := "Collectioneer Core",
     libraryDependencies ++= Seq(
+      "ch.qos.logback"          %  "logback-classic"  % "1.2.3",
       "org.flywaydb"            % "flyway-core"       % "6.3.0",
-      "com.h2database"          % "h2"                % "1.4.200"  % "test",
-      "org.tpolecat"            %% "doobie-core"      % "1.0.0-RC2",
-      "org.tpolecat"            %% "doobie-h2"        % "1.0.0-RC2",          // H2 extensions support
-      "org.tpolecat"            %% "doobie-hikari"    % "1.0.0-RC2",          // HikariCP transactor
-      "org.tpolecat"            %% "doobie-munit"     % "1.0.0-RC2" % "test", // MUnit
+      "com.h2database"          % "h2"                % "2.2.222"  % "test",
+      "org.scalikejdbc"         %% "scalikejdbc"      % "4.0.0",
+      "org.tpolecat"            %% "doobie-core"      % "1.0.0-RC4",
+      "org.tpolecat"            %% "doobie-h2"        % "1.0.0-RC4",          // H2 extensions support
+      "org.tpolecat"            %% "doobie-hikari"    % "1.0.0-RC4",          // HikariCP transactor
+      "org.tpolecat"            %% "doobie-munit"     % "1.0.0-RC4" % "test", // MUnit
     )
   )
 
@@ -71,17 +73,10 @@ lazy val repl = project
   .settings(
     name:= "Collectioneer REPL",
     libraryDependencies ++= Seq(
-//      "com.lihaoyi" % "ammonite" % "2.5.2" cross CrossVersion.full
+//      "com.lihaoyi" % "ammonite" % "2.5.3" cross CrossVersion.full
     )
   )
 
-// Determine OS version of JavaFX binaries
-lazy val osName = System.getProperty("os.name") match {
-  case n if n.startsWith("Linux") => "linux"
-  case n if n.startsWith("Mac") => "mac"
-  case n if n.startsWith("Windows") => "win"
-  case _ => throw new Exception("Unknown platform!")
-}
 // Add JavaFX dependencies
 lazy val javaFXModules = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
 lazy val gui = project
@@ -90,13 +85,18 @@ lazy val gui = project
   .settings(
     name := "Collectioneer GUI",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature"),
+    scalacOptions ++= (
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3, _)) =>
+          Seq("-explain", "-explain-types", "-rewrite", "-source", "3.2-migration")
+        case _ =>
+          Seq("-Xlint", "-explaintypes")
+      }
+      ),
     fork := true,
     mainClass := Some("ScalaFXHelloWorld"),
     libraryDependencies ++= Seq(
-      "org.scalafx"             %% "scalafx"          % "17.0.1-R26",
-    ),
-    libraryDependencies ++= javaFXModules.map(m =>
-      "org.openjfx" % s"javafx-$m" % "17.0.1" classifier osName
+      "org.scalafx"             %% "scalafx"          % "20.0.0-R31",
     )
   )
   .dependsOn(core)
