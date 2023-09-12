@@ -1,13 +1,16 @@
 lazy val scala213Version      = "2.13.10"
-lazy val scala3Version       = "3.2.2"
-
+lazy val scala3Version        = "3.2.2"
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
   crossScalaVersions := Seq(scala213Version, scala3Version),
   libraryDependencies ++= Seq(
-    "com.novocode"  % "junit-interface" % "0.11" % "test",
-    "com.lihaoyi" % "ammonite" % "3.0.0-M0" % "test"  cross CrossVersion.full
+    "ch.qos.logback"          % "logback-classic"         % "1.2.3",
+    "org.flywaydb"            % "flyway-core"             % "9.22.0",
+    "org.scalikejdbc"         %% "scalikejdbc"            % "4.0.0",
+    "com.h2database"          % "h2"                      % "2.2.222",
+    "com.novocode"            % "junit-interface"         % "0.11"              % "test",
+    "com.lihaoyi"             % "ammonite"                % "3.0.0-M0"          % "test"  cross CrossVersion.full
   ),
   Test / sourceGenerators += Def.task {
     val file = (sourceManaged in Test).value / "amm.scala"
@@ -41,10 +44,6 @@ lazy val core = project
   .settings(
     name := "Collectioneer Core",
     libraryDependencies ++= Seq(
-      "ch.qos.logback"          %  "logback-classic"  % "1.2.3",
-      "org.flywaydb"            % "flyway-core"       % "6.3.0",
-      "com.h2database"          % "h2"                % "2.2.222"  % "test",
-      "org.scalikejdbc"         %% "scalikejdbc"      % "4.0.0"
     )
   )
 
@@ -54,8 +53,10 @@ lazy val cli = project
   .settings(
     name := "Collectioneer CLI",
     libraryDependencies ++= Seq(
-      "com.github.scopt"        %% "scopt"            % "4.0.1",
-    )
+      "com.github.scopt"        %% "scopt"            % "4.1.0",
+    ),
+    fork := true,
+    mainClass := Some("com.oopman.collectioneer.cli.CLI")
   )
   .dependsOn(core)
 
