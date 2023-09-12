@@ -7,17 +7,13 @@ lazy val commonSettings = Seq(
   crossScalaVersions := Seq(scala213Version, scala3Version),
   libraryDependencies ++= Seq(
     "com.novocode"  % "junit-interface" % "0.11" % "test",
-//    "com.lihaoyi" % "ammonite" % "2.5.3" cross CrossVersion.full
+    "com.lihaoyi" % "ammonite" % "3.0.0-M0" % "test"  cross CrossVersion.full
   ),
-//  Test / sourceGenerators += Def.task {
-//    val file = (Test / sourceManaged).value / "amm.scala"
-//    IO.write(file,
-//      """object amm {
-//        |   def main(args: Array[String]) = ammonite.Main.main(args)
-//        |}""".stripMargin
-//    )
-//    Seq(file)
-//  }.taskValue,
+  Test / sourceGenerators += Def.task {
+    val file = (sourceManaged in Test).value / "amm.scala"
+    IO.write(file, """object amm extends App { ammonite.AmmoniteMain.main(args) }""")
+    Seq(file)
+  }.taskValue,
   Test / fullClasspath ++= {
     (Test / updateClassifiers).value
       .configurations
@@ -48,11 +44,7 @@ lazy val core = project
       "ch.qos.logback"          %  "logback-classic"  % "1.2.3",
       "org.flywaydb"            % "flyway-core"       % "6.3.0",
       "com.h2database"          % "h2"                % "2.2.222"  % "test",
-      "org.scalikejdbc"         %% "scalikejdbc"      % "4.0.0",
-      "org.tpolecat"            %% "doobie-core"      % "1.0.0-RC4",
-      "org.tpolecat"            %% "doobie-h2"        % "1.0.0-RC4",          // H2 extensions support
-      "org.tpolecat"            %% "doobie-hikari"    % "1.0.0-RC4",          // HikariCP transactor
-      "org.tpolecat"            %% "doobie-munit"     % "1.0.0-RC4" % "test", // MUnit
+      "org.scalikejdbc"         %% "scalikejdbc"      % "4.0.0"
     )
   )
 
@@ -73,12 +65,11 @@ lazy val repl = project
   .settings(
     name:= "Collectioneer REPL",
     libraryDependencies ++= Seq(
-//      "com.lihaoyi" % "ammonite" % "2.5.3" cross CrossVersion.full
+      "com.lihaoyi" % "ammonite" % "3.0.0-M0" % "test" cross CrossVersion.full
     )
   )
 
 // Add JavaFX dependencies
-lazy val javaFXModules = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
 lazy val gui = project
   .in(file("modules/gui"))
   .settings(commonSettings)
