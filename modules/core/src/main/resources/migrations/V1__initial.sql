@@ -50,7 +50,7 @@ create table properties
     property_name varchar not null,
     property_type enum(
         'varchar', 'varbinary', 'tinyint', 'smallint', 'int', 'bigint', 'numeric', 'float', 'double', 'boolean',
-        'date', 'time', 'timestamp', 'clob', 'blob', 'uuid', 'json') not null,
+        'date', 'time', 'timestamp', 'clob', 'blob', 'uuid', 'json') array not null,
     deleted boolean not null default false,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
@@ -477,4 +477,3 @@ create table property_value_jsons
     constraint property_value_jsons__property_pk_fk
         foreign key (property_pk) references properties(pk)
 );
-// TODO: Insert default Properties, Collections of Properties and Collections of Properties of Properties
