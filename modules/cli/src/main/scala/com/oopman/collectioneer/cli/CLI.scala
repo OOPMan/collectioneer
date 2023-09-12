@@ -36,8 +36,8 @@ object CLI {
               .configure()
               .dataSource(s"jdbc:h2:${config.collection.getAbsolutePath}", "sa", "")
               .locations(
-                "classpath:migrations",
-                "classpath:com/oopman/collectioneer/db/migrations"
+                "classpath:migrations/h2",
+                "classpath:com/oopman/collectioneer/db/migrations/h2"
               )
               .load()
               .migrate()

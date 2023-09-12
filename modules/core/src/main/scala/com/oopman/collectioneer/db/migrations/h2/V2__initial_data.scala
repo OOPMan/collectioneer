@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.migrations
+package com.oopman.collectioneer.db.migrations.h2
 
 import com.oopman.collectioneer.CoreProperties
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
