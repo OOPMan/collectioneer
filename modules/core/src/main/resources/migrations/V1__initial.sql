@@ -1,3 +1,18 @@
+
+/**
+  Property Value Sets are used to group multiple Property Value rows together, allowing them to be associated with rows
+  in the `collections`, `collections__related_collections` and `properties__collections` tables without the need to
+  create numerous M2M tables for each combination of the above tables and the numerous type-specific Property Value
+  tables below.
+ */
+create table property_value_sets
+(
+    pk uuid not null default RANDOM_UUID(),
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property_value_sets__pk
+        primary key (pk)
+);
+
 /**
   The core concept within Collectioneer is that of the Collection.
 
@@ -14,7 +29,6 @@
   Collection can be said to exist in the real world (E.g. Your MTG deck, a boardgame on your shelf) or be virtual in
   the sense that the items which comprise the collection may be conceptually real but don't actually exist in the real
   world (E.g. A MTG deck you are planning to build but haven't actually put together yet, a boardgame in the store
-  which, in theory, has an unlimited supply of said game).
 
   Additionally, a Collection features columns recording when it was Created and Last Modified as well as one to
   denote whether it has been marked as Deleted.
@@ -173,20 +187,6 @@ create table properties__collections__related_collections
         foreign key (property_pk) references properties(pk),
     constraint properties__collections__related_collections_collections__related_collections_pk_fk
         foreign key (collections__related_collections_pk) references collections__related_collections(pk)
-);
-
-/**
-  Property Value Sets are used to group multiple Property Value rows together, allowing them to be associated with rows
-  in the `collections`, `collections__related_collections` and `properties__collections` tables without the need to
-  create numerous M2M tables for each combination of the above tables and the numerous type-specific Property Value
-  tables below.
- */
-create table property_value_sets
-(
-    pk uuid not null default RANDOM_UUID(),
-    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_sets__pk
-        primary key (pk)
 );
 
 create table property_value_varchars
