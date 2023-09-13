@@ -1,7 +1,7 @@
 
 /**
   Property Value Sets are used to group multiple Property Value rows together, allowing them to be associated with rows
-  in the `collections`, `collections__related_collections` and `properties__collections` tables without the need to
+  in the `properties__collections__related_collections` and `properties__collections` tables without the need to
   create numerous M2M tables for each combination of the above tables and the numerous type-specific Property Value
   tables below.
  */
@@ -128,17 +128,15 @@ create table collections__related_collections
  */
 create table properties__collections
 (
-    pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
     property_pk uuid not null,
     collection_pk uuid not null,
+    property_value_set_pk uuid not null,
     index int not null default 0,
     relationship enum('property_of_collection', 'collection_of_properties_of_property') not null default 'property_of_collection',
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint properties__collections__pk
-
-        primary key (pk),
+        primary key (property_pk, collection_pk),
     constraint properties__collections__property_value_set_pk_fk
         foreign key (property_value_set_pk) references property_value_sets(pk),
     constraint properties__collections__property_pk_fk
@@ -168,16 +166,15 @@ create table properties__collections
  */
 create table properties__collections__related_collections
 (
-    pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
     property_pk uuid not null,
     collections__related_collections_pk uuid not null,
+    property_value_set_pk uuid not null,
     relationship enum('property_of_relationship', 'property_of_collection', 'property_of_related_collection') not null default 'property_of_relationship',
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint properties__collections__related_collections__pk
-        primary key (pk),
+        primary key (property_pk, collections__related_collections_pk),
     constraint collections__related_collections__property_value_set_pk_fk
         foreign key (property_value_set_pk) references property_value_sets(pk),
     constraint properties__collections__related_collections_property_pk_fk
