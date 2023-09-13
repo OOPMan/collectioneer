@@ -36,15 +36,12 @@ create table property_value_sets
 create table collections
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
     virtual boolean not null default false,
     deleted boolean not null default false,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint collections__pk
-        primary key (pk),
-    constraint collections__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_sets(pk)
+        primary key (pk)
 );
 
 /**
@@ -99,31 +96,18 @@ create table properties
     and create Collection B, representing a specific deck that the user is building, then we can define the relationship
     to indicate that the parent Collection, Collection A, is a `source_of_child_collections` for the child Collection,
     Collection B. This in turn allows Collection B to associate itself with child Collections of Collection A
-
-  The `property_value_set_pk` column allows the relationship between the two Collections to have Property Values
-  associated with it. This allows for metadata pertaining to the relationship to be stored. For example, if the
-  `parent_collection` relationship is used then a Property like `quantity` might be applied to the relationship
-  between the Collections to indicate that a given quantity of the child collection is part of the parent Collection.
-  For example, a MTG deck may contain 3 of some specific card. This would be modelled using a row in the
-  `collections__related_collections` table with a `relationship` of `parent_collection`, `collection_pk` referencing
-  the Collection associated with the specific card, `relation_collection_pk` referencing the Collection associated with
-  the entire Collection of MTG cards and a `property_value_set_pk` referencing a Property Value Set storing data
-  that includes the `quantity` property.
  */
 create table collections__related_collections
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
     collection_pk uuid not null,
     related_collection_pk uuid not null,
-    relationship enum('source_of_properties', 'source_of_child_collections', 'parent_collection') not null default 'parent_collection',
+    relationship enum('parent_collection', 'source_of_properties', 'source_of_child_collections') not null default 'parent_collection',
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint collections__related_collections__pk
         primary key (pk),
-    constraint collections__related_collections__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_sets(pk),
     constraint collections__related_collections__collection_pk_fk
         foreign key (collection_pk) references collections(pk),
     constraint collections__related_collections__related_collection_pk_fk
@@ -171,10 +155,21 @@ create table properties__collections
   This allows for meta-data about the relationship to be stored without adding additional columns to the
   `collections__related_collections` table that may not make sense for all values of the `relationship` column of that
   table.
+
+  The `property_value_set_pk` column allows the relationship between the two Collections to have Property Values
+  associated with it. This allows for metadata pertaining to the relationship to be stored. For example, if the
+  `parent_collection` relationship is used then a Property like `quantity` might be applied to the relationship
+  between the Collections to indicate that a given quantity of the child collection is part of the parent Collection.
+  For example, a MTG deck may contain 3 of some specific card. This would be modelled using a row in the
+  `collections__related_collections` table with a `relationship` of `parent_collection`, `collection_pk` referencing
+  the Collection associated with the specific card, `relation_collection_pk` referencing the Collection associated with
+  the entire Collection of MTG cards and a `property_value_set_pk` referencing a Property Value Set storing data
+  that includes the `quantity` property.
  */
 create table properties__collections__related_collections
 (
     pk uuid not null default RANDOM_UUID(),
+    property_value_set_pk uuid not null,
     property_pk uuid not null,
     collections__related_collections_pk uuid not null,
     relationship enum('property_of_relationship', 'property_of_collection', 'property_of_related_collection') not null default 'property_of_relationship',
@@ -183,6 +178,8 @@ create table properties__collections__related_collections
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint properties__collections__related_collections__pk
         primary key (pk),
+    constraint collections__related_collections__property_value_set_pk_fk
+        foreign key (property_value_set_pk) references property_value_sets(pk),
     constraint properties__collections__related_collections_property_pk_fk
         foreign key (property_pk) references properties(pk),
     constraint properties__collections__related_collections_collections__related_collections_pk_fk
