@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.db.migrations.h2
 
-import com.oopman.collectioneer.{CoreCollections, CoreProperties, PropertyTypes}
+import com.oopman.collectioneer.db.entity.PropertyTypes
+import com.oopman.collectioneer.{CoreCollections, CoreProperties}
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 
 /**

@@ -7,7 +7,7 @@ enum CoreCollections
   val uuid: UUID,
   val properties: List[CoreProperties],
   val propertyPropertyValueSets: Map[CoreProperties, String]
-) {
+):
   /**
    * CommonProperties encapsulates those Properties that are always common to all Collections:
    *
@@ -37,4 +37,3 @@ enum CoreCollections
     List(CoreProperties.default_value, CoreProperties.min_values, CoreProperties.max_values),
     Map()
   )
-}

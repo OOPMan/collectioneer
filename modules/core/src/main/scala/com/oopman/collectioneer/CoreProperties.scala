@@ -1,11 +1,13 @@
 package com.oopman.collectioneer
 
+import com.oopman.collectioneer.db.entity.PropertyTypes
+
 import java.util.UUID
 
 /**
  * This enumeration contains the UUIDs and PropertyTypes associated with the core properties in the application
  */
-enum CoreProperties(val uuid: UUID, val propertyTypes: List[PropertyTypes]) {
+enum CoreProperties(val uuid: UUID, val propertyTypes: List[PropertyTypes]):
   case name extends CoreProperties(
     UUID.fromString("f65d1d21-3542-48f9-a9d5-f96921e4ba15"),
     List(PropertyTypes.varchar)
@@ -34,4 +36,4 @@ enum CoreProperties(val uuid: UUID, val propertyTypes: List[PropertyTypes]) {
     UUID.fromString("158a2358-b5d1-4e73-a6bf-c93d0587590d"),
     List(PropertyTypes.int)
   )
-}
+
