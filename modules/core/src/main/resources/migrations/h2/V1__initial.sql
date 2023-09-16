@@ -392,7 +392,7 @@ create table property_value_timestamps
     pk uuid not null default RANDOM_UUID(),
     property_value_set_pk uuid not null,
     property_pk uuid not null,
-    property_value timestamp not null,
+    property_value timestamp with time zone not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
