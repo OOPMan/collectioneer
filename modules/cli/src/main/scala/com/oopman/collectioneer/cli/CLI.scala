@@ -5,9 +5,9 @@ import scopt.OParser
 
 import java.io.File
 
-object CLI {
+object CLI:
   val builder = OParser.builder[Config]
-  val parser = {
+  val parser =
     import builder._
     OParser.sequence(
       programName("Collectioneer CLI"),
@@ -23,13 +23,32 @@ object CLI {
         .action((file, config) => config.copy(collection = file)),
       cmd("init")
         .action((_, config) => config.copy(command = "initDB"))
-        .text("Initialize the Collection DB")
+        .text("Initialize the Collection DB"),
+      cmd("list")
+        .text("List Collections or Properties")
+        .children(
+          cmd("collections")
+            .text("List All Collections")
+            .action((_, config) => config.copy()), // TODO:
+          cmd("properties")
+            .text("List All Properties")
+            .action((_, config) => config.copy()), // TODO:
+        ),
+      cmd("get")
+        .text("Get Collections or Properties")
+        .children(
+          cmd("collections")
+            .text("Get 1..n Collections")
+            .action((_, config) => config.copy()), // TODO:
+          cmd("properties")
+            .text("Get 1..n Properties")
+            .action((_, config) => config.copy()) // TODO:
+        )
     )
-  }
-  def main(args: Array[String]): Unit = {
-    OParser.parse(parser, args, Config()) match {
+  def main(args: Array[String]): Unit =
+    OParser.parse(parser, args, Config()) match
       case Some(config) =>
-        config.command match {
+        config.command match
           case "initDB" =>
             // TODO: Implement DB init
             Flyway
@@ -41,10 +60,9 @@ object CLI {
               )
               .load()
               .migrate()
-        }
+
       case _ =>
-    }
 
 
-  }
-}
+
+
