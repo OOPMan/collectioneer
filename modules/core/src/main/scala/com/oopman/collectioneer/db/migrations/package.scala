@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db
+package com.oopman.collectioneer.db.migrations
 
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
