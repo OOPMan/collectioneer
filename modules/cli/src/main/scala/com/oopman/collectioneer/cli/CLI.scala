@@ -4,11 +4,17 @@ import org.flywaydb.core.Flyway
 import scopt.OParser
 
 import java.io.File
+import java.util.UUID
 
 object CLI:
   val builder = OParser.builder[Config]
   val parser =
     import builder._
+    val uuidArgs = arg[String]("<UUID>...")
+      .unbounded()
+      .required()
+      // TODO: Validate UUIDs
+      .text("One or more UUIDs")
     OParser.sequence(
       programName("Collectioneer CLI"),
       head("collectioneer-cli", "master"),
@@ -19,8 +25,16 @@ object CLI:
       opt[Boolean]("debug")
         .action((_, config) => config.copy(debug = true))
         .text("Enable debugging output"),
-      opt[File]("collection")
-        .action((file, config) => config.copy(collection = file)),
+      opt[String]("datasourceUri")
+        .text("JDBC URI")
+        // TODO: Add validator
+        .action((datasourceUri, config) => config.copy(datasourceUri = datasourceUri)),
+      opt[String]("datasourceUsername")
+        .text("Datasource username")
+        .action((datasourceUsername, config) => config.copy(datasourceUsername = datasourceUsername)),
+      opt[String]("datasourcePassword")
+        .text("Datasource password")
+        .action((datasourcePassword, config) => config.copy(datasourcePassword = datasourcePassword)),
       cmd(Verbs.list.toString)
         .text("List Collections or Properties")
         .action((_, config) => config.copy(verb = Verbs.list))
@@ -46,12 +60,14 @@ object CLI:
             .text("Get 1..n Collections")
             .action((_, config) => config.copy(subject = Some(Subjects.collections)))
             .children(
+              uuidArgs
               // TODO: Add args option for UUIDs
             ),
           cmd(Subjects.properties.toString)
             .text("Get 1..n Properties")
             .action((_, config) => config.copy(subject = Some(Subjects.properties)))
             .children(
+              uuidArgs
               // TODO: Add args option for UUIDs
             ),
         )

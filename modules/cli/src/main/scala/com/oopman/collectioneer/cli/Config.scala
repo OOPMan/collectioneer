@@ -19,10 +19,11 @@ enum Verbs(val subjects: List[Subjects] = Nil):
 
 case class Config
 (
-  // TODO: Make this an enum
   verb: Verbs = Verbs.help,
   subject: Option[Subjects] = None,
-  collection: File = new File("./collection.db"),
+  datasourceUri: String = "jdbc:h2:./collection.db",
+  datasourceUsername: String = "sa",
+  datasourcePassword: String = "",
   verbose: Boolean = false,
   debug: Boolean = false
 )
