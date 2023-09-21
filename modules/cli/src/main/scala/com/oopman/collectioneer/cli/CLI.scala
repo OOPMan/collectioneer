@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.cli
 
+import com.oopman.collectioneer.db.migrations.executeMigrations
 import org.flywaydb.core.Flyway
 import scopt.OParser
 
@@ -75,6 +76,7 @@ object CLI:
   def main(args: Array[String]): Unit =
     OParser.parse(parser, args, Config()) match
       case Some(config) =>
+        executeMigrations(config.datasourceUri, config.datasourceUsername, config.datasourcePassword)
         config.verb match
           case Verbs.list =>
           // TODO: Implement
