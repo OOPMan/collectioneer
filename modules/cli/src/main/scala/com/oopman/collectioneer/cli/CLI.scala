@@ -2,6 +2,7 @@ package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer.db.migrations.executeMigrations
 import org.flywaydb.core.Flyway
+import org.h2.jdbcx.JdbcDataSource
 import scopt.OParser
 
 import java.io.File
@@ -16,6 +17,14 @@ object CLI:
       .required()
       // TODO: Validate UUIDs
       .text("One or more UUIDs")
+    val deletedOpt = opt[Boolean]("deleted")
+      .optional()
+      .action((deleted, config) => config) // TODO: Set options on something
+      .text("TODO:")
+    val virtualOp = opt[Boolean]("virtual")
+      .optional()
+      .action((virtual, config) => config) // TODO: Set options on something
+      .text("TODO:")
     OParser.sequence(
       programName("Collectioneer CLI"),
       head("collectioneer-cli", "master"),
@@ -44,12 +53,15 @@ object CLI:
             .text("List All Collections")
             .action((_, config) => config.copy(subject = Some(Subjects.collections)))
             .children(
+              deletedOpt,
+              virtualOp
               // TODO: Add filtering options
             ),
           cmd(Subjects.properties.toString)
             .text("List All Properties")
             .action((_, config) => config.copy(subject = Some(Subjects.collections)))
             .children(
+              deletedOpt
               // TODO: Add filtering options
             ),
         ),
@@ -76,7 +88,11 @@ object CLI:
   def main(args: Array[String]): Unit =
     OParser.parse(parser, args, Config()) match
       case Some(config) =>
-        executeMigrations(config.datasourceUri, config.datasourceUsername, config.datasourcePassword)
+        val dataSource = new JdbcDataSource();
+        dataSource.setURL(config.datasourceUri)
+        dataSource.setUser(config.datasourceUsername)
+        dataSource.setPassword(config.datasourcePassword)
+        executeMigrations(dataSource)
         config.verb match
           case Verbs.list =>
           // TODO: Implement
