@@ -27,4 +27,5 @@ object Collections extends SQLSyntaxSupport[Collections]:
       modified = rs.zonedDateTime(c.modified)
     )
 
-val c = Collections.syntax("c")
+val c1 = Collections.syntax("c1")
+val c2 = Collections.syntax("c2")
