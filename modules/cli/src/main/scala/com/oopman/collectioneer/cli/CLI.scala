@@ -39,10 +39,13 @@ object CLI:
       programName("Collectioneer CLI"),
       head("collectioneer-cli", "master"),
       help("help").text("Coming soon..."),
-      opt[Boolean]("verbose")
+      opt[Unit]("json")
+        .action((_, config) => config.copy(outputFormat = OutputFormat.json))
+        .text("Enable JSON output"),
+      opt[Unit]("verbose")
         .action((_, config) => config.copy(verbose = true))
         .text("Enable verbose output"),
-      opt[Boolean]("debug")
+      opt[Unit]("debug")
         .action((_, config) => config.copy(debug = true))
         .text("Enable debugging output"),
       opt[String]("datasourceUri")
@@ -57,7 +60,7 @@ object CLI:
         .action((datasourcePassword, config) => config.copy(datasourcePassword = datasourcePassword)),
       cmd(Verbs.list.toString)
         .text("List Collections or Properties")
-        .action((_, config) => config.copy(verb = Verbs.list))
+        .action((_, config) => config.copy(verb = Some(Verbs.list)))
         .children(
           cmd(Subjects.collections.toString)
             .text("List All Collections")
@@ -77,7 +80,7 @@ object CLI:
         ),
       cmd(Verbs.get.toString)
         .text("Get Collections or Properties")
-        .action((_, config) => config.copy(verb = Verbs.get))
+        .action((_, config) => config.copy(verb = Some(Verbs.get)))
         .children(
           cmd(Subjects.collections.toString)
             .text("Get 1..n Collections")
@@ -98,26 +101,27 @@ object CLI:
   def main(args: Array[String]): Unit =
     OParser.parse(parser, args, Config()) match
       case Some(config) =>
+        // Setup DataSoure
         val dataSource = new JdbcDataSource();
         dataSource.setURL(config.datasourceUri)
         dataSource.setUser(config.datasourceUsername)
         dataSource.setPassword(config.datasourcePassword)
+        // Execute Flyway Migrations
         executeMigrations(dataSource)
+        // Configure ScalikeJDBC
+        GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
+          enabled = config.debug,
+          singleLineMode = !config.verbose
+        )
         ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
         ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
-        // TODO: Derive name from JDBC URI
-        config.verb match
-          case Verbs.list =>
-            config.subject match
-              case Some(Subjects.collections) =>
-                val collectionsDAO = new CollectionsDAO(config.datasourceUri)
-                val collections = collectionsDAO.getAll()
-                println(collections.asJson.asYaml.spaces2)
-
-          // TODO: Implement
-          case Verbs.get =>
-          // TODO: Implement
-          case _ =>
+        // Process CLI arguments
+        val action = actions((config.verb, config.subject))
+        val result = (config.outputFormat, action(config)) match {
+          case (OutputFormat.json, r) => r.spaces2SortKeys
+          case (OutputFormat.yaml, r) => r.asYaml.spaces2
+        }
+        println(result)
 
       case _ =>
 
