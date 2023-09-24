@@ -54,6 +54,10 @@ lazy val cli = project
     name := "Collectioneer CLI",
     libraryDependencies ++= Seq(
       "com.github.scopt"        %% "scopt"            % "4.1.0",
+      "io.circe"                %% "circe-core"       % "0.14.2",
+      "io.circe"                %% "circe-generic"    % "0.14.2",
+      "io.circe"                %% "circe-parser"     % "0.14.2",
+      "io.circe"                %% "circe-yaml"       % "0.14.2",
     ),
     fork := true,
     mainClass := Some("com.oopman.collectioneer.cli.CLI")
