@@ -1,12 +1,22 @@
 package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer.db.migrations.executeMigrations
+import com.oopman.collectioneer.db.dao.CollectionsDAO
+import com.oopman.collectioneer.db.entity.Collections
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
 import scopt.OParser
+import scalikejdbc._
+
 
 import java.io.File
 import java.util.UUID
+
+import io.circe.generic.auto._
+import io.circe.syntax._
+import cats.syntax.either._
+import io.circe.yaml._
+import io.circe.yaml.syntax._
 
 object CLI:
   val builder = OParser.builder[Config]
@@ -93,11 +103,21 @@ object CLI:
         dataSource.setUser(config.datasourceUsername)
         dataSource.setPassword(config.datasourcePassword)
         executeMigrations(dataSource)
+        ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
+        ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
+        // TODO: Derive name from JDBC URI
         config.verb match
           case Verbs.list =>
+            config.subject match
+              case Some(Subjects.collections) =>
+                val collectionsDAO = new CollectionsDAO(config.datasourceUri)
+                val collections = collectionsDAO.getAll()
+                println(collections.asJson.asYaml.spaces2)
+
           // TODO: Implement
           case Verbs.get =>
           // TODO: Implement
+          case _ =>
 
       case _ =>
 
