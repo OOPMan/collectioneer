@@ -85,7 +85,7 @@ class V2__initial_data extends BaseJavaMigration:
     insertPropertiesCollections.executeBatch()
     // TODO: Insert PropertyValues for the properties of name and description to set in place sensible defaults
     val insertPropertyValueStrings = connection.prepareStatement(
-      "INSERT INTO property_value_strings(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
+      "INSERT INTO property_value_varchars(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
     )
     val insertPropertyValueInts = connection.prepareStatement(
       "INSERT INTO property_value_ints(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
