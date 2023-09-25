@@ -1,17 +1,14 @@
-package com.oopman.collectioneer.cli
+package com.oopman.collectioneer.cli.actions.list
 
+import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.db.dao.CollectionsDAO
+import com.oopman.collectioneer.db.entity.Collections
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import com.oopman.collectioneer.db.dao.CollectionsDAO
-import com.oopman.collectioneer.db.entity.Collections
 
 import java.util.UUID
 
-
-val actions: Map[(Option[Verbs], Option[Subjects]), Config => Json] = Map(
-  (Some(Verbs.list), Some(Subjects.collections)) -> listCollections
-)
 
 case class ListCollectionsResult
 (

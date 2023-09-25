@@ -1,22 +1,28 @@
 package com.oopman.collectioneer.cli
 
+import com.oopman.collectioneer.cli.{Config, Subjects, Verbs}
 import com.oopman.collectioneer.db.migrations.executeMigrations
 import com.oopman.collectioneer.db.dao.CollectionsDAO
 import com.oopman.collectioneer.db.entity.Collections
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
 import scopt.OParser
-import scalikejdbc._
-
+import scalikejdbc.*
 
 import java.io.File
 import java.util.UUID
+import io.circe.generic.auto.*
+import io.circe.syntax.*
+import cats.syntax.either.*
+import com.oopman.collectioneer.cli.actions.list.{listCollections, listProperties}
+import io.circe.Json
+import io.circe.yaml.*
+import io.circe.yaml.syntax.*
 
-import io.circe.generic.auto._
-import io.circe.syntax._
-import cats.syntax.either._
-import io.circe.yaml._
-import io.circe.yaml.syntax._
+val actionsMap: Map[(Option[Verbs], Option[Subjects]), Config => Json] = Map(
+  (Some(Verbs.list), Some(Subjects.collections)) -> listCollections,
+  (Some(Verbs.list), Some(Subjects.properties)) -> listProperties
+)
 
 object CLI:
   val builder = OParser.builder[Config]
@@ -72,7 +78,7 @@ object CLI:
             ),
           cmd(Subjects.properties.toString)
             .text("List All Properties")
-            .action((_, config) => config.copy(subject = Some(Subjects.collections)))
+            .action((_, config) => config.copy(subject = Some(Subjects.properties)))
             .children(
               deletedOpt
               // TODO: Add filtering options
@@ -116,7 +122,7 @@ object CLI:
         ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
         ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
         // Process CLI arguments
-        val action = actions((config.verb, config.subject))
+        val action = actionsMap((config.verb, config.subject))
         val result = (config.outputFormat, action(config)) match {
           case (OutputFormat.json, r) => r.spaces2SortKeys
           case (OutputFormat.yaml, r) => r.asYaml.spaces2
