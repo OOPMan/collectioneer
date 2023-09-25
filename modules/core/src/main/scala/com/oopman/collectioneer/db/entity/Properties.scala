@@ -3,6 +3,8 @@ package com.oopman.collectioneer.db.entity
 import java.time.ZonedDateTime
 import java.util.UUID
 
+import scalikejdbc._
+
 enum PropertyTypes:
   case varchar extends PropertyTypes
   case varbinary extends PropertyTypes
@@ -31,3 +33,26 @@ case class Properties
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now()
 )
+
+object Properties extends SQLSyntaxSupport[Properties]:
+  override val schemaName = Some("public")
+  override val tableName = "properties"
+
+  def apply(p: ResultName[Properties])(rs: WrappedResultSet) =
+    val propertyType = rs
+      .array(p.propertyType)
+      .getArray()
+      .asInstanceOf[Array[Object]]
+      .map(s => PropertyTypes.valueOf(s.asInstanceOf[String]))
+      .toList
+    new Properties(
+      pk = UUID.fromString(rs.string(p.pk)),
+      propertyName = rs.string(p.propertyName),
+      propertyType = propertyType,
+      deleted = rs.boolean(p.deleted),
+      created = rs.zonedDateTime(p.created),
+      modified = rs.zonedDateTime(p.modified)
+    )
+
+val p1 = Properties.syntax("p1")
+val p2 = Properties.syntax("p2")
