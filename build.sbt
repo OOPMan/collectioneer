@@ -59,6 +59,9 @@ lazy val cli = project
       "io.circe"                %% "circe-parser"     % "0.14.2",
       "io.circe"                %% "circe-yaml"       % "0.14.2",
     ),
+    scalacOptions ++= Seq(
+      "-Xmax-inlines", "64"
+    ),
     fork := true,
     mainClass := Some("com.oopman.collectioneer.cli.CLI")
   )
