@@ -9,4 +9,3 @@ object CollectionQueries:
          SELECT ${c1.result.*}
          FROM ${Collections.as(c1)}
     """
-
