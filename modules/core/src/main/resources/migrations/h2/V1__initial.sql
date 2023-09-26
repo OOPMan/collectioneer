@@ -59,7 +59,7 @@ create table properties
 (
     pk uuid not null default RANDOM_UUID(),
     property_name varchar not null,
-    property_type enum(
+    property_types enum(
         'varchar', 'varbinary', 'tinyint', 'smallint', 'int', 'bigint', 'numeric', 'float', 'double', 'boolean',
         'date', 'time', 'timestamp', 'clob', 'blob', 'uuid', 'json') array not null,
     deleted boolean not null default false,

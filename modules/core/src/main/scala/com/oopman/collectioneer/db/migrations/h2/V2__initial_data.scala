@@ -12,7 +12,7 @@ class V2__initial_data extends BaseJavaMigration:
     val connection = context.getConnection
     // Insert Property rows
     val insertProperties = connection.prepareStatement(
-      "INSERT INTO properties(pk, property_name, property_type) VALUES (?, ?, ?)"
+      "INSERT INTO properties(pk, property_name, property_types) VALUES (?, ?, ?)"
     )
     for
       coreProperty <- CoreProperties.values

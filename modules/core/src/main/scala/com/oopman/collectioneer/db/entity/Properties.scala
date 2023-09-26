@@ -28,7 +28,7 @@ case class Properties
 (
   pk: UUID = UUID.randomUUID(),
   propertyName: String,
-  propertyType: List[PropertyTypes],
+  propertyTypes: List[PropertyTypes],
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now()
@@ -40,7 +40,7 @@ object Properties extends SQLSyntaxSupport[Properties]:
 
   def apply(p: ResultName[Properties])(rs: WrappedResultSet) =
     val propertyType = rs
-      .array(p.propertyType)
+      .array(p.propertyTypes)
       .getArray()
       .asInstanceOf[Array[Object]]
       .map(s => PropertyTypes.valueOf(s.asInstanceOf[String]))
@@ -48,7 +48,7 @@ object Properties extends SQLSyntaxSupport[Properties]:
     new Properties(
       pk = UUID.fromString(rs.string(p.pk)),
       propertyName = rs.string(p.propertyName),
-      propertyType = propertyType,
+      propertyTypes = propertyType,
       deleted = rs.boolean(p.deleted),
       created = rs.zonedDateTime(p.created),
       modified = rs.zonedDateTime(p.modified)
