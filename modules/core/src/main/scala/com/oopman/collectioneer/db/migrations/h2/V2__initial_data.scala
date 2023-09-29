@@ -84,17 +84,17 @@ class V2__initial_data extends BaseJavaMigration:
     insertPropertiesCollections.addBatch()
     insertPropertiesCollections.executeBatch()
     // TODO: Insert PropertyValues for the properties of name and description to set in place sensible defaults
-    val insertPropertyValueStrings = connection.prepareStatement(
+    val insertPropertyValueVarchars = connection.prepareStatement(
       "INSERT INTO property_value_varchars(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
     )
     val insertPropertyValueInts = connection.prepareStatement(
       "INSERT INTO property_value_ints(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
     )
     // CommonProperties.name
-    insertPropertyValueStrings.setString(1, CoreCollections.CommonProperties.uuid.toString)
-    insertPropertyValueStrings.setString(2, CoreProperties.name.uuid.toString)
-    insertPropertyValueStrings.setString(3, "Common Properties")
-    insertPropertyValueStrings.addBatch()
+    insertPropertyValueVarchars.setString(1, CoreCollections.CommonProperties.uuid.toString)
+    insertPropertyValueVarchars.setString(2, CoreProperties.name.uuid.toString)
+    insertPropertyValueVarchars.setString(3, "Common Properties")
+    insertPropertyValueVarchars.addBatch()
     // CommonProperties.name.min_values
     insertPropertyValueInts.setString(1, namePropertyValueSetPk)
     insertPropertyValueInts.setString(2, CoreProperties.min_values.uuid.toString)
@@ -106,10 +106,10 @@ class V2__initial_data extends BaseJavaMigration:
     insertPropertyValueInts.setInt(3, Int.MaxValue)
     insertPropertyValueInts.addBatch()
     // CommonProperties.description
-    insertPropertyValueStrings.setString(1, CoreCollections.CommonProperties.uuid.toString)
-    insertPropertyValueStrings.setString(2, CoreProperties.description.uuid.toString)
-    insertPropertyValueStrings.setString(3, "A Collection of Properties automatically available to all other Collections")
-    insertPropertyValueStrings.addBatch()
+    insertPropertyValueVarchars.setString(1, CoreCollections.CommonProperties.uuid.toString)
+    insertPropertyValueVarchars.setString(2, CoreProperties.description.uuid.toString)
+    insertPropertyValueVarchars.setString(3, "A Collection of Properties automatically available to all other Collections")
+    insertPropertyValueVarchars.addBatch()
     // CommonProperties.description.min_values
     insertPropertyValueInts.setString(1, descriptionPropertyValueSetPk)
     insertPropertyValueInts.setString(2, CoreProperties.min_values.uuid.toString)
@@ -120,4 +120,6 @@ class V2__initial_data extends BaseJavaMigration:
     insertPropertyValueInts.setString(2, CoreProperties.max_values.uuid.toString)
     insertPropertyValueInts.setInt(3, Int.MaxValue)
     insertPropertyValueInts.addBatch()
+    // Execute batch
+    insertPropertyValueVarchars.executeBatch()
     insertPropertyValueInts.executeBatch()
