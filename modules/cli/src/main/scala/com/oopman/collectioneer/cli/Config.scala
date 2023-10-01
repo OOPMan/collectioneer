@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.cli
 
 import java.io.File
+import java.util.UUID
 
 enum Subjects:
   case database extends Subjects
@@ -29,5 +30,6 @@ case class Config
   datasourcePassword: String = "",
   verbose: Boolean = false,
   debug: Boolean = false,
-  outputFormat: OutputFormat = OutputFormat.yaml
+  outputFormat: OutputFormat = OutputFormat.yaml,
+  uuids: List[UUID] = Nil,
 )

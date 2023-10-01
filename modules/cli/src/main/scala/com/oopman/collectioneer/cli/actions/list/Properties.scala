@@ -8,8 +8,7 @@ import io.circe.Decoder.Result
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
-implicit val encodePropertyTypes: Encoder[PropertyTypes] = new Encoder[PropertyTypes]:
-  override final def apply(a: PropertyTypes): Json = Json.fromString(a.toString)
+implicit val encodePropertyTypes: Encoder[PropertyTypes] = (a: PropertyTypes) => Json.fromString(a.toString)
 
 case class ListPropertiesResult
 (

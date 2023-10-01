@@ -14,14 +14,15 @@ import java.util.UUID
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import cats.syntax.either.*
-import com.oopman.collectioneer.cli.actions.list.{listCollections, listProperties}
+import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
 import io.circe.Json
 import io.circe.yaml.*
 import io.circe.yaml.syntax.*
 
 val actionsMap: Map[(Option[Verbs], Option[Subjects]), Config => Json] = Map(
   (Some(Verbs.list), Some(Subjects.collections)) -> listCollections,
-  (Some(Verbs.list), Some(Subjects.properties)) -> listProperties
+  (Some(Verbs.list), Some(Subjects.properties)) -> listProperties,
+  (Some(Verbs.get), Some(Subjects.collections)) -> getCollections
 )
 
 object CLI:
@@ -31,7 +32,7 @@ object CLI:
     val uuidArgs = arg[String]("<UUID>...")
       .unbounded()
       .required()
-      // TODO: Validate UUIDs
+      .action((uuid, config) => config.copy(uuids = UUID.fromString(uuid) :: config.uuids))
       .text("One or more UUIDs")
     val deletedOpt = opt[Boolean]("deleted")
       .optional()

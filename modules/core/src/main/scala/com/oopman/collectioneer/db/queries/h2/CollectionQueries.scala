@@ -16,5 +16,5 @@ object CollectionQueries:
     sql"""
          SELECT ${c1.result.*}
          FROM ${Collections.as(c1)}
-         WHERE {$c1.pk} IN ${collectionPKs}
+         WHERE ${c1.pk} IN (${collectionPKs})
        """
