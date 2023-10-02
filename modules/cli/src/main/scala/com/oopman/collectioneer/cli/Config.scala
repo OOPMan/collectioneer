@@ -25,7 +25,7 @@ case class Config
 (
   verb: Option[Verbs] = None,
   subject: Option[Subjects] = None,
-  datasourceUri: String = "jdbc:h2:./collection.db",
+  datasourceUri: String = "jdbc:h2:./collection",
   datasourceUsername: String = "sa",
   datasourcePassword: String = "",
   verbose: Boolean = false,
