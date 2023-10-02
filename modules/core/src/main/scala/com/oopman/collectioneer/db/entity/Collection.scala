@@ -5,7 +5,7 @@ import java.util.UUID
 
 import scalikejdbc._
 
-case class Collections
+case class Collection
 (
   pk: UUID = UUID.randomUUID(),
   virtual: Boolean = false,
@@ -14,12 +14,12 @@ case class Collections
   modified: ZonedDateTime = ZonedDateTime.now(),
 )
 
-object Collections extends SQLSyntaxSupport[Collections]:
+object Collection extends SQLSyntaxSupport[Collection]:
   override val schemaName = Some("public")
-  override val tableName = "collections"
+  override val tableName = "collection"
 
-  def apply(c: ResultName[Collections])(rs: WrappedResultSet) =
-    new Collections(
+  def apply(c: ResultName[Collection])(rs: WrappedResultSet) =
+    new Collection(
       pk = UUID.fromString(rs.string(c.pk)),
       virtual = rs.boolean(c.virtual),
       deleted = rs.boolean(c.deleted),
@@ -27,5 +27,5 @@ object Collections extends SQLSyntaxSupport[Collections]:
       modified = rs.zonedDateTime(c.modified)
     )
 
-val c1 = Collections.syntax("c1")
-val c2 = Collections.syntax("c2")
+val c1 = Collection.syntax("c1")
+val c2 = Collection.syntax("c2")

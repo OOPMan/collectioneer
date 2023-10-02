@@ -5,20 +5,20 @@ import java.util.UUID
 
 import scalikejdbc._
 
-case class PropertyValueSets
+case class PropertyValueSet
 (
   pk: UUID = UUID.randomUUID(),
   created: ZonedDateTime = ZonedDateTime.now()
 )
 
-object PropertyValueSets extends SQLSyntaxSupport[PropertyValueSets]:
+object PropertyValueSet extends SQLSyntaxSupport[PropertyValueSet]:
   override val schemaName = Some("public")
-  override val tableName = "property_value_sets"
+  override val tableName = "property_value_set"
 
-  def apply(pvc: ResultName[PropertyValueSets])(rs: WrappedResultSet) =
-    new PropertyValueSets(
+  def apply(pvc: ResultName[PropertyValueSet])(rs: WrappedResultSet) =
+    new PropertyValueSet(
       pk = UUID.fromString(rs.string(pvc.pk)),
       created = rs.zonedDateTime(pvc.created)
     )
 
-val pvc1 = PropertyValueSets.syntax("pvc1")
+val pvc1 = PropertyValueSet.syntax("pvc1")

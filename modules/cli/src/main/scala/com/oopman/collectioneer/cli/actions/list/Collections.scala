@@ -3,7 +3,7 @@ package com.oopman.collectioneer.cli.actions.list
 import com.oopman.collectioneer.cli.Config
 import com.oopman.collectioneer.db.dao.CollectionsDAO
 import com.oopman.collectioneer.db.dao.projected.PropertyValuesDAO
-import com.oopman.collectioneer.db.entity.Collections
+import com.oopman.collectioneer.db.entity.Collection
 import com.oopman.collectioneer.db.entity.projected.PropertyValues
 import io.circe.*
 import io.circe.generic.auto.*
@@ -24,7 +24,7 @@ case class ListCollectionsVerboseResult
 (
   dataSourceUri: String,
   count: Int,
-  collections: List[Collections]
+  collections: List[Collection]
 )
 
 def listCollections(config: Config) =

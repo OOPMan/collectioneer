@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.migrations.h2
 
-import com.oopman.collectioneer.db.entity.PropertyTypes
+import com.oopman.collectioneer.db.entity.PropertyType
 import com.oopman.collectioneer.{CoreCollections, CoreProperties}
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 
@@ -12,7 +12,7 @@ class V2__initial_data extends BaseJavaMigration:
     val connection = context.getConnection
     // Insert Property rows
     val insertProperties = connection.prepareStatement(
-      "INSERT INTO properties(pk, property_name, property_types) VALUES (?, ?, ?)"
+      "INSERT INTO property(pk, property_name, property_types) VALUES (?, ?, ?)"
     )
     for
       coreProperty <- CoreProperties.values
@@ -28,10 +28,10 @@ class V2__initial_data extends BaseJavaMigration:
     insertProperties.executeBatch()
     // Insert PropertyValueSet and Collection rows
     val insertPropertyValueSets = connection.prepareStatement(
-      "INSERT INTO property_value_sets(pk) VALUES (?)"
+      "INSERT INTO property_value_set(pk) VALUES (?)"
     )
     val insertCollections = connection.prepareStatement(
-      "INSERT INTO collections(pk) VALUES (?)"
+      "INSERT INTO collection(pk) VALUES (?)"
     )
     for
       coreCollection <- CoreCollections.values
@@ -53,7 +53,7 @@ class V2__initial_data extends BaseJavaMigration:
     insertCollections.executeBatch()
     // Associate Properties with Collections
     val insertPropertiesCollections = connection.prepareStatement(
-      "INSERT INTO properties__collections(property_pk, collection_pk, property_value_set_pk, relationship) VALUES (?, ?, ?, ?)"
+      "INSERT INTO property__collection(property_pk, collection_pk, property_value_set_pk, relationship) VALUES (?, ?, ?, ?)"
     )
     for
       coreCollection <- CoreCollections.values
@@ -85,10 +85,10 @@ class V2__initial_data extends BaseJavaMigration:
     insertPropertiesCollections.executeBatch()
     // TODO: Insert PropertyValues for the properties of name and description to set in place sensible defaults
     val insertPropertyValueVarchars = connection.prepareStatement(
-      "INSERT INTO property_value_varchars(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
+      "INSERT INTO property_value_varchar(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
     )
     val insertPropertyValueInts = connection.prepareStatement(
-      "INSERT INTO property_value_ints(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
+      "INSERT INTO property_value_int(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"
     )
     // CommonProperties.name
     insertPropertyValueVarchars.setString(1, CoreCollections.CommonProperties.uuid.toString)

@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
-import com.oopman.collectioneer.db.entity.PropertyTypes
+import com.oopman.collectioneer.db.entity.PropertyType
 import scalikejdbc.*
 
 import java.util.UUID
@@ -8,7 +8,7 @@ import java.util.UUID
 case class PropertyValues
 (
   propertyName: String,
-  propertyTypes: List[PropertyTypes],
+  propertyTypes: List[PropertyType],
   propertyValueSetPk: UUID,
   propertyPk: UUID,
   pvcValues: List[String],
@@ -20,7 +20,7 @@ def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
     .array("PROPERTY_TYPES")
     .getArray
     .asInstanceOf[Array[Object]]
-    .map(s => PropertyTypes.valueOf(s.asInstanceOf[String]))
+    .map(s => PropertyType.valueOf(s.asInstanceOf[String]))
     .toList
   val pvcValues = rs
     .array("PVC_VALUES")

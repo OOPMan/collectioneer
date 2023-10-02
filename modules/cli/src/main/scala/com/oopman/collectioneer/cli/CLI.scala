@@ -3,7 +3,7 @@ package com.oopman.collectioneer.cli
 import com.oopman.collectioneer.cli.{Config, Subjects, Verbs}
 import com.oopman.collectioneer.db.migrations.executeMigrations
 import com.oopman.collectioneer.db.dao.CollectionsDAO
-import com.oopman.collectioneer.db.entity.Collections
+import com.oopman.collectioneer.db.entity.Collection
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
 import scopt.OParser

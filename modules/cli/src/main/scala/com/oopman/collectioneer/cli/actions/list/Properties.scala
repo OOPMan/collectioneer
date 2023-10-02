@@ -2,13 +2,13 @@ package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
 import com.oopman.collectioneer.db.dao.PropertiesDAO
-import com.oopman.collectioneer.db.entity.{Properties, PropertyTypes}
+import com.oopman.collectioneer.db.entity.{Property, PropertyType}
 import io.circe.*
 import io.circe.Decoder.Result
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
-implicit val encodePropertyTypes: Encoder[PropertyTypes] = (a: PropertyTypes) => Json.fromString(a.toString)
+implicit val encodePropertyTypes: Encoder[PropertyType] = (a: PropertyType) => Json.fromString(a.toString)
 
 case class ListPropertiesResult
 (
@@ -21,7 +21,7 @@ case class ListPropertiesVerboseResult
 (
   datasourceUri: String,
   count: Int,
-  properties: List[Properties]
+  properties: List[Property]
 )
 
 def listProperties(config: Config) =

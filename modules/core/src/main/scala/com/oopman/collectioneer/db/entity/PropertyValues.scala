@@ -6,7 +6,7 @@ import java.util.UUID
 
 sealed trait PropertyValue
 
-case class PropertyValueVarchars
+case class PropertyValueVarchar
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -17,7 +17,7 @@ case class PropertyValueVarchars
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueVarBinaries
+case class PropertyValueVarBinary
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -28,7 +28,7 @@ case class PropertyValueVarBinaries
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueVarTinyints
+case class PropertyValueVarTinyint
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -39,7 +39,7 @@ case class PropertyValueVarTinyints
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueSmallints
+case class PropertyValueSmallint
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -50,7 +50,7 @@ case class PropertyValueSmallints
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueInts
+case class PropertyValueInt
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -61,7 +61,7 @@ case class PropertyValueInts
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueBigInts
+case class PropertyValueBigInt
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -72,7 +72,7 @@ case class PropertyValueBigInts
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueNumerics
+case class PropertyValueNumeric
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -83,7 +83,7 @@ case class PropertyValueNumerics
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueFloats
+case class PropertyValueFloat
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -94,7 +94,7 @@ case class PropertyValueFloats
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueDoubles
+case class PropertyValueDouble
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -105,7 +105,7 @@ case class PropertyValueDoubles
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueBooleans
+case class PropertyValueBoolean
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -116,7 +116,7 @@ case class PropertyValueBooleans
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueDates
+case class PropertyValueDate
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -127,7 +127,7 @@ case class PropertyValueDates
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueTimes
+case class PropertyValueTime
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -138,7 +138,7 @@ case class PropertyValueTimes
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueTimestamps
+case class PropertyValueTimestamp
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -149,7 +149,7 @@ case class PropertyValueTimestamps
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueClobs
+case class PropertyValueClob
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -160,7 +160,7 @@ case class PropertyValueClobs
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueBlobs
+case class PropertyValueBlob
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -171,7 +171,7 @@ case class PropertyValueBlobs
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueUUIDs
+case class PropertyValueUUID
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -182,7 +182,7 @@ case class PropertyValueUUIDs
   modified: ZonedDateTime = ZonedDateTime.now()
 ) extends PropertyValue
 
-case class PropertyValueJSONs
+case class PropertyValueJSON
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
