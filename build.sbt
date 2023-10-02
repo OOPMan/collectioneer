@@ -4,13 +4,18 @@ lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
   crossScalaVersions := Seq(scala213Version, scala3Version),
+  scalacOptions ++= Seq(
+    "-Yretain-trees",
+  ),
   libraryDependencies ++= Seq(
-    "ch.qos.logback"          % "logback-classic"         % "1.2.3",
-    "org.flywaydb"            % "flyway-core"             % "9.22.0",
-    "org.scalikejdbc"         %% "scalikejdbc"            % "4.0.0",
-    "com.h2database"          % "h2"                      % "2.2.222",
-    "com.novocode"            % "junit-interface"         % "0.11"              % "test",
-    "com.lihaoyi"             % "ammonite"                % "3.0.0-M0"          % "test"  cross CrossVersion.full
+    "ch.qos.logback"          % "logback-classic"             % "1.2.3",
+    "org.flywaydb"            % "flyway-core"                 % "9.22.0",
+    "org.scalikejdbc"         %% "scalikejdbc"                % "4.0.0",
+    "com.h2database"          % "h2"                          % "2.2.222",
+    "io.7mind.izumi"          %% "distage-core"               % "1.1.0",
+    "io.7mind.izumi"          %% "distage-extension-plugins"  % "1.1.0",
+    "com.novocode"            % "junit-interface"             % "0.11"              % "test",
+    "com.lihaoyi"             % "ammonite"                    % "3.0.0-M0"          % "test"  cross CrossVersion.full,
   ),
   Test / sourceGenerators += Def.task {
     val file = (sourceManaged in Test).value / "amm.scala"
