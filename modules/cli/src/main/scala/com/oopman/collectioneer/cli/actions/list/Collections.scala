@@ -42,10 +42,6 @@ def listCollections(config: Config) =
       uuids = collections.map(_.pk)
     ).asJson
 
-sealed trait PropertyValue
-case class PropertyValueVarchar(name: String, value: List[String]) extends PropertyValue
-case class PropertyValueInt(name: String, value: List[Int]) extends PropertyValue
-
 case class CollectionWithPropertyValues
 (
   pk: UUID = UUID.randomUUID(),
@@ -53,7 +49,7 @@ case class CollectionWithPropertyValues
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  properties: List[PropertyValues]
+  properties: Map[String, List[String]]
 )
 
 case class GetCollectionsResult
@@ -63,18 +59,29 @@ case class GetCollectionsResult
   collections: List[CollectionWithPropertyValues]
 )
 
+def propertyValuesToMapTuple(propertyValue: PropertyValues): (String, List[String]) =
+  propertyValue.propertyName -> (
+    propertyValue.pvcValues ++
+    propertyValue.pviValues.map(_.toString)
+  )
+
 def getCollections(config: Config): Json =
   val collectionsDAO = new CollectionsDAO(config.datasourceUri)
   val propertyValuesDAO = new PropertyValuesDAO(config.datasourceUri)
   val collections = collectionsDAO.getAllMatchingPKs(config.uuids)
   val propertyValues = propertyValuesDAO.getPropertyValuesByPropertyValueSet(config.uuids)
   val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
-  collections
-    .map(collection => CollectionWithPropertyValues(
-      pk = collection.pk,
-      virtual = collection.virtual,
-      deleted = collection.deleted,
-      created = collection.created,
-      modified = collection.modified,
-      properties = propertyValuesByPVSUUID.getOrElse(collection.pk, Nil)
-    )).asJson
+  GetCollectionsResult(
+    dataSourceUri = config.datasourceUri,
+    count = collections.size,
+    collections = collections
+      .map(collection => CollectionWithPropertyValues(
+        pk = collection.pk,
+        virtual = collection.virtual,
+        deleted = collection.deleted,
+        created = collection.created,
+        modified = collection.modified,
+        properties = Map.from(propertyValuesByPVSUUID
+          .getOrElse(collection.pk, Nil)
+          .map(propertyValuesToMapTuple))
+      ))).asJson
