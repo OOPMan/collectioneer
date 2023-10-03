@@ -23,13 +23,13 @@ def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
     .map(s => PropertyType.valueOf(s.asInstanceOf[String]))
     .toList
   val pvcValues = rs
-    .array("PVC_VALUES")
+    .array("VARCHAR_VALUES")
     .getArray
     .asInstanceOf[Array[Object]]
     .map(_.asInstanceOf[String])
     .toList
   val pviValues = rs
-    .array("PVI_VALUES")
+    .array("INT_VALUES")
     .getArray
     .asInstanceOf[Array[Object]]
     .map(_.asInstanceOf[Int])
