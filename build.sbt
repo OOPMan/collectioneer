@@ -54,6 +54,7 @@ lazy val core = project
 
 lazy val cli = project
   .in(file("modules/cli"))
+  .enablePlugins(PackPlugin)
   .settings(commonSettings)
   .settings(
     name := "Collectioneer CLI",
@@ -68,7 +69,8 @@ lazy val cli = project
       "-Xmax-inlines", "64"
     ),
     fork := true,
-    mainClass := Some("com.oopman.collectioneer.cli.CLI")
+    mainClass := Some("com.oopman.collectioneer.cli.CLI"),
+    packMain := Map("collectioneer-cli" -> "com.oopman.collectioneer.cli.CLI")
   )
   .dependsOn(core)
 
@@ -103,4 +105,11 @@ lazy val gui = project
       "org.scalafx"             %% "scalafx"          % "20.0.0-R31",
     )
   )
+  .dependsOn(core)
+
+// Plugin projects
+lazy val grandArchiveTCG = project
+  .in(file("modules/plugins/grand-archive-tcg"))
+  .settings(commonSettings)
+  .settings()
   .dependsOn(core)
