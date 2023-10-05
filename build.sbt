@@ -40,7 +40,8 @@ lazy val collectioneer = project
       core,
       cli,
       gui,
-      repl
+      repl,
+      grandArchiveTCG,
   )
 
 lazy val core = project
@@ -111,5 +112,8 @@ lazy val gui = project
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))
   .settings(commonSettings)
-  .settings()
+  .settings(
+    name := "Grand Archive TCG Plugin",
+    exportJars := true
+  )
   .dependsOn(core)
