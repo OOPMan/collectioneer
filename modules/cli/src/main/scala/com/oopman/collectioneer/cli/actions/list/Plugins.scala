@@ -7,6 +7,7 @@ import izumi.distage.plugins.PluginConfig
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
+import izumi.distage.model.exceptions.runtime.ProvisioningException
 import izumi.distage.plugins.load.PluginLoader
 
 def listPlugins(config: Config): Json =
@@ -14,10 +15,14 @@ def listPlugins(config: Config): Json =
     "com.oopman.collectioneer.plugins" :: Nil
   )
   val appModules = PluginLoader().load(pluginConfig).result.merge
-  Injector()
-    .produceGet[Set[CLIPlugin]](appModules)
-    .unsafeGet()
-    .map(plugin => s"${plugin.getName} (${plugin.getVersion})")
-    .asJson
+  val result =
+    try Injector()
+        .produceGet[Set[CLIPlugin]](appModules)
+        .unsafeGet()
+        .map(plugin => s"${plugin.getName} (${plugin.getVersion})")
+        .toList
+    catch case e: ProvisioningException => Nil
+  result.asJson
+
 
 
