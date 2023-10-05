@@ -14,7 +14,7 @@ import java.util.UUID
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import cats.syntax.either.*
-import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
+import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listPlugins, listProperties}
 import io.circe.Json
 import io.circe.yaml.*
 import io.circe.yaml.syntax.*
@@ -22,7 +22,8 @@ import io.circe.yaml.syntax.*
 val actionsMap: Map[(Option[Verbs], Option[Subjects]), Config => Json] = Map(
   (Some(Verbs.list), Some(Subjects.collections)) -> listCollections,
   (Some(Verbs.list), Some(Subjects.properties)) -> listProperties,
-  (Some(Verbs.get), Some(Subjects.collections)) -> getCollections
+  (Some(Verbs.list), Some(Subjects.plugins)) -> listPlugins,
+  (Some(Verbs.get), Some(Subjects.collections)) -> getCollections,
 )
 
 object CLI:
@@ -84,6 +85,9 @@ object CLI:
               deletedOpt
               // TODO: Add filtering options
             ),
+          cmd(Subjects.plugins.toString)
+            .text("List All Plugins")
+            .action((_, config) => config.copy(subject = Some(Subjects.plugins)))
         ),
       cmd(Verbs.get.toString)
         .text("Get Collections or Properties")
