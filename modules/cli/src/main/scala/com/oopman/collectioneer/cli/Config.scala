@@ -7,12 +7,13 @@ enum Subjects:
   case database extends Subjects
   case collections extends Subjects
   case properties extends Subjects
+  case plugins extends Subjects
 
 enum Verbs(val subjects: List[Subjects] = Nil):
   case create extends Verbs
   case delete extends Verbs
   case update extends Verbs
-  case list extends Verbs(List(Subjects.collections, Subjects.properties))
+  case list extends Verbs(List(Subjects.collections, Subjects.properties, Subjects.plugins))
   case get extends Verbs(List(Subjects.collections, Subjects.properties))
 
 enum OutputFormat:
