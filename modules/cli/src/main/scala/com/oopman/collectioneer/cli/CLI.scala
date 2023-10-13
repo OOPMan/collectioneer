@@ -172,12 +172,10 @@ object CLI:
           verb <- config.verb
           subject <- config.subject
         } yield actionsMap(verb)(subject)(config.usePlugin)._4
-        val result = action.map(_(config))
-        val resultString = result.map(result =>
-          config.outputFormat match
+        val result = action.map(_(config)).getOrElse(Map[String, String]().asJson)
+        val resultString = config.outputFormat match
             case OutputFormat.json => result.spaces2SortKeys
             case OutputFormat.yaml => result.asYaml.spaces2
-        )
         println(resultString)
       case _ =>
 
