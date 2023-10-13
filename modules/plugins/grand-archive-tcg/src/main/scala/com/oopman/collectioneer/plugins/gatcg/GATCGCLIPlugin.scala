@@ -11,7 +11,7 @@ import io.circe.syntax.*
 class GATCGCLIPlugin extends CLIPlugin:
   override def getName: String = "Grand Archive TCG"
 
-  override def getShortName: String = "gatcg"
+  override def getShortName: String = "GATCG"
 
   override def getVersion: String = "master"
 

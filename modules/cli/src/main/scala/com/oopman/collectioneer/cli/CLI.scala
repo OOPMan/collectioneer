@@ -46,14 +46,13 @@ def generateSubjectCmds
 (builder: OParserBuilder[Config], verb: Verb)
 (subject: Subject, pluginNameActionListItemMap: PluginNameActionListItemMap) =
   val pluginNames = pluginNameActionListItemMap.keySet.flatten
-  val pluginNamesString = pluginNames.mkString(", ")
+  val pluginNamesString = pluginNames.mkString("|")
   val actionListItems = pluginNameActionListItemMap.values.toList
-  // TODO: Only include pluginNameOpt if it is a valid concept for this particular verb/subject combination
   val pluginNameOpt = builder.opt[String]("use-plugin")
     .text(s"Specify whether to use a specific plugin. Valid options: " + pluginNamesString)
     .maxOccurs(1)
     .optional()
-    .action((pluginName, config) => config.copy(usePlugin = Some(pluginName)))
+    .action((pluginName, config) => config.copy(usePlugin = Some(cliSafeName(pluginName))))
     .validate(pluginName =>
       if pluginNames.contains(pluginName) then builder.success
       else builder.failure("Invalid plugin name. Valid options: " + pluginNamesString))
