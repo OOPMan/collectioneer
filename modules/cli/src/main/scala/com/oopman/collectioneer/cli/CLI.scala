@@ -6,7 +6,7 @@ import com.oopman.collectioneer.db.dao.CollectionsDAO
 import com.oopman.collectioneer.db.entity.Collection
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
-import scopt.OParser
+import scopt.{OParser, OParserBuilder}
 import scalikejdbc.*
 
 import java.io.File
@@ -37,88 +37,90 @@ type PluginNameActionListItemMap = Map[Option[String], ActionListItem]
 type SubjectMap = Map[Subject, PluginNameActionListItemMap]
 type ActionMap = Map[Verb, SubjectMap]
 
+def cliSafeName(name: String): String = name
+  .toLowerCase
+  .replaceAll("[^a-z- ]", "")
+  .replaceAll("\\s+", "-")
+
+def generateSubjectCmds
+(builder: OParserBuilder[Config], verb: Verb)
+(subject: Subject, pluginNameActionListItemMap: PluginNameActionListItemMap) =
+  val pluginNames = pluginNameActionListItemMap.keySet.flatten
+  val pluginNamesString = pluginNames.mkString(", ")
+  val actionListItems = pluginNameActionListItemMap.values.toList
+  // TODO: Only include pluginNameOpt if it is a valid concept for this particular verb/subject combination
+  val pluginNameOpt = builder.opt[String]("use-plugin")
+    .text(s"Specify whether to use a specific plugin. Valid options: " + pluginNamesString)
+    .maxOccurs(1)
+    .optional()
+    .action((pluginName, config) => config.copy(usePlugin = Some(pluginName)))
+    .validate(pluginName =>
+      if pluginNames.contains(pluginName) then builder.success
+      else builder.failure("Invalid plugin name. Valid options: " + pluginNamesString))
+  val oParserItems = pluginNameOpt :: actionListItems.flatMap(_._5)
+  builder.cmd(subject.name)
+    .text(subject.help.getOrElse(verb, ""))
+    .action((_, config) => config.copy(subject = Some(subject)))
+    .children(oParserItems: _*)
+
+def generateVerbCmd
+(builder: OParserBuilder[Config])
+(verb: Verb, subjectsMap: SubjectMap) =
+  val oParserItems = subjectsMap.map(generateSubjectCmds(builder, verb)).toList
+  builder.cmd(verb.name)
+    .text(verb.help)
+    .action((_, config) => config.copy(verb = Some(verb)))
+    .children(oParserItems: _*)
+
 object CLI:
-  val pluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
-  val pluginModules = PluginLoader().load(pluginConfig).result.merge
-  val plugins =
+  val builder: OParserBuilder[Config] = OParser.builder[Config]
+  val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
+  val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
+  val plugins: List[CLIPlugin] =
     try Injector()
       .produceGet[Set[CLIPlugin]](pluginModules)
       .unsafeGet()
       .toList
     catch case e: ProvisioningException => Nil
-  // TODO: Build actionsMap from defaults + additional actions provided by Plugins
-  // TODO: Generate commands and children using actionsMap
-  val builder = OParser.builder[Config]
-  val parser: OParser[Unit, Config] =
-    import builder._
-    val uuidArgs = arg[String]("<UUID>...")
-      .unbounded()
-      .required()
-      .action((uuid, config) => config.copy(uuids = UUID.fromString(uuid) :: config.uuids))
-      .text("One or more UUIDs")
-    val deletedOpt = opt[Boolean]("deleted")
-      .optional()
-      .action((deleted, config) => config) // TODO: Set options on something
-      .text("TODO:")
-    val virtualOp = opt[Boolean]("virtual")
-      .optional()
-      .action((virtual, config) => config) // TODO: Set options on something
-      .text("TODO:")
-
-    def cliSafeName(name: String) = name
-      .toLowerCase
-      .replaceAll("[^a-z- ]", "")
-      .replaceAll("\\s+", "-")
-
-    val pluginActions: List[ActionListItem] = plugins
-      .flatMap(plugin => plugin
-        .getActions(builder)
-        .map((verb, subject, action, oparserItems) => (verb, subject, Some(cliSafeName(plugin.getShortName)), action, oparserItems))
-      )
-    val baseActions: List[ActionListItem] = List(
-      (Verb.list, Subject.collections, None, listCollections, List(deletedOpt, virtualOp)),
-      (Verb.list, Subject.properties, None, listProperties, List(deletedOpt)),
-      (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
-      // TODO: Add more
+  val pluginActions: List[ActionListItem] = plugins
+    .flatMap(plugin => plugin
+      .getActions(builder)
+      .map((verb, subject, action, oparserItems) => (verb, subject, Some(cliSafeName(plugin.getShortName)), action, oparserItems))
+    )
+  val uuidArgs: OParser[String, Config] = builder.arg[String]("<UUID>...")
+    .unbounded()
+    .required()
+    .action((uuid, config) => config.copy(uuids = UUID.fromString(uuid) :: config.uuids))
+    .text("One or more UUIDs")
+  val deletedOpt: OParser[Boolean, Config] = builder.opt[Boolean]("deleted")
+    .optional()
+    .action((deleted, config) => config) // TODO: Set options on something
+    .text("TODO:")
+  val virtualOp: OParser[Boolean, Config] = builder.opt[Boolean]("virtual")
+    .optional()
+    .action((virtual, config) => config) // TODO: Set options on something
+    .text("TODO:")
+  val baseActions: List[ActionListItem] = List(
+    (Verb.list, Subject.collections, None, listCollections, List(deletedOpt, virtualOp)),
+    (Verb.list, Subject.properties, None, listProperties, List(deletedOpt)),
+    (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
+    // TODO: Add more
+  )
+  val actionsMap: ActionMap = baseActions
+    .concat(pluginActions)
+    .groupBy(_._1)
+    .map((verb: Verb, actionList: List[ActionListItem]) =>
+      verb -> actionList
+        .groupBy(_._2)
+        .map((subject: Subject, actionList: List[ActionListItem]) =>
+          subject -> actionList
+            .groupBy(_._3)
+            .map((pluginNameOption: Option[String], actionList: List[ActionListItem]) =>
+              pluginNameOption -> actionList.head))
     )
 
-    val actionsMap: ActionMap = baseActions
-      .concat(pluginActions)
-      .groupBy(_._1)
-      .map((verb: Verb, actionList: List[ActionListItem]) =>
-        verb -> actionList
-          .groupBy(_._2)
-          .map((subject: Subject, actionList: List[ActionListItem]) =>
-            subject -> actionList
-              .groupBy(_._3)
-              .map((pluginNameOption: Option[String], actionList: List[ActionListItem]) =>
-                pluginNameOption -> actionList.head))
-      )
-
-    def generateSubjectCmds(verb: Verb)(subject: Subject, pluginNameActionListItemMap: PluginNameActionListItemMap) =
-      val pluginNames = pluginNameActionListItemMap.keySet.flatten
-      val pluginNamesString = pluginNames.mkString(", ")
-      val actionListItems = pluginNameActionListItemMap.values.toList
-      val pluginNameOpt = opt[String]("use-plugin")
-        .text(s"Specify whether to use a specific plugin. Valid options: " + pluginNamesString)
-        .maxOccurs(1)
-        .optional()
-        .action((pluginName, config) => config.copy(usePlugin = Some(pluginName)))
-        .validate(pluginName =>
-          if pluginNames.contains(pluginName) then success
-          else failure("Invalid plugin name. Valid options: " + pluginNamesString))
-      val oParserItems = pluginNameOpt :: actionListItems.flatMap(_._5)
-      cmd(subject.name)
-        .text(subject.help.getOrElse(verb, ""))
-        .action((_, config) => config.copy(subject = Some(subject)))
-        .children(oParserItems: _*)
-
-    def generateVerbCmd(verb: Verb, subjectsMap: SubjectMap) =
-      val oParserItems = subjectsMap.map(generateSubjectCmds(verb)).toList
-      cmd(verb.name)
-        .text(verb.help)
-        .action((_, config) => config.copy(verb = Some(verb)))
-        .children(oParserItems: _*)
+  val parser: OParser[Unit, Config] =
+    import builder._
 
     val oParserItems: List[OParser[_, Config]] = List(
       head("collectioneer-cli", "master"),
@@ -142,8 +144,7 @@ object CLI:
       opt[String]("datasourcePassword")
         .text("Datasource password")
         .action((datasourcePassword, config) => config.copy(datasourcePassword = datasourcePassword)),
-    ) ++ actionsMap.map(generateVerbCmd).toList
-
+    ) ++ actionsMap.map(generateVerbCmd(builder)).toList
     OParser.sequence(
       programName("Collectioneer CLI"),
       oParserItems: _*
@@ -167,13 +168,17 @@ object CLI:
         ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
         ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
         // Process CLI arguments
-        val action = actionsMap((config.verb, config.subject))
-        val result = (config.outputFormat, action(config)) match {
-          case (OutputFormat.json, r) => r.spaces2SortKeys
-          case (OutputFormat.yaml, r) => r.asYaml.spaces2
-        }
-        println(result)
-
+        val action = for {
+          verb <- config.verb
+          subject <- config.subject
+        } yield actionsMap(verb)(subject)(config.usePlugin)._4
+        val result = action.map(_(config))
+        val resultString = result.map(result =>
+          config.outputFormat match
+            case OutputFormat.json => result.spaces2SortKeys
+            case OutputFormat.yaml => result.asYaml.spaces2
+        )
+        println(resultString)
       case _ =>
 
 
