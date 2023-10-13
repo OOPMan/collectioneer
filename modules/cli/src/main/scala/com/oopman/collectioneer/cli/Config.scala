@@ -18,11 +18,12 @@ object Verb:
   def apply(name: String, help: String) =
     new Verb(name.toLowerCase, help)
 
-  val create = Verb("create", "Create")
-  val delete = Verb("delete", "Delete")
-  val update = Verb("update", "Update")
-  val list = Verb("list", "List")
-  val get = Verb("get", "Retrieve")
+  val create = Verb("create", "Create objects within the Database")
+  val delete = Verb("delete", "Delete objects from the Database")
+  val update = Verb("update", "Update objects within the Database")
+  val list = Verb("list", "List objects wtihin the Database")
+  val get = Verb("get", "Retrieve objects from the Database")
+  val imprt = Verb("import", "Import objects into the Database")
 
 case class Subject
 (
@@ -34,6 +35,7 @@ object Subject:
   def apply(name: String, help: Map[Verb, String]) =
     new Subject(name.toLowerCase, help)
 
+  val database = Subject("database", Map())
   val collections = Subject("collections", Map())
   val properties = Subject("properties", Map())
 
