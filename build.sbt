@@ -116,4 +116,4 @@ lazy val grandArchiveTCG = project
     name := "Grand Archive TCG Plugin",
     exportJars := true
   )
-  .dependsOn(core)
+  .dependsOn(core, cli)
