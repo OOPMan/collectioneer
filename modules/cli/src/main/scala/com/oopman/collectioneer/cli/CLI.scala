@@ -86,6 +86,7 @@ object CLI:
       .getActions(builder)
       .map((verb, subject, action, oparserItems) => (verb, subject, Some(cliSafeName(plugin.getShortName)), action, oparserItems))
     )
+  val pluginSubconfigs: Map[String, Subconfig] = plugins.map(p => p.getShortName -> p.getDefaultSubconfig).toMap
   val uuidArgs: OParser[String, Config] = builder.arg[String]("<UUID>...")
     .unbounded()
     .required()
@@ -150,7 +151,7 @@ object CLI:
     )
 
   def main(args: Array[String]): Unit =
-    OParser.parse(parser, args, Config()) match
+    OParser.parse(parser, args, Config(subconfigs = pluginSubconfigs)) match
       case Some(config) =>
         // Setup DataSoure
         val dataSource = new JdbcDataSource();
