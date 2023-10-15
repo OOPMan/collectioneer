@@ -1,3 +1,5 @@
+import scala.collection.Seq
+
 lazy val scala213Version      = "2.13.10"
 lazy val scala3Version        = "3.2.2"
 lazy val commonSettings = Seq(
@@ -8,14 +10,15 @@ lazy val commonSettings = Seq(
     "-Yretain-trees",
   ),
   libraryDependencies ++= Seq(
-    "ch.qos.logback"          % "logback-classic"             % "1.2.3",
-    "org.flywaydb"            % "flyway-core"                 % "9.22.0",
-    "org.scalikejdbc"         %% "scalikejdbc"                % "4.0.0",
-    "com.h2database"          % "h2"                          % "2.2.222",
-    "io.7mind.izumi"          %% "distage-core"               % "1.1.0",
-    "io.7mind.izumi"          %% "distage-extension-plugins"  % "1.1.0",
-    "com.novocode"            % "junit-interface"             % "0.11"              % "test",
-    "com.lihaoyi"             % "ammonite"                    % "3.0.0-M0"          % "test"  cross CrossVersion.full,
+    "ch.qos.logback"                  % "logback-classic"             % "1.2.3",
+    "org.flywaydb"                    % "flyway-core"                 % "9.22.0",
+    "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
+    "com.h2database"                  % "h2"                          % "2.2.222",
+    "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
+    "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
+    "com.softwaremill.sttp.client3"   %% "core"                       % "3.9.0",
+    "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
+    "com.lihaoyi"                     % "ammonite"                    % "3.0.0-M0"          % "test"  cross CrossVersion.full,
   ),
   Test / sourceGenerators += Def.task {
     val file = (sourceManaged in Test).value / "amm.scala"
@@ -41,7 +44,7 @@ lazy val collectioneer = project
       cli,
       gui,
       repl,
-      grandArchiveTCG,
+      plugins,
   )
 
 lazy val core = project
@@ -53,27 +56,38 @@ lazy val core = project
     )
   )
 
+lazy val cliCore = project
+  .in(file("modules/cli-core"))
+  .settings(commonSettings)
+  .settings(
+    name := "Collectioneer CLI Core",
+    libraryDependencies ++= Seq(
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "io.circe" %% "circe-core" % "0.14.2",
+      "io.circe" %% "circe-generic" % "0.14.2",
+      "io.circe" %% "circe-parser" % "0.14.2",
+      "io.circe" %% "circe-yaml" % "0.14.2",
+    ),
+    scalacOptions ++= Seq(
+      "-Xmax-inlines", "64"
+    ),
+  )
+
 lazy val cli = project
   .in(file("modules/cli"))
   .enablePlugins(PackPlugin)
   .settings(commonSettings)
   .settings(
     name := "Collectioneer CLI",
-    libraryDependencies ++= Seq(
-      "com.github.scopt"        %% "scopt"            % "4.1.0",
-      "io.circe"                %% "circe-core"       % "0.14.2",
-      "io.circe"                %% "circe-generic"    % "0.14.2",
-      "io.circe"                %% "circe-parser"     % "0.14.2",
-      "io.circe"                %% "circe-yaml"       % "0.14.2",
-    ),
-    scalacOptions ++= Seq(
-      "-Xmax-inlines", "64"
-    ),
     fork := true,
     mainClass := Some("com.oopman.collectioneer.cli.CLI"),
     packMain := Map("collectioneer-cli" -> "com.oopman.collectioneer.cli.CLI")
   )
-  .dependsOn(core)
+  .dependsOn(
+    core,
+    cliCore,
+    plugins
+  )
 
 lazy val repl = project
   .in(file("modules/repl"))
@@ -109,6 +123,13 @@ lazy val gui = project
   .dependsOn(core)
 
 // Plugin projects
+lazy val plugins = project
+  .in(file("modules/plugins"))
+  .settings(commonSettings)
+  .aggregate(
+    grandArchiveTCG,
+  )
+
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))
   .settings(commonSettings)
@@ -116,4 +137,4 @@ lazy val grandArchiveTCG = project
     name := "Grand Archive TCG Plugin",
     exportJars := true
   )
-  .dependsOn(core, cli)
+  .dependsOn(core, cliCore)

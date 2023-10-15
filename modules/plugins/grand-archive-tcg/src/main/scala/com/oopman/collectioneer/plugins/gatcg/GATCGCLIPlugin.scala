@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.plugins.gatcg
 
-import com.oopman.collectioneer.cli.{Action, Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.cli.{Verb, Subject, Config, Subconfig}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
@@ -17,7 +17,7 @@ class GATCGCLIPlugin extends CLIPlugin:
 
   override def getDefaultSubconfig: Subconfig = GATCGPluginConfig()
 
-  override def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Action, List[OParser[_, Config]])] =
+  override def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[_, Config]])] =
     List(
       (Verb.imprt, Subject.database, importDatabase, List()),
     )
