@@ -12,8 +12,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/modules/cli" />
+            <option value="$PROJECT_DIR$/modules/cli-core" />
             <option value="$PROJECT_DIR$/modules/core" />
             <option value="$PROJECT_DIR$/modules/gui" />
+            <option value="$PROJECT_DIR$/modules/plugins" />
+            <option value="$PROJECT_DIR$/modules/plugins/grand-archive-tcg" />
             <option value="$PROJECT_DIR$/modules/repl" />
             <option value="$PROJECT_DIR$/project" />
           </set>

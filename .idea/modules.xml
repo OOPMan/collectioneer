@@ -3,11 +3,14 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Collectioneer CLI.iml" filepath="$PROJECT_DIR$/.idea/modules/Collectioneer CLI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Collectioneer CLI Core.iml" filepath="$PROJECT_DIR$/.idea/modules/Collectioneer CLI Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Collectioneer Core.iml" filepath="$PROJECT_DIR$/.idea/modules/Collectioneer Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Collectioneer GUI.iml" filepath="$PROJECT_DIR$/.idea/modules/Collectioneer GUI.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Collectioneer REPL.iml" filepath="$PROJECT_DIR$/.idea/modules/Collectioneer REPL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Grand Archive TCG Plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/Grand Archive TCG Plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/collectioneer.iml" filepath="$PROJECT_DIR$/.idea/modules/collectioneer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/collectioneer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/collectioneer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/plugins.iml" filepath="$PROJECT_DIR$/.idea/modules/plugins.iml" />
     </modules>
   </component>
 </project>

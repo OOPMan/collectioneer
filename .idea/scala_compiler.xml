@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="Collectioneer Core,Collectioneer REPL,collectioneer,collectioneer_2112,repl" />
+    <profile name="sbt 1" modules="collectioneer_2112,repl" />
     <profile name="sbt 2" modules="Collectioneer GUI">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
       <option name="featureWarnings" value="true" />
       <parameters>
+        <parameter value="-Yretain-trees" />
         <parameter value="-encoding" />
         <parameter value="utf8" />
         <parameter value="-explain" />
@@ -16,10 +17,16 @@
         <parameter value="3.2-migration" />
       </parameters>
     </profile>
-    <profile name="sbt 3" modules="Collectioneer CLI">
+    <profile name="sbt 3" modules="Collectioneer CLI Core">
       <parameters>
+        <parameter value="-Yretain-trees" />
         <parameter value="-Xmax-inlines" />
         <parameter value="64" />
+      </parameters>
+    </profile>
+    <profile name="sbt 4" modules="Collectioneer CLI,Collectioneer Core,Collectioneer REPL,Grand Archive TCG Plugin,collectioneer,grandArchiveTCG,plugins">
+      <parameters>
+        <parameter value="-Yretain-trees" />
       </parameters>
     </profile>
   </component>
