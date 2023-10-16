@@ -81,12 +81,12 @@ lazy val cli = project
     name := "Collectioneer CLI",
     fork := true,
     mainClass := Some("com.oopman.collectioneer.cli.CLI"),
-    packMain := Map("collectioneer-cli" -> "com.oopman.collectioneer.cli.CLI")
+    packMain := Map("collectioneer-cli" -> "com.oopman.collectioneer.cli.CLI"),
   )
   .dependsOn(
     core,
     cliCore,
-    plugins
+    plugins,
   )
 
 lazy val repl = project
@@ -128,6 +128,9 @@ lazy val plugins = project
   .settings(commonSettings)
   .aggregate(
     grandArchiveTCG,
+  )
+  .dependsOn(
+    grandArchiveTCG
   )
 
 lazy val grandArchiveTCG = project
