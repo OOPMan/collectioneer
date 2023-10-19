@@ -38,6 +38,7 @@ object Subject:
   val database = Subject("database", Map())
   val collections = Subject("collections", Map())
   val properties = Subject("properties", Map())
+  val plugins = Subject("plugins", Map())
 
 enum OutputFormat:
   case json extends OutputFormat
@@ -58,6 +59,9 @@ case class Config
   debug: Boolean = false,
   outputFormat: OutputFormat = OutputFormat.yaml,
   uuids: List[UUID] = Nil,
+  importDatasourceUris: List[String] = Nil,
+  deleted: Option[Boolean] = None,
+  virtual: Option[Boolean] = None,
   usePlugin: Option[String] = None,
   subconfigs: Map[String, Subconfig] = Map(),
 )

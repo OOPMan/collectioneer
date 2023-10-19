@@ -92,18 +92,25 @@ object CLI:
     .required()
     .action((uuid, config) => config.copy(uuids = UUID.fromString(uuid) :: config.uuids))
     .text("One or more UUIDs")
+  val importDatasourceUriArgs: OParser[String, Config] = builder.arg[String]("<URI>...")
+    .unbounded()
+    .required()
+    .action((importDatasourceUri, config) => config.copy(importDatasourceUris = importDatasourceUri :: config.importDatasourceUris))
+    .text("One or more Datasource URIs")
   val deletedOpt: OParser[Boolean, Config] = builder.opt[Boolean]("deleted")
     .optional()
-    .action((deleted, config) => config) // TODO: Set options on something
-    .text("TODO:")
+    .action((deleted, config) => config.copy(deleted = Some(deleted)))
+    .text("Filter by deleted field value")
   val virtualOp: OParser[Boolean, Config] = builder.opt[Boolean]("virtual")
     .optional()
-    .action((virtual, config) => config) // TODO: Set options on something
-    .text("TODO:")
+    .action((virtual, config) => config.copy(virtual = Some(virtual)))
+    .text("Filter by virtual field value")
   val baseActions: List[ActionListItem] = List(
     (Verb.list, Subject.collections, None, listCollections, List(deletedOpt, virtualOp)),
     (Verb.list, Subject.properties, None, listProperties, List(deletedOpt)),
+    (Verb.list, Subject.plugins, None, _ => plugins.map(plugin => s"${plugin.getName} (${plugin.getVersion})").asJson, List()),
     (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
+    (Verb.imprt, Subject.database, None, importDatabase, List(importDatasourceUriArgs))
     // TODO: Add more
   )
   val actionsMap: ActionMap = baseActions
