@@ -17,7 +17,6 @@
             <option value="$PROJECT_DIR$/modules/gui" />
             <option value="$PROJECT_DIR$/modules/plugins" />
             <option value="$PROJECT_DIR$/modules/plugins/grand-archive-tcg" />
-            <option value="$PROJECT_DIR$/modules/repl" />
             <option value="$PROJECT_DIR$/project" />
           </set>
         </option>
