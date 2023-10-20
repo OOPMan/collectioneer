@@ -1,7 +1,7 @@
 import scala.collection.Seq
 
 lazy val scala213Version      = "2.13.10"
-lazy val scala3Version        = "3.2.2"
+lazy val scala3Version        = "3.3.1"
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
@@ -18,22 +18,7 @@ lazy val commonSettings = Seq(
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.softwaremill.sttp.client3"   %% "core"                       % "3.9.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
-    "com.lihaoyi"                     % "ammonite"                    % "3.0.0-M0"          % "test"  cross CrossVersion.full,
   ),
-  Test / sourceGenerators += Def.task {
-    val file = (sourceManaged in Test).value / "amm.scala"
-    IO.write(file, """object amm extends App { ammonite.AmmoniteMain.main(args) }""")
-    Seq(file)
-  }.taskValue,
-  Test / fullClasspath ++= {
-    (Test / updateClassifiers).value
-      .configurations
-      .find(_.configuration.name == Test.name)
-      .get
-      .modules
-      .flatMap(_.artifacts)
-      .collect{case (a, f) if a.classifier == Some("sources") => f}
-  }
 )
 
 lazy val collectioneer = project
@@ -43,7 +28,6 @@ lazy val collectioneer = project
       core,
       cli,
       gui,
-      repl,
       plugins,
   )
 
@@ -87,16 +71,6 @@ lazy val cli = project
     core,
     cliCore,
     plugins,
-  )
-
-lazy val repl = project
-  .in(file("modules/repl"))
-  .settings(commonSettings)
-  .settings(
-    name:= "Collectioneer REPL",
-    libraryDependencies ++= Seq(
-      "com.lihaoyi" % "ammonite" % "3.0.0-M0" % "test" cross CrossVersion.full
-    )
   )
 
 // Add JavaFX dependencies
