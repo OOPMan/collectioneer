@@ -14,7 +14,8 @@ import java.util.UUID
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import cats.syntax.either.*
-import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listPlugins, listProperties}
+import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
+import com.oopman.collectioneer.cli.actions.imprt.{importDatabase}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.{Injector, ModuleBase}
 import distage.plugins.PluginConfig
@@ -23,13 +24,6 @@ import io.circe.yaml.*
 import io.circe.yaml.syntax.*
 import izumi.distage.model.exceptions.runtime.ProvisioningException
 import izumi.distage.plugins.load.PluginLoader
-
-val actionsMap: Map[(Option[Verb], Option[Subject]), Config => Json] = Map(
-  (Some(Verb.list), Some(Subject.collections)) -> listCollections,
-  (Some(Verb.list), Some(Subject.properties)) -> listProperties,
-//  (Some(Verb.list), Some(Subject.plugins)) -> listPlugins,
-  (Some(Verb.get), Some(Subject.collections)) -> getCollections,
-)
 
 type Action = Config => Json
 type ActionListItem = (Verb, Subject, Option[String], Action, List[OParser[_, Config]])
