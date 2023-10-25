@@ -5,7 +5,13 @@ import scalikejdbc._
 
 object PropertyQueries:
 
-  def all =
+  def insert =
+    sql"""
+          INSERT INTO PROPERTY(pk, property_name, property_types, deleted, created, modified)
+          VALUES (?, ?, ?, ?, ?, ?);
+    """
+
+  def selectAll =
     sql"""
           SELECT ${p1.result.*}
           FROM ${Property.as(p1)}
