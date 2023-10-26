@@ -5,18 +5,26 @@ import com.oopman.collectioneer.db.entity.{Property, p1}
 import com.oopman.collectioneer.db.queries.h2.PropertyQueries
 
 object PropertiesDAO:
-
-  def createProperties(properties: List[Property])(implicit session: DBSession = AutoSession) =
-    val propertiesSeq = properties.map(p => Seq(
+  def propertiesListToBatchInsertSeqList(properties: List[Property]) =
+    properties.map(p => Seq(
       p.pk.toString,
       p.propertyName,
       p.propertyTypes.map(_.toString).toArray,
       p.deleted,
       p.created,
-      p.modified))
+      p.modified)
+    )
+
+  def createProperties(properties: List[Property])(implicit session: DBSession = AutoSession) =
     PropertyQueries
       .insert
-      .batch(propertiesSeq: _*)
+      .batch(propertiesListToBatchInsertSeqList(properties): _*)
+      .apply()
+
+  def createOrUpdateProperties(properties: List[Property])(implicit session: DBSession = AutoSession) =
+    PropertyQueries
+      .upsert
+      .batch(propertiesListToBatchInsertSeqList(properties): _*)
       .apply()
 
   def getAll()(implicit session: DBSession = AutoSession): List[Property] =
@@ -27,6 +35,10 @@ class PropertiesDAO(val connectionPoolName: String):
 
   def createProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit  session =>
     PropertiesDAO.createProperties(properties)
+  }
+
+  def createOrUpdateProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit session =>
+    PropertiesDAO.createOrUpdateProperties(properties)
   }
   
   def getAll(): List[Property] = NamedDB(connectionPoolName) readOnly { implicit session => PropertiesDAO.getAll() }
