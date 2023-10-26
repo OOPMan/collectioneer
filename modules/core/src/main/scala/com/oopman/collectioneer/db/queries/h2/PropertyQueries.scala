@@ -11,6 +11,13 @@ object PropertyQueries:
           VALUES (?, ?, ?, ?, ?, ?);
     """
 
+  def upsert =
+    sql"""
+          MERGE INTO PROPERTY(pk, property_name, property_types, deleted, created, modified)
+          KEY (pk)
+          VALUES (?, ?, ?, ?, ?, ?)
+    """
+
   def selectAll =
     sql"""
           SELECT ${p1.result.*}
