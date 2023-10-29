@@ -28,10 +28,8 @@ class GATCGCLIPlugin extends CLIPlugin:
   def importDatabase(config: Config) =
     // TODO: Create GA-specific properties if they don't exist using an UPSERT
     val propertiesDAO = new PropertiesDAO(config.datasourceUri)
-    propertiesDAO.createProperties(List(Property(
-      propertyName = "newTest",
-      propertyTypes = List(PropertyType.varchar),
-    )))
+    val properties = GATCGProperties.values.toList.map(_.property)
+    propertiesDAO.createOrUpdateProperties(properties)
     // TODO: Replace with a real response
     "Something".asJson
 
