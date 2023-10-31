@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity.PropertyType
+import com.oopman.collectioneer.db.entity.Utils.{resultSetArray, resultSetArrayToList}
 import scalikejdbc.*
 
 import java.sql.{Blob, Clob}
@@ -34,15 +35,6 @@ case class PropertyValues
   // TODO: Add fields for remaining values
 )
 
-def resultSetArray(rs: WrappedResultSet, columnLabel: String): Array[Object] = rs
-  .array(columnLabel)
-  .getArray
-  .asInstanceOf[Array[Object]]
-
-def resultSetArrayToList[T:ClassTag](rs: WrappedResultSet, columnLabel: String): List[T] =
-  resultSetArray(rs, columnLabel)
-  .map(_.asInstanceOf[T])
-  .toList
 
 def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
   val propertyTypes =
