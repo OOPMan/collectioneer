@@ -11,28 +11,27 @@ import scala.reflect.ClassTag
 
 case class PropertyValues
 (
-  propertyName: String,
-  propertyTypes: List[PropertyType],
-  propertyValueSetPk: UUID,
   propertyPk: UUID,
-  varcharValues: List[String],
-  varbinaryValues: List[Array[Byte]],
-  tinyintValues: List[Byte],
-  smallintValues: List[Short],
-  intValues: List[Int],
-  bigintValues: List[BigInt],
-  numericValues: List[BigDecimal],
-  floatValues: List[Float],
-  doubleValues: List[Double],
-  booleanValues: List[Boolean],
-  dateValues: List[LocalDate],
-  timeValues: List[OffsetTime],
-  timestampValues: List[ZonedDateTime],
-  clobValues: List[Clob],
-  blobValues: List[Blob],
-  uuidValues: List[UUID],
-  jsonValues: List[Array[Byte]]
-  // TODO: Add fields for remaining values
+  propertyValueSetPk: UUID,
+  propertyTypes: List[PropertyType] = Nil,
+  propertyName: String = "",
+  varcharValues: List[String] = Nil,
+  varbinaryValues: List[Array[Byte]] = Nil,
+  tinyintValues: List[Byte] = Nil,
+  smallintValues: List[Short] = Nil,
+  intValues: List[Int] = Nil,
+  bigintValues: List[BigInt] = Nil,
+  numericValues: List[BigDecimal] = Nil,
+  floatValues: List[Float] = Nil,
+  doubleValues: List[Double] = Nil,
+  booleanValues: List[Boolean] = Nil,
+  dateValues: List[LocalDate] = Nil,
+  timeValues: List[OffsetTime] = Nil,
+  timestampValues: List[ZonedDateTime] = Nil,
+  clobValues: List[Clob] = Nil,
+  blobValues: List[Blob] = Nil,
+  uuidValues: List[UUID] = Nil,
+  jsonValues: List[Array[Byte]] = Nil
 )
 
 
@@ -56,10 +55,10 @@ def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
   val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
   val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
   PropertyValues(
-    propertyName = rs.string("PROPERTY_NAME"),
-    propertyTypes = propertyTypes,
-    propertyValueSetPk = UUID.fromString(rs.string("PROPERTY_VALUE_SET_PK")),
     propertyPk = UUID.fromString(rs.string("PROPERTY_PK")),
+    propertyValueSetPk = UUID.fromString(rs.string("PROPERTY_VALUE_SET_PK")),
+    propertyTypes = propertyTypes,
+    propertyName = rs.string("PROPERTY_NAME"),
     varcharValues = varcharValues,
     varbinaryValues = varbinaryValues,
     tinyintValues = tinyintValues,
