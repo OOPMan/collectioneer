@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
+import com.oopman.collectioneer.db.entity.Utils.{resultSetArrayToPropertyTypeList}
 import com.oopman.collectioneer.db.entity.{Property, PropertyType}
 import scalikejdbc._
 
@@ -22,12 +23,7 @@ object Property extends SQLSyntaxSupport[Property]:
   override val tableName = "property"
 
   def apply(p: ResultName[Property], properties: List[Property])(rs: WrappedResultSet) =
-    val propertyType = rs
-      .array(p.propertyTypes)
-      .getArray()
-      .asInstanceOf[Array[Object]]
-      .map(s => PropertyType.valueOf(s.asInstanceOf[String]))
-      .toList
+    val propertyType = resultSetArrayToPropertyTypeList(rs, p.propertyTypes)
     new Property(
       pk = UUID.fromString(rs.string(p.pk)),
       propertyName = rs.string(p.propertyName),
