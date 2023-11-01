@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity.PropertyType
-import com.oopman.collectioneer.db.entity.Utils.{resultSetArray, resultSetArrayToList}
+import com.oopman.collectioneer.db.entity.Utils.{resultSetArrayToListOf, resultSetArrayToPropertyTypeList}
 import scalikejdbc.*
 
 import java.sql.{Blob, Clob}
@@ -37,27 +37,24 @@ case class PropertyValues
 
 
 def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
-  val propertyTypes =
-    resultSetArray(rs, "PROPERTY_TYPES")
-    .map(s => PropertyType.valueOf(s.asInstanceOf[String]))
-    .toList
-  val varcharValues = resultSetArrayToList[String](rs, "VARCHAR_VALUES")
-  val varbinaryValues = resultSetArrayToList[Array[Byte]](rs, "VARBINARY_VALUES")
-  val tinyintValues = resultSetArrayToList[Byte](rs, "TINYINT_VALUES")
-  val smallintValues = resultSetArrayToList[Short](rs, "SMALLINT_VALUES")
-  val intValues = resultSetArrayToList[Int](rs, "INT_VALUES")
-  val bigintValues = resultSetArrayToList[BigInt](rs, "BIGINT_VALUES")
-  val numericValues = resultSetArrayToList[BigDecimal](rs, "NUMERIC_VALUES")
-  val floatValues = resultSetArrayToList[Float](rs, "FLOAT_VALUES")
-  val doubleValues = resultSetArrayToList[Double](rs, "DOUBLE_VALUES")
-  val booleanValues = resultSetArrayToList[Boolean](rs, "BOOLEAN_VALUES")
-  val dateValues = resultSetArrayToList[LocalDate](rs, "DATE_VALUES")
-  val timeValues = resultSetArrayToList[OffsetTime](rs, "TIME_VALUES")
-  val timestampValues = resultSetArrayToList[ZonedDateTime](rs, "TIMESTAMP_VALUES")
-  val clobValues = resultSetArrayToList[Clob](rs, "CLOB_VALUES")
-  val blobValues = resultSetArrayToList[Blob](rs, "BLOB_VALUES")
-  val uuidValues = resultSetArrayToList[UUID](rs, "UUID_VALUES")
-  val jsonValues = resultSetArrayToList[Array[Byte]](rs, "JSON_VALUES")
+  val propertyTypes = resultSetArrayToPropertyTypeList(rs, "PROPERTY_TYPES")
+  val varcharValues = resultSetArrayToListOf[String](rs, "VARCHAR_VALUES")
+  val varbinaryValues = resultSetArrayToListOf[Array[Byte]](rs, "VARBINARY_VALUES")
+  val tinyintValues = resultSetArrayToListOf[Byte](rs, "TINYINT_VALUES")
+  val smallintValues = resultSetArrayToListOf[Short](rs, "SMALLINT_VALUES")
+  val intValues = resultSetArrayToListOf[Int](rs, "INT_VALUES")
+  val bigintValues = resultSetArrayToListOf[BigInt](rs, "BIGINT_VALUES")
+  val numericValues = resultSetArrayToListOf[BigDecimal](rs, "NUMERIC_VALUES")
+  val floatValues = resultSetArrayToListOf[Float](rs, "FLOAT_VALUES")
+  val doubleValues = resultSetArrayToListOf[Double](rs, "DOUBLE_VALUES")
+  val booleanValues = resultSetArrayToListOf[Boolean](rs, "BOOLEAN_VALUES")
+  val dateValues = resultSetArrayToListOf[LocalDate](rs, "DATE_VALUES")
+  val timeValues = resultSetArrayToListOf[OffsetTime](rs, "TIME_VALUES")
+  val timestampValues = resultSetArrayToListOf[ZonedDateTime](rs, "TIMESTAMP_VALUES")
+  val clobValues = resultSetArrayToListOf[Clob](rs, "CLOB_VALUES")
+  val blobValues = resultSetArrayToListOf[Blob](rs, "BLOB_VALUES")
+  val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
+  val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
   PropertyValues(
     propertyName = rs.string("PROPERTY_NAME"),
     propertyTypes = propertyTypes,
