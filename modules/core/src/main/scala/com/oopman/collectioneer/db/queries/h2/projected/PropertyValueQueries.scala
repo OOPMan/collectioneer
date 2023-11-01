@@ -5,7 +5,7 @@ import scalikejdbc.*
 import java.util.UUID
 
 object PropertyValueQueries {
-  def propertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID]) =
+  def propertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID], deleted: Seq[Boolean] = List(false)) =
     sql"""
       SELECT
         p.PROPERTY_NAME,
@@ -438,6 +438,7 @@ object PropertyValueQueries {
             WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
             GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
       ) AS pv ON pv.PROPERTY_PK = p.PK
+      WHERE p.DELETED IN (${deleted})
       ORDER BY pv.PROPERTY_VALUE_SET_PK, pv.PROPERTY_PK
        """
 
