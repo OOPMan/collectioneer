@@ -10,6 +10,9 @@ object PropertyValueQueries {
       SELECT
         p.PROPERTY_NAME,
         p.PROPERTY_TYPES,
+        p.DELETED,
+        p.CREATED,
+        p.MODIFIED,
         pv.*
       FROM PROPERTY AS p
       INNER JOIN (
