@@ -10,7 +10,7 @@ import io.circe.generic.auto.*
 import io.circe.syntax.*
 
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.{HexFormat, UUID}
 
 
 case class ListCollectionsResult
@@ -60,9 +60,25 @@ case class GetCollectionsResult
 )
 
 def propertyValuesToMapTuple(propertyValue: PropertyValues): (String, List[String]) =
-  propertyValue.propertyName -> (
-    propertyValue.pvcValues ++
-    propertyValue.pviValues.map(_.toString)
+  val hexFormat = HexFormat.of()
+  propertyValue.property.propertyName -> (
+    propertyValue.varcharValues ++
+    propertyValue.varbinaryValues.map(hexFormat.formatHex) ++
+    propertyValue.tinyintValues.map(_.toString) ++
+    propertyValue.smallintValues.map(_.toString) ++
+    propertyValue.intValues.map(_.toString) ++
+    propertyValue.bigintValues.map(_.toString()) ++
+    propertyValue.numericValues.map(_.toString()) ++
+    propertyValue.floatValues.map(_.toString) ++
+    propertyValue.doubleValues.map(_.toString) ++
+    propertyValue.booleanValues.map(_.toString) ++
+    propertyValue.dateValues.map(_.toString) ++
+    propertyValue.timeValues.map(_.toString) ++
+    propertyValue.timestampValues.map(_.toString) ++
+    propertyValue.clobValues.map(s => s.getSubString(0, s.length().toInt)) ++
+    propertyValue.blobValues.map(b => hexFormat.formatHex(b.getBinaryStream.readAllBytes())) ++
+    propertyValue.uuidValues.map(_.toString) ++
+    propertyValue.jsonValues.map(hexFormat.formatHex)
   )
 
 def getCollections(config: Config): Json =
