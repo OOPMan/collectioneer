@@ -11,10 +11,8 @@ import scala.reflect.ClassTag
 
 case class PropertyValues
 (
-  propertyPk: UUID,
+  property: Property = Property(),
   propertyValueSetPk: UUID,
-  propertyTypes: List[PropertyType] = Nil,
-  propertyName: String = "",
   varcharValues: List[String] = Nil,
   varbinaryValues: List[Array[Byte]] = Nil,
   tinyintValues: List[Byte] = Nil,
@@ -55,10 +53,15 @@ def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
   val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
   val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
   PropertyValues(
-    propertyPk = UUID.fromString(rs.string("PROPERTY_PK")),
+    property = Property(
+      pk = UUID.fromString(rs.string("PROPERTY_PK")),
+      propertyName = rs.string("PROPERTY_NAME"),
+      propertyTypes = propertyTypes,
+      deleted = rs.boolean("DELETED"),
+      created = rs.zonedDateTime("CREATED"),
+      modified = rs.zonedDateTime("MODIFIED"),
+    ),
     propertyValueSetPk = UUID.fromString(rs.string("PROPERTY_VALUE_SET_PK")),
-    propertyTypes = propertyTypes,
-    propertyName = rs.string("PROPERTY_NAME"),
     varcharValues = varcharValues,
     varbinaryValues = varbinaryValues,
     tinyintValues = tinyintValues,
