@@ -1,8 +1,8 @@
-package com.oopman.collectioneer.db.dao
+package com.oopman.collectioneer.db.dao.raw
 
-import scalikejdbc._
-import com.oopman.collectioneer.db.entity.{Property, p1}
-import com.oopman.collectioneer.db.queries.h2.PropertyQueries
+import com.oopman.collectioneer.db.entity.raw.{Property, p1}
+import com.oopman.collectioneer.db.queries.h2.raw.PropertyQueries
+import scalikejdbc.*
 
 object PropertiesDAO:
   def propertiesListToBatchInsertSeqList(properties: List[Property]) =
@@ -33,7 +33,7 @@ object PropertiesDAO:
 
 class PropertiesDAO(val connectionPoolName: String):
 
-  def createProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit  session =>
+  def createProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit session =>
     PropertiesDAO.createProperties(properties)
   }
 
