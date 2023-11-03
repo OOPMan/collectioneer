@@ -1,45 +1,40 @@
 package com.oopman.collectioneer.db.dao.raw
 
-import com.oopman.collectioneer.db.entity.raw.{Property, p1}
-import com.oopman.collectioneer.db.queries.h2.raw.PropertyQueries
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.queries.h2
 import scalikejdbc.*
 
 object PropertiesDAO:
-  def propertiesListToBatchInsertSeqList(properties: List[Property]) =
-    properties.map(p => Seq(
-      p.pk.toString,
-      p.propertyName,
-      p.propertyTypes.map(_.toString).toArray,
-      p.deleted,
-      p.created,
-      p.modified)
-    )
 
-  def createProperties(properties: List[Property])(implicit session: DBSession = AutoSession) =
-    PropertyQueries
+  def createProperties(properties: List[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
+    h2.raw.PropertyQueries
       .insert
-      .batch(propertiesListToBatchInsertSeqList(properties): _*)
+      .batch(entity.Property.propertiesListToBatchInsertSeqList(properties): _*)
       .apply()
 
-  def createOrUpdateProperties(properties: List[Property])(implicit session: DBSession = AutoSession) =
-    PropertyQueries
+  def createOrUpdateProperties(properties: List[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
+    h2.raw.PropertyQueries
       .upsert
-      .batch(propertiesListToBatchInsertSeqList(properties): _*)
+      .batch(entity.Property.propertiesListToBatchInsertSeqList(properties): _*)
       .apply()
 
-  def getAll()(implicit session: DBSession = AutoSession): List[Property] =
-    PropertyQueries.selectAll.map(Property(p1.resultName)).list.apply()
+  def getAll()(implicit session: DBSession = AutoSession): List[entity.Property] =
+    h2.raw.PropertyQueries
+      .selectAll
+      .map(entity.raw.Property(entity.raw.p1.resultName))
+      .list
+      .apply()
 
 
 class PropertiesDAO(val connectionPoolName: String):
 
-  def createProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit session =>
+  def createProperties(properties: List[entity.Property]): Array[Int] = NamedDB(connectionPoolName) localTx { implicit session =>
     PropertiesDAO.createProperties(properties)
   }
 
-  def createOrUpdateProperties(properties: List[Property]) = NamedDB(connectionPoolName) localTx { implicit session =>
+  def createOrUpdateProperties(properties: List[entity.Property]): Array[Int] = NamedDB(connectionPoolName) localTx { implicit session =>
     PropertiesDAO.createOrUpdateProperties(properties)
   }
   
-  def getAll(): List[Property] = NamedDB(connectionPoolName) readOnly { implicit session => PropertiesDAO.getAll() }
+  def getAll: List[entity.Property] = NamedDB(connectionPoolName) readOnly { implicit session => PropertiesDAO.getAll() }
   

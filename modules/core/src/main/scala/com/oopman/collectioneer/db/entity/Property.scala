@@ -29,3 +29,14 @@ trait Property:
   val deleted: Boolean
   val created: ZonedDateTime
   val modified: ZonedDateTime
+
+object Property:
+  def propertiesListToBatchInsertSeqList(properties: List[Property]): List[Seq[Any]] =
+    properties.map(p => Seq(
+      p.pk.toString,
+      p.propertyName,
+      p.propertyTypes.map(_.toString).toArray,
+      p.deleted,
+      p.created,
+      p.modified)
+    )
