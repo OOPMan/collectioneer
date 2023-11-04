@@ -1,4 +1,6 @@
-package com.oopman.collectioneer.db.entity
+package com.oopman.collectioneer.db.entity.raw
+
+import com.oopman.collectioneer.db.entity.PropertyValue
 
 import java.sql.{Blob, Clob}
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
