@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.dao.PropertiesDAO
+import com.oopman.collectioneer.db.dao.raw.PropertyDAO
 import com.oopman.collectioneer.db.entity.{Property, PropertyType}
 import io.circe.*
 import io.circe.Decoder.Result
@@ -25,8 +25,8 @@ case class ListPropertiesVerboseResult
 )
 
 def listProperties(config: Config) =
-  val propertiesDAO = new PropertiesDAO(config.datasourceUri)
-  val properties = propertiesDAO.getAll()
+  val propertyDAO = new PropertyDAO(config.datasourceUri)
+  val properties = propertyDAO.getAll
   config.verbose match
     case true => ListPropertiesVerboseResult(
       datasourceUri = config.datasourceUri,
