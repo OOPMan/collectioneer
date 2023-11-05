@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.dao.projected.PropertyValuesDAO
+import com.oopman.collectioneer.db.dao.projected.PropertyValueDAO
 import com.oopman.collectioneer.db.dao.raw.CollectionDAO
 import com.oopman.collectioneer.db.entity.Collection
 import com.oopman.collectioneer.db.entity.projected.PropertyValues
@@ -83,9 +83,9 @@ def propertyValuesToMapTuple(propertyValue: PropertyValues): (String, List[Strin
 
 def getCollections(config: Config): Json =
   val collectionDAO = new CollectionDAO(config.datasourceUri)
-  val propertyValuesDAO = new PropertyValuesDAO(config.datasourceUri)
+  val propertyValueDAO = new PropertyValueDAO(config.datasourceUri)
   val collections = collectionDAO.getAllMatchingPKs(config.uuids)
-  val propertyValues = propertyValuesDAO.getPropertyValuesByPropertyValueSet(config.uuids)
+  val propertyValues = propertyValueDAO.getPropertyValuesByPropertyValueSet(config.uuids)
   val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
   GetCollectionsResult(
     dataSourceUri = config.datasourceUri,
