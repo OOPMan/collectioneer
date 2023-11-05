@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.dao.CollectionsDAO
 import com.oopman.collectioneer.db.dao.projected.PropertyValuesDAO
+import com.oopman.collectioneer.db.dao.raw.CollectionDAO
 import com.oopman.collectioneer.db.entity.Collection
 import com.oopman.collectioneer.db.entity.projected.PropertyValues
 import io.circe.*
@@ -28,8 +28,8 @@ case class ListCollectionsVerboseResult
 )
 
 def listCollections(config: Config) =
-  val collectionsDAO = new CollectionsDAO(config.datasourceUri)
-  val collections = collectionsDAO.getAll
+  val collectionDAO = new CollectionDAO(config.datasourceUri)
+  val collections = collectionDAO.getAll
   config.verbose match
     case true => ListCollectionsVerboseResult(
       dataSourceUri = config.datasourceUri,
@@ -82,9 +82,9 @@ def propertyValuesToMapTuple(propertyValue: PropertyValues): (String, List[Strin
   )
 
 def getCollections(config: Config): Json =
-  val collectionsDAO = new CollectionsDAO(config.datasourceUri)
+  val collectionDAO = new CollectionDAO(config.datasourceUri)
   val propertyValuesDAO = new PropertyValuesDAO(config.datasourceUri)
-  val collections = collectionsDAO.getAllMatchingPKs(config.uuids)
+  val collections = collectionDAO.getAllMatchingPKs(config.uuids)
   val propertyValues = propertyValuesDAO.getPropertyValuesByPropertyValueSet(config.uuids)
   val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
   GetCollectionsResult(

@@ -1,13 +1,13 @@
-package com.oopman.collectioneer.db.dao
+package com.oopman.collectioneer.db.dao.raw
 
-import scalikejdbc.*
 import com.oopman.collectioneer.db.entity.{Collection, c1}
 import com.oopman.collectioneer.db.queries.h2.CollectionQueries
+import scalikejdbc.*
 
 import java.util.UUID
 
 
-object CollectionsDAO:
+object CollectionDAO:
   def getAll(implicit session: DBSession = AutoSession): List[Collection] =
     CollectionQueries.all.map(Collection(c1.resultName)).list.apply()
 
@@ -15,9 +15,9 @@ object CollectionsDAO:
     CollectionQueries.allMatchingPKs(collectionPKs).map(Collection(c1.resultName)).list.apply()
 
 
-class CollectionsDAO(val connectionPoolName: String):
+class CollectionDAO(val connectionPoolName: String):
 
-  def getAll: List[Collection] = NamedDB(connectionPoolName) readOnly { implicit session => CollectionsDAO.getAll }
+  def getAll: List[Collection] = NamedDB(connectionPoolName) readOnly { implicit session => CollectionDAO.getAll }
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection] =
-    NamedDB(connectionPoolName) readOnly { implicit session => CollectionsDAO.getAllMatchingPKs(collectionPKs) }
+    NamedDB(connectionPoolName) readOnly { implicit session => CollectionDAO.getAllMatchingPKs(collectionPKs) }
