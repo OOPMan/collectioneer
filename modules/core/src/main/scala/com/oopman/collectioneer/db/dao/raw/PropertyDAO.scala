@@ -3,6 +3,7 @@ package com.oopman.collectioneer.db.dao.raw
 import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.queries.h2
 import scalikejdbc.*
+import java.sql.Connection
 
 object PropertyDAO:
 
@@ -26,15 +27,20 @@ object PropertyDAO:
       .apply()
 
 
-class PropertyDAO(val connectionPoolName: String):
+class PropertyDAO(val dbProvider: () => DBConnection):
+  def this(connectionPoolName: String) =
+    this(() => NamedDB(connectionPoolName))
 
-  def createProperties(properties: List[entity.Property]): Array[Int] = NamedDB(connectionPoolName) localTx { implicit session =>
+  def this(connection: Connection, autoclose: Boolean = false) =
+    this(() => DB(connection).autoClose(autoclose))
+
+  def createProperties(properties: List[entity.Property]): Array[Int] = dbProvider() localTx { implicit session =>
     PropertyDAO.createProperties(properties)
   }
 
-  def createOrUpdateProperties(properties: List[entity.Property]): Array[Int] = NamedDB(connectionPoolName) localTx { implicit session =>
+  def createOrUpdateProperties(properties: List[entity.Property]): Array[Int] = dbProvider() localTx { implicit session =>
     PropertyDAO.createOrUpdateProperties(properties)
   }
 
-  def getAll: List[entity.Property] = NamedDB(connectionPoolName) readOnly { implicit session => PropertyDAO.getAll() }
+  def getAll: List[entity.Property] = dbProvider() readOnly { implicit session => PropertyDAO.getAll() }
   
