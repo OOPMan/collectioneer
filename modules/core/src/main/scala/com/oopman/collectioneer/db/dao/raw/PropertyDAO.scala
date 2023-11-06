@@ -19,7 +19,7 @@ object PropertyDAO:
       .batch(entity.Property.propertiesListToBatchInsertSeqList(properties): _*)
       .apply()
 
-  def getAll()(implicit session: DBSession = AutoSession): List[entity.Property] =
+  def getAll()(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
     h2.raw.PropertyQueries
       .selectAll
       .map(entity.raw.Property(entity.raw.p1.resultName))
@@ -42,5 +42,5 @@ class PropertyDAO(val dbProvider: () => DBConnection):
     PropertyDAO.createOrUpdateProperties(properties)
   }
 
-  def getAll: List[entity.Property] = dbProvider() readOnly { implicit session => PropertyDAO.getAll() }
+  def getAll: List[entity.raw.Property] = dbProvider() readOnly { implicit session => PropertyDAO.getAll() }
   
