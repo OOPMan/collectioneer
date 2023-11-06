@@ -2,9 +2,9 @@ package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
 import com.oopman.collectioneer.db.dao.raw.PropertyDAO
-import com.oopman.collectioneer.db.entity.{Property, PropertyType}
+import com.oopman.collectioneer.db.entity.PropertyType
+import com.oopman.collectioneer.db.entity.raw.Property
 import io.circe.*
-import io.circe.Decoder.Result
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
