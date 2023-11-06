@@ -1,31 +1,26 @@
 package com.oopman.collectioneer.db.migrations.h2
 
-import com.oopman.collectioneer.db.entity.PropertyType
 import com.oopman.collectioneer.{CoreCollections, CoreProperties}
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.dao
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
+import scalikejdbc.DB
 
 /**
  *
  */
 class V2__initial_data extends BaseJavaMigration:
+  override def canExecuteInTransaction: Boolean = false
   override def migrate(context: Context): Unit =
     val connection = context.getConnection
+    val db = DB(connection).autoClose(false)
     // Insert Property rows
-    val insertProperties = connection.prepareStatement(
-      "INSERT INTO property(pk, property_name, property_types) VALUES (?, ?, ?)"
-    )
-    for
-      coreProperty <- CoreProperties.values
-    do
-      val uuid = coreProperty.uuid.toString
-      val propertyName = coreProperty.toString
-      val propertyTypesArray = connection.createArrayOf("VARCHAR", coreProperty.propertyTypes.map(_.toString).toArray)
-      insertProperties.setString(1, uuid)
-      insertProperties.setString(2, propertyName)
-      insertProperties.setArray(3, propertyTypesArray)
-      insertProperties.addBatch()
-
-    insertProperties.executeBatch()
+    val propertiesDAO = new dao.raw.PropertyDAO(() => db)
+    propertiesDAO.createProperties(CoreProperties.values.toList.map(property => entity.raw.Property(
+      pk = property.uuid,
+      propertyName = property.toString,
+      propertyTypes = property.propertyTypes
+    )))
     // Insert PropertyValueSet and Collection rows
     val insertPropertyValueSets = connection.prepareStatement(
       "INSERT INTO property_value_set(pk) VALUES (?)"
