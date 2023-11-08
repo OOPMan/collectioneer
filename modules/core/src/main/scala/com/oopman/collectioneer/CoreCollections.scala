@@ -46,13 +46,13 @@ private object CoreCollectionUUIDs:
   val commonProperties = "709113ad-6ca0-4d08-b9f4-a526d81da549"
   val commonPropertiesOfProperties = "4a3dfbf0-3d68-4604-a471-5c4451a3ee5a"
 
-enum CoreCollections(collection: Collection):
+enum CoreCollections(val collection: Collection):
   case commonProperties extends CoreCollections(Collection(
     pk = CoreCollectionUUIDs.commonProperties,
     properties = List(
       CoreProperties.name,
       CoreProperties.description
-    ),
+    ).map(_.property),
     propertyValues = List(
       PropertyValues(
         property = CoreProperties.name.property,
