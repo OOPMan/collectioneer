@@ -36,7 +36,14 @@ object Property:
       p.pk.toString,
       p.propertyName,
       p.propertyTypes.map(_.toString).toArray,
+      p.deleted
+    ))
+
+  def propertiesListToBatchUpsertSeqList(properties: List[Property]): List[Seq[Any]] =
+    properties.map(p => Seq(
+      p.pk.toString,
+      p.propertyName,
+      p.propertyTypes.map(_.toString).toArray,
       p.deleted,
-      p.created,
-      p.modified)
-    )
+      p.modified
+    ))

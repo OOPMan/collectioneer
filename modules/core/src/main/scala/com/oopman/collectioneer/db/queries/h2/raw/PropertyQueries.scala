@@ -7,15 +7,15 @@ object PropertyQueries:
 
   def insert =
     sql"""
-          INSERT INTO PROPERTY(pk, property_name, property_types, deleted, created, modified)
-          VALUES (?, ?, ?, ?, ?, ?);
+          INSERT INTO PROPERTY(pk, property_name, property_types, deleted)
+          VALUES ( ?, ?, ?, ? );
     """
 
   def upsert =
     sql"""
-          MERGE INTO PROPERTY(pk, property_name, property_types, deleted, created, modified)
+          MERGE INTO PROPERTY(pk, property_name, property_types, deleted, modified)
           KEY (pk)
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES ( ?, ?, ?, ?, ? );
     """
 
   def selectAll =
