@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity.Utils.resultSetArrayToPropertyTypeList
-import com.oopman.collectioneer.db.entity.PropertyType
+import com.oopman.collectioneer.db.entity
 import scalikejdbc._
 
 import java.time.ZonedDateTime
@@ -11,12 +11,12 @@ case class Property
 (
   pk: UUID = UUID.randomUUID(),
   propertyName: String = "",
-  propertyTypes: List[PropertyType] = Nil,
+  propertyTypes: List[entity.PropertyType] = Nil,
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValues: List[PropertyValues] = Nil
-) extends com.oopman.collectioneer.db.entity.Property
+) extends entity.Property
 
 object Property extends SQLSyntaxSupport[Property]:
   override val schemaName = Some("public")
