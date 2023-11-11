@@ -7,13 +7,31 @@ enum PropertyCollectionRelationship:
   case PropertyOfCollection extends PropertyCollectionRelationship
   case CollectionOfPropertiesOfProperty extends PropertyCollectionRelationship
 
-case class PropertyCollection
-(
-  propertyPK: UUID,
-  collectionPK: UUID,
-  propertyValueSetPK: UUID,
-  index: Int = 0,
-  relationship: PropertyCollectionRelationship = PropertyCollectionRelationship.PropertyOfCollection,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now()
-)
+trait PropertyCollection:
+  val propertyPK: UUID
+  val collectionPK: UUID
+  val propertyValueSetPK: UUID
+  val index: Int
+  val relationship: PropertyCollectionRelationship
+  val created: ZonedDateTime
+  val modified: ZonedDateTime
+
+object PropertyCollection:
+  def propertyCollectionListToBatchInserSeqList(propertyCollections: List[PropertyCollection]): List[Seq[Any]] =
+    propertyCollections.map(pc => Seq(
+      pc.propertyPK.toString,
+      pc.collectionPK.toString,
+      pc.propertyValueSetPK.toString,
+      pc.index,
+      pc.relationship.toString
+    ))
+
+  def propertyCollectionListToBatchUpsertSeqList(propertyCollections: List[PropertyCollection]): List[Seq[Any]] =
+    propertyCollections.map(pc => Seq(
+      pc.propertyPK.toString,
+      pc.collectionPK.toString,
+      pc.propertyValueSetPK.toString,
+      pc.index,
+      pc.relationship.toString,
+      pc.modified
+    ))
