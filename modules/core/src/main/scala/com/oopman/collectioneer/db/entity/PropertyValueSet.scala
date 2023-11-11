@@ -7,3 +7,6 @@ trait PropertyValueSet:
   val pk: UUID
   val created: ZonedDateTime
 
+object PropertyValueSet:
+  def propertyValueSetListToBatchInsertUpsertSeqList(pvs: List[PropertyValueSet]): List[Seq[Any]] =
+    pvs.map(p => Seq(p.pk.toString))
