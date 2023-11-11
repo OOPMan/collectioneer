@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.entity
+package com.oopman.collectioneer.db.entity.raw
 
 import java.time.ZonedDateTime
 import java.util.UUID
