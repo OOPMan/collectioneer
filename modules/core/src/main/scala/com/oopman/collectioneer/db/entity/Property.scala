@@ -31,7 +31,7 @@ trait Property:
   val modified: ZonedDateTime
 
 object Property:
-  def propertiesListToBatchInsertSeqList(properties: List[Property]): List[Seq[Any]] =
+  def propertiesSeqToBatchInsertSeqSeq(properties: Seq[Property]): Seq[Seq[Any]] =
     properties.map(p => Seq(
       p.pk.toString,
       p.propertyName,
@@ -39,7 +39,7 @@ object Property:
       p.deleted
     ))
 
-  def propertiesListToBatchUpsertSeqList(properties: List[Property]): List[Seq[Any]] =
+  def propertiesSeqToBatchUpsertSeqSeq(properties: Seq[Property]): Seq[Seq[Any]] =
     properties.map(p => Seq(
       p.pk.toString,
       p.propertyName,

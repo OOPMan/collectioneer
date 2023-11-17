@@ -8,5 +8,5 @@ trait PropertyValueSet:
   val created: ZonedDateTime
 
 object PropertyValueSet:
-  def propertyValueSetListToBatchInsertUpsertSeqList(pvs: List[PropertyValueSet]): List[Seq[Any]] =
+  def propertyValueSetSeqToBatchInsertUpsertSeqSeq(pvs: Seq[PropertyValueSet]): Seq[Seq[Any]] =
     pvs.map(p => Seq(p.pk.toString))

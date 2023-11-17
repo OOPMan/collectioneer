@@ -11,14 +11,14 @@ trait Collection:
   val modified: ZonedDateTime
   
 object Collection:
-  def collectionsListToBatchInsertSeqList(collections: List[Collection]): List[Seq[Any]] =
+  def collectionsListToBatchInsertSeqList(collections: Seq[Collection]): Seq[Seq[Any]] =
     collections.map(c => Seq(
       c.pk.toString,
       c.virtual,
       c.deleted
     ))
     
-  def collectionsListToBatchUpsertSeqList(collections: List[Collection]): List[Seq[Any]] =
+  def collectionsListToBatchUpsertSeqList(collections: Seq[Collection]): Seq[Seq[Any]] =
     collections.map(c => Seq(
       c.pk.toString,
       c.virtual,
