@@ -7,16 +7,16 @@ import java.sql.Connection
 
 object PropertyDAO:
 
-  def createProperties(properties: List[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createProperties(properties: Seq[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyQueries
       .insert
-      .batch(entity.Property.propertiesListToBatchInsertSeqList(properties): _*)
+      .batch(entity.Property.propertiesSeqToBatchInsertSeqSeq(properties): _*)
       .apply()
 
-  def createOrUpdateProperties(properties: List[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateProperties(properties: Seq[entity.Property])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyQueries
       .upsert
-      .batch(entity.Property.propertiesListToBatchUpsertSeqList(properties): _*)
+      .batch(entity.Property.propertiesSeqToBatchUpsertSeqSeq(properties): _*)
       .apply()
 
   def getAll()(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
@@ -34,10 +34,10 @@ class PropertyDAO(val dbProvider: () => DBConnection):
   def this(connection: Connection, autoclose: Boolean = false) =
     this(() => DB(connection).autoClose(autoclose))
 
-  def createProperties(properties: List[entity.Property]): Array[Int] =
+  def createProperties(properties: Seq[entity.Property]): Array[Int] =
     dbProvider() localTx { implicit session => PropertyDAO.createProperties(properties) }
 
-  def createOrUpdateProperties(properties: List[entity.Property]): Array[Int] =
+  def createOrUpdateProperties(properties: Seq[entity.Property]): Array[Int] =
     dbProvider() localTx { implicit session => PropertyDAO.createOrUpdateProperties(properties) }
 
   def getAll: List[entity.raw.Property] =

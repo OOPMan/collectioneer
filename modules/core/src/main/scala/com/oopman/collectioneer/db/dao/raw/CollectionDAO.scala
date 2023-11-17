@@ -9,13 +9,13 @@ import java.util.UUID
 
 
 object CollectionDAO:
-  def createCollections(collections: List[entity.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createCollections(collections: Seq[entity.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.CollectionQueries
       .insert
       .batch(entity.Collection.collectionsListToBatchInsertSeqList(collections): _*)
       .apply()
 
-  def createOrUpdateCollections(collections: List[entity.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateCollections(collections: Seq[entity.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.CollectionQueries
       .upsert
       .batch(entity.Collection.collectionsListToBatchUpsertSeqList(collections): _*)
@@ -42,10 +42,10 @@ class CollectionDAO(val dbProvider: () => DBConnection):
   def this(connection: Connection, autoclose: Boolean = false) =
     this(() => DB(connection).autoClose(autoclose))
 
-  def createCollections(collections: List[entity.Collection]): Array[Int] =
+  def createCollections(collections: Seq[entity.Collection]): Array[Int] =
     dbProvider() localTx { implicit session => CollectionDAO.createCollections(collections) }
 
-  def createOrUpdateCollections(collections: List[entity.Collection]): Array[Int] =
+  def createOrUpdateCollections(collections: Seq[entity.Collection]): Array[Int] =
     dbProvider() localTx { implicit session => CollectionDAO.createOrUpdateCollections(collections) }
 
   def getAll: List[entity.raw.Collection] =

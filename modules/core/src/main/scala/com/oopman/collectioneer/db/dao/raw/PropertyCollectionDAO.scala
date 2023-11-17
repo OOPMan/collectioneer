@@ -10,13 +10,13 @@ object PropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[entity.PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyCollectionQueries
       .insert
-      .batch(entity.PropertyCollection.propertyCollectionListToBatchInserSeqList(propertyCollections): _*)
+      .batch(entity.PropertyCollection.propertyCollectionSeqToBatchInsertSeqSeq(propertyCollections): _*)
       .apply()
 
   def createOrUpdatePropertyCollections(propertyCollections: Seq[entity.PropertyCollection])(implicit  session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyCollectionQueries
       .upsert
-      .batch(entity.PropertyCollection.propertyCollectionListToBatchUpsertSeqList(propertyCollections): _*)
+      .batch(entity.PropertyCollection.propertyCollectionSeqToBatchUpsertSeqSeq(propertyCollections): _*)
       .apply()
 
 class PropertyCollectionDAO(val dbProvider: () => DBConnection):
