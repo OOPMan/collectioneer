@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.raw
 
-import com.oopman.collectioneer.db.entity.PropertyValueSet
+import com.oopman.collectioneer.db.entity
 import scalikejdbc.*
 
 import java.time.ZonedDateTime
@@ -10,7 +10,7 @@ case class PropertyValueSet
 (
   pk: UUID = UUID.randomUUID(),
   created: ZonedDateTime = ZonedDateTime.now()
-)
+) extends entity.PropertyValueSet
 
 object PropertyValueSet extends SQLSyntaxSupport[PropertyValueSet]:
   override val schemaName = Some("public")
