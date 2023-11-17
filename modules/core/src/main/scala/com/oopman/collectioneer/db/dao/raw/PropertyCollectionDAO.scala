@@ -7,13 +7,13 @@ import scalikejdbc.*
 import java.sql.Connection
 
 object PropertyCollectionDAO:
-  def createPropertyCollections(propertyCollections: List[entity.PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createPropertyCollections(propertyCollections: Seq[entity.PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyCollectionQueries
       .insert
       .batch(entity.PropertyCollection.propertyCollectionListToBatchInserSeqList(propertyCollections): _*)
       .apply()
 
-  def createOrUpdatePropertyCollections(propertyCollections: List[entity.PropertyCollection])(implicit  session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdatePropertyCollections(propertyCollections: Seq[entity.PropertyCollection])(implicit  session: DBSession = AutoSession): Array[Int] =
     h2.raw.PropertyCollectionQueries
       .upsert
       .batch(entity.PropertyCollection.propertyCollectionListToBatchUpsertSeqList(propertyCollections): _*)
@@ -25,3 +25,9 @@ class PropertyCollectionDAO(val dbProvider: () => DBConnection):
 
   def this(connection: Connection, autoclose: Boolean = false) =
     this(() => DB(connection).autoClose(autoclose))
+
+  def createPropertyCollections(propertyCollection: Seq[entity.PropertyCollection]): Array[Int] =
+    dbProvider() localTx { implicit session => PropertyCollectionDAO.createPropertyCollections(propertyCollection) }
+
+  def createOrUpdatePropertyCollections(propertyCollection: Seq[entity.PropertyCollection]): Array[Int] =
+    dbProvider() localTx { implicit session => PropertyCollectionDAO.createOrUpdatePropertyCollections(propertyCollection) }

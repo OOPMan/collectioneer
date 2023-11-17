@@ -17,7 +17,7 @@ trait PropertyCollection:
   val modified: ZonedDateTime
 
 object PropertyCollection:
-  def propertyCollectionListToBatchInserSeqList(propertyCollections: List[PropertyCollection]): List[Seq[Any]] =
+  def propertyCollectionListToBatchInserSeqList(propertyCollections: Seq[PropertyCollection]): Seq[Seq[Any]] =
     propertyCollections.map(pc => Seq(
       pc.propertyPK.toString,
       pc.collectionPK.toString,
@@ -26,7 +26,7 @@ object PropertyCollection:
       pc.relationship.toString
     ))
 
-  def propertyCollectionListToBatchUpsertSeqList(propertyCollections: List[PropertyCollection]): List[Seq[Any]] =
+  def propertyCollectionListToBatchUpsertSeqList(propertyCollections: Seq[PropertyCollection]): Seq[Seq[Any]] =
     propertyCollections.map(pc => Seq(
       pc.propertyPK.toString,
       pc.collectionPK.toString,

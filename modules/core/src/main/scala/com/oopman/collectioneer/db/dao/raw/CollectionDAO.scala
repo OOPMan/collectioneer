@@ -31,7 +31,7 @@ object CollectionDAO:
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     h2.raw.CollectionQueries
       .allMatchingPKs(collectionPKs)
-      .map(entity.raW.Collection(entity.raw.c1.resultName))
+      .map(entity.raw.Collection(entity.raw.c1.resultName))
       .list
       .apply()
 
