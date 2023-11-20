@@ -15,14 +15,14 @@ case class Property
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValues: List[PropertyValues] = Nil
+  propertyValues: List[PropertyValue] = Nil
 ) extends entity.Property
 
 object Property extends SQLSyntaxSupport[Property]:
   override val schemaName = Some("public")
   override val tableName = "property"
 
-  def apply(p: ResultName[Property], propertyValues: List[PropertyValues])(rs: WrappedResultSet) =
+  def apply(p: ResultName[Property], propertyValues: List[PropertyValue])(rs: WrappedResultSet) =
     val propertyType = resultSetArrayToPropertyTypeList(rs, p.propertyTypes)
     new Property(
       pk = UUID.fromString(rs.string(p.pk)),

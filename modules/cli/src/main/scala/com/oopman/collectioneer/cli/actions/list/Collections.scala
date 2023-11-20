@@ -3,8 +3,8 @@ package com.oopman.collectioneer.cli.actions.list
 import com.oopman.collectioneer.cli.Config
 import com.oopman.collectioneer.db.dao.projected.PropertyValueDAO
 import com.oopman.collectioneer.db.dao.raw.CollectionDAO
-import com.oopman.collectioneer.db.entity.Collection
-import com.oopman.collectioneer.db.entity.projected.PropertyValues
+import com.oopman.collectioneer.db.entity.projected.PropertyValue
+import com.oopman.collectioneer.db.entity.raw.Collection
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
@@ -59,7 +59,7 @@ case class GetCollectionsResult
   collections: List[CollectionWithPropertyValues]
 )
 
-def propertyValuesToMapTuple(propertyValue: PropertyValues): (String, List[String]) =
+def propertyValuesToMapTuple(propertyValue: PropertyValue): (String, List[String]) =
   val hexFormat = HexFormat.of()
   propertyValue.property.propertyName -> (
     propertyValue.varcharValues ++

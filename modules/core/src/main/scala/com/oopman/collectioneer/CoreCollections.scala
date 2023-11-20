@@ -1,7 +1,7 @@
 package com.oopman.collectioneer
 
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValues}
+import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 
 import java.util.UUID
 
@@ -54,12 +54,12 @@ enum CoreCollections(val collection: Collection):
       CoreProperties.description
     ).map(_.property),
     propertyValues = List(
-      PropertyValues(
+      PropertyValue(
         property = CoreProperties.name.property,
         propertyValueSetPk = CoreCollectionUUIDs.commonProperties,
         varcharValues = List("Common Properties")
       ),
-      PropertyValues(
+      PropertyValue(
         property = CoreProperties.description.property,
         propertyValueSetPk = CoreCollectionUUIDs.commonPropertiesOfProperties,
         varcharValues = List("A Collection of Properties automatically available to all other Collections")

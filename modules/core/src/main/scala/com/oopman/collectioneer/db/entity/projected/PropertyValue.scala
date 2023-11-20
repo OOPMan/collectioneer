@@ -9,7 +9,7 @@ import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
 import scala.reflect.ClassTag
 
-case class PropertyValues
+case class PropertyValue
 (
   property: Property = Property(),
   propertyValueSetPk: UUID,
@@ -52,7 +52,7 @@ def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
   val blobValues = resultSetArrayToListOf[Blob](rs, "BLOB_VALUES")
   val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
   val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
-  PropertyValues(
+  PropertyValue(
     property = Property(
       pk = UUID.fromString(rs.string("PROPERTY_PK")),
       propertyName = rs.string("PROPERTY_NAME"),

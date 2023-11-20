@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity
-import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValues}
+import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValue}
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -14,6 +14,6 @@ case class Collection
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   properties: List[Property] = Nil,
-  propertyValues: List[PropertyValues] = Nil
+  propertyValues: List[PropertyValue] = Nil
   // TODO: Add a property for related
 ) extends entity.Collection
