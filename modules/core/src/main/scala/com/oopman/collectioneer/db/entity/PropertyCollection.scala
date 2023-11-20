@@ -3,9 +3,9 @@ package com.oopman.collectioneer.db.entity
 import java.time.ZonedDateTime
 import java.util.UUID
 
-enum PropertyCollectionRelationship:
-  case PropertyOfCollection extends PropertyCollectionRelationship
-  case CollectionOfPropertiesOfProperty extends PropertyCollectionRelationship
+enum PropertyCollectionRelationship(val dbValue: String):
+  case PropertyOfCollection extends PropertyCollectionRelationship("property_of_collection")
+  case CollectionOfPropertiesOfProperty extends PropertyCollectionRelationship("collection_of_properties_of_property")
 
 trait PropertyCollection:
   val propertyPK: UUID
@@ -23,7 +23,7 @@ object PropertyCollection:
       pc.collectionPK.toString,
       pc.propertyValueSetPK.toString,
       pc.index,
-      pc.relationship.toString
+      pc.relationship.dbValue
     ))
 
   def propertyCollectionSeqToBatchUpsertSeqSeq(propertyCollections: Seq[PropertyCollection]): Seq[Seq[Any]] =
@@ -32,6 +32,6 @@ object PropertyCollection:
       pc.collectionPK.toString,
       pc.propertyValueSetPK.toString,
       pc.index,
-      pc.relationship.toString,
+      pc.relationship.dbValue,
       pc.modified
     ))
