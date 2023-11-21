@@ -6,6 +6,8 @@ import com.oopman.collectioneer.db.queries.h2.projected.PropertyValueQueries
 import java.util.UUID
 import scalikejdbc.*
 
+import java.sql.Connection
+
 object PropertyValueDAO:
   def getPropertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyValue] =
     PropertyValueQueries
@@ -15,8 +17,13 @@ object PropertyValueDAO:
       .apply()
 
 
-class PropertyValueDAO(val connectionPoolName: String):
+class PropertyValueDAO(val dbProvider: () => DBConnection):
+  def this(connectionPoolName: String) =
+    this(() => NamedDB(connectionPoolName))
+
+  def this(connection: Connection, autoclose: Boolean = false) =
+    this(() => DB(connection).autoClose(autoclose))
 
   def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
-    NamedDB(connectionPoolName) readOnly { implicit session => PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
+    dbProvider() readOnly { implicit session => PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
 
