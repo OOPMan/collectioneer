@@ -14,3 +14,6 @@ trait PropertyValue:
 trait PropertyValueVarchar extends PropertyValue:
   val propertyValue: String
 
+trait PropertyValueVarbinary extends PropertyValue:
+  val propertyValue: Array[Byte]
+
