@@ -14,7 +14,7 @@ case class PropertyValueVarchar
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValue: String,
+  propertyValue: String = "",
 ) extends entity.PropertyValueVarchar
 
 class PropertyValueVarcharSQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueVarchar](tableName):
@@ -23,7 +23,6 @@ class PropertyValueVarcharSQLSyntaxSupport(override val tableName: String) exten
     PropertyValueVarchar(
       propertyValueSetPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
-      propertyValue = ""
     )
 
 object PropertyValueVarchar extends PropertyValueVarcharSQLSyntaxSupport("PROPERTY_VALUE_VARCHAR")
