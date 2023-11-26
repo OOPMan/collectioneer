@@ -49,4 +49,25 @@ object PropertyValueBLOBQueries extends PropertyValueQueries(propertyvalue.Prope
 object PropertyValueUUIDQueries extends PropertyValueQueries(propertyvalue.PropertyValueUUID)
 object PropertyValueJSONQueries extends PropertyValueQueries(propertyvalue.PropertyValueJSON)
 
+object PropertyValueQueries:
+  val propertyValueQueryObjects = List(
+    PropertyValueVarcharQueries,
+    PropertyValueVarbinaryQueries,
+    PropertyValueTinyintQueries,
+    PropertyValueSmallintQueries,
+    PropertyValueIntQueries,
+    PropertyValueBigintQueries,
+    PropertyValueNumericQueries,
+    PropertyValueFloatQueries,
+    PropertyValueDoubleQueries,
+    PropertyValueBooleanQueries,
+    PropertyValueDateQueries,
+    PropertyValueTimeQueries,
+    PropertyValueTimestampQueries,
+    PropertyValueCLOBQueries,
+    PropertyValueBLOBQueries,
+    PropertyValueUUIDQueries,
+    PropertyValueJSONQueries
+  )
+
 
