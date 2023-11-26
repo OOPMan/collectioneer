@@ -32,51 +32,51 @@ case class PropertyValue
   jsonValues: List[Array[Byte]] = Nil
 )
 
-
-def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
-  val propertyTypes = resultSetArrayToPropertyTypeList(rs, "PROPERTY_TYPES")
-  val varcharValues = resultSetArrayToListOf[String](rs, "VARCHAR_VALUES")
-  val varbinaryValues = resultSetArrayToListOf[Array[Byte]](rs, "VARBINARY_VALUES")
-  val tinyintValues = resultSetArrayToListOf[Byte](rs, "TINYINT_VALUES")
-  val smallintValues = resultSetArrayToListOf[Short](rs, "SMALLINT_VALUES")
-  val intValues = resultSetArrayToListOf[Int](rs, "INT_VALUES")
-  val bigintValues = resultSetArrayToListOf[BigInt](rs, "BIGINT_VALUES")
-  val numericValues = resultSetArrayToListOf[BigDecimal](rs, "NUMERIC_VALUES")
-  val floatValues = resultSetArrayToListOf[Float](rs, "FLOAT_VALUES")
-  val doubleValues = resultSetArrayToListOf[Double](rs, "DOUBLE_VALUES")
-  val booleanValues = resultSetArrayToListOf[Boolean](rs, "BOOLEAN_VALUES")
-  val dateValues = resultSetArrayToListOf[LocalDate](rs, "DATE_VALUES")
-  val timeValues = resultSetArrayToListOf[OffsetTime](rs, "TIME_VALUES")
-  val timestampValues = resultSetArrayToListOf[ZonedDateTime](rs, "TIMESTAMP_VALUES")
-  val clobValues = resultSetArrayToListOf[Clob](rs, "CLOB_VALUES")
-  val blobValues = resultSetArrayToListOf[Blob](rs, "BLOB_VALUES")
-  val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
-  val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
-  PropertyValue(
-    property = Property(
-      pk = UUID.fromString(rs.string("PROPERTY_PK")),
-      propertyName = rs.string("PROPERTY_NAME"),
-      propertyTypes = propertyTypes,
-      deleted = rs.boolean("DELETED"),
-      created = rs.zonedDateTime("CREATED"),
-      modified = rs.zonedDateTime("MODIFIED"),
-    ),
-    propertyValueSetPk = UUID.fromString(rs.string("PROPERTY_VALUE_SET_PK")),
-    varcharValues = varcharValues,
-    varbinaryValues = varbinaryValues,
-    tinyintValues = tinyintValues,
-    smallintValues = smallintValues,
-    intValues = intValues,
-    bigintValues = bigintValues,
-    numericValues = numericValues,
-    floatValues = floatValues,
-    doubleValues = doubleValues,
-    booleanValues = booleanValues,
-    dateValues = dateValues,
-    timeValues = timeValues,
-    timestampValues = timestampValues,
-    clobValues = clobValues,
-    blobValues = blobValues,
-    uuidValues = uuidValues,
-    jsonValues = jsonValues
-  )
+object PropertyValue:
+  def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
+    val propertyTypes = resultSetArrayToPropertyTypeList(rs, "PROPERTY_TYPES")
+    val varcharValues = resultSetArrayToListOf[String](rs, "VARCHAR_VALUES")
+    val varbinaryValues = resultSetArrayToListOf[Array[Byte]](rs, "VARBINARY_VALUES")
+    val tinyintValues = resultSetArrayToListOf[Byte](rs, "TINYINT_VALUES")
+    val smallintValues = resultSetArrayToListOf[Short](rs, "SMALLINT_VALUES")
+    val intValues = resultSetArrayToListOf[Int](rs, "INT_VALUES")
+    val bigintValues = resultSetArrayToListOf[BigInt](rs, "BIGINT_VALUES")
+    val numericValues = resultSetArrayToListOf[BigDecimal](rs, "NUMERIC_VALUES")
+    val floatValues = resultSetArrayToListOf[Float](rs, "FLOAT_VALUES")
+    val doubleValues = resultSetArrayToListOf[Double](rs, "DOUBLE_VALUES")
+    val booleanValues = resultSetArrayToListOf[Boolean](rs, "BOOLEAN_VALUES")
+    val dateValues = resultSetArrayToListOf[LocalDate](rs, "DATE_VALUES")
+    val timeValues = resultSetArrayToListOf[OffsetTime](rs, "TIME_VALUES")
+    val timestampValues = resultSetArrayToListOf[ZonedDateTime](rs, "TIMESTAMP_VALUES")
+    val clobValues = resultSetArrayToListOf[Clob](rs, "CLOB_VALUES")
+    val blobValues = resultSetArrayToListOf[Blob](rs, "BLOB_VALUES")
+    val uuidValues = resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
+    val jsonValues = resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES")
+    PropertyValue(
+      property = Property(
+        pk = UUID.fromString(rs.string("PROPERTY_PK")),
+        propertyName = rs.string("PROPERTY_NAME"),
+        propertyTypes = propertyTypes,
+        deleted = rs.boolean("DELETED"),
+        created = rs.zonedDateTime("CREATED"),
+        modified = rs.zonedDateTime("MODIFIED"),
+      ),
+      propertyValueSetPk = UUID.fromString(rs.string("PROPERTY_VALUE_SET_PK")),
+      varcharValues = varcharValues,
+      varbinaryValues = varbinaryValues,
+      tinyintValues = tinyintValues,
+      smallintValues = smallintValues,
+      intValues = intValues,
+      bigintValues = bigintValues,
+      numericValues = numericValues,
+      floatValues = floatValues,
+      doubleValues = doubleValues,
+      booleanValues = booleanValues,
+      dateValues = dateValues,
+      timeValues = timeValues,
+      timestampValues = timestampValues,
+      clobValues = clobValues,
+      blobValues = blobValues,
+      uuidValues = uuidValues,
+      jsonValues = jsonValues
+    )
