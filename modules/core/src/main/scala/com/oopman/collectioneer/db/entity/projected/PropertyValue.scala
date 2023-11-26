@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
-import com.oopman.collectioneer.db.entity.PropertyType
+import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.entity.Utils.{resultSetArrayToListOf, resultSetArrayToPropertyTypeList}
 import scalikejdbc.*
 
@@ -30,7 +30,59 @@ case class PropertyValue
   blobValues: List[Blob] = Nil,
   uuidValues: List[UUID] = Nil,
   jsonValues: List[Array[Byte]] = Nil
-)
+):
+  def toRawPropertyValues: List[entity.PropertyValue[?]] =
+    varcharValues.map(stringValue => entity.raw.propertyvalue.PropertyValueVarchar(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = stringValue
+    )) ++
+    varbinaryValues.map(byteValues => entity.raw.propertyvalue.PropertyValueVarbinary(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = byteValues
+    )) ++
+    tinyintValues.map(byteValue => entity.raw.propertyvalue.PropertyValueTinyint(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = byteValue
+    )) ++
+    smallintValues.map(intValue => entity.raw.propertyvalue.PropertyValueSmallint(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = intValue
+    )) ++
+    intValues.map(intValue => entity.raw.propertyvalue.PropertyValueInt(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = intValue
+    )) ++
+    bigintValues.map(bigIntValue => entity.raw.propertyvalue.PropertyValueBigint(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = bigIntValue
+    )) ++
+    numericValues.map(numericValue => entity.raw.propertyvalue.PropertyValueNumeric(
+        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = numericValue
+    )) ++
+    floatValues.map(floatValue => entity.raw.propertyvalue.PropertyValueFloat(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = floatValue
+    )) ++
+    doubleValues.map(doubleValue => entity.raw.propertyvalue.PropertyValueDouble(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = doubleValue
+    )) ++
+    booleanValues.map(booleanValue => entity.raw.propertyvalue.PropertyValueBoolean(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = booleanValue
+    )) ++
+    dateValues.map(dateValue => entity.raw.propertyvalue.PropertyValueDate(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = dateValue
+    )) ++
+    timeValues.map(timeValue => entity.raw.propertyvalue.PropertyValueTime(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = timeValue
+    )) ++
+    timestampValues.map(timestampValue => entity.raw.propertyvalue.PropertyValueTimestamp(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = timestampValue
+    )) ++
+    clobValues.map(clobValue => entity.raw.propertyvalue.PropertyValueCLOB(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = clobValue
+    )) ++
+    blobValues.map(blobValue => entity.raw.propertyvalue.PropertyValueBLOB(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = blobValue
+    )) ++
+    uuidValues.map(uuidValue => entity.raw.propertyvalue.PropertyValueUUID(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = uuidValue
+    )) ++
+    jsonValues.map(jsonValue => entity.raw.propertyvalue.PropertyValueJSON(
+      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = jsonValue
+    ))
 
 object PropertyValue:
   def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
