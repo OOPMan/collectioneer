@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
-import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
 
 import java.sql.Blob
@@ -16,7 +16,7 @@ case class PropertyValueBLOB
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: Blob,
-) extends entity.PropertyValueBLOB
+) extends traits.entity.PropertyValueBLOB
 
 class PropertyValueBLOBSQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueBLOB](tableName):
   override def apply(pv: scalikejdbc.ResultName[PropertyValueBLOB])(rs: WrappedResultSet): PropertyValueBLOB =

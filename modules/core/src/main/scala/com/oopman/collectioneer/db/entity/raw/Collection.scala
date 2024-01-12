@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.entity.raw
 
-import com.oopman.collectioneer.db.entity
-
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
 
 import java.time.ZonedDateTime
@@ -14,7 +13,7 @@ case class Collection
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-) extends entity.Collection
+) extends traits.entity.Collection
 
 object Collection extends SQLSyntaxSupport[Collection]:
   override val schemaName = Some("public")

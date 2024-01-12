@@ -1,39 +1,22 @@
 package com.oopman.collectioneer.db.dao.projected
 
-import com.oopman.collectioneer.db.entity.projected.PropertyValue
-import com.oopman.collectioneer.db.queries.h2
-
-import java.util.UUID
+import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.traits.DatabaseBackend
 import scalikejdbc.*
 
 import java.sql.Connection
-
-object PropertyValueDAO:
-  def getPropertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyValue] =
-    h2.projected.PropertyValueQueries
-      .propertyValuesByPropertyValueSets(pvsUUIDs)
-      .map(PropertyValue.generatePropertyValuesFromWrappedResultSet)
-      .list
-      .apply()
-
-  def updatePropertyValues(propertyValues: Seq[PropertyValue])(implicit session: DBSession = AutoSession) =
-    val propertyPks = propertyValues.map(_.property.pk)
-    val propertyValueSetPks = propertyValues.map(_.propertyValueSetPk)
-    // Delete existing PropertyValues in all property value tables by property and propertyValueSet
-    h2.raw.PropertyValueQueries.propertyValueQueryObjects
-      .map(_.deleteByPropertyValueSetPksAndPropertyPks.bind(propertyValueSetPks, propertyPks).execute)
-  // TODO: Insert new PropertyValues into relevant property value tables by property and properyValueSet
+import java.util.UUID
 
 
-class PropertyValueDAO(val dbProvider: () => DBConnection):
-  def this(connectionPoolName: String) =
-    this(() => NamedDB(connectionPoolName))
+class PropertyValueDAO(val dbProvider: () => DBConnection, db: traits.DatabaseBackend):
+  def this(connectionPoolName: String, db: traits.DatabaseBackend) =
+    this(() => NamedDB(connectionPoolName), db)
 
-  def this(connection: Connection, autoclose: Boolean = false) =
-    this(() => DB(connection).autoClose(autoclose))
+  def this(connection: Connection, autoclose: Boolean = false, db: traits.DatabaseBackend) =
+    this(() => DB(connection).autoClose(autoclose), db)
 
-  def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
-    dbProvider() readOnly { implicit session => PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
-
-  def updatePropertyValues(propertyValues: Seq[PropertyValue]) =
-    dbProvider() localTx { implicit session => PropertyValueDAO.updatePropertyValues(propertyValues) }
+  def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[entity.projected.PropertyValue] =
+    dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
+//
+//  def updatePropertyValues(propertyValues: Seq[entity.projected.PropertyValue]) =
+//    dbProvider() localTx { implicit session => db.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues) }

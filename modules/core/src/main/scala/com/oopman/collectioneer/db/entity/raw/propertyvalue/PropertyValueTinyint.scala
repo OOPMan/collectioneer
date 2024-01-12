@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
-import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
 
 import java.time.ZonedDateTime
@@ -15,7 +15,7 @@ case class PropertyValueTinyint
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: Byte = Byte.MinValue,
-) extends entity.PropertyValueTinyint
+) extends traits.entity.PropertyValueTinyint
 
 class PropertyValueTinyintSQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueTinyint](tableName):
   override def apply(pv: scalikejdbc.ResultName[PropertyValueTinyint])(rs: WrappedResultSet): PropertyValueTinyint =

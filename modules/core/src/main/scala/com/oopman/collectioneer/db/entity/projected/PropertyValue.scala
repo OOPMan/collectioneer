@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
-import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.db.entity.Utils.{resultSetArrayToListOf, resultSetArrayToPropertyTypeList}
 import scalikejdbc.*
 
@@ -31,7 +31,8 @@ case class PropertyValue
   uuidValues: List[UUID] = Nil,
   jsonValues: List[Array[Byte]] = Nil
 ):
-  def toRawPropertyValues: List[entity.PropertyValue[?]] =
+
+  def toRawPropertyValues: List[traits.entity.PropertyValue[?]] =
     varcharValues.map(stringValue => entity.raw.propertyvalue.PropertyValueVarchar(
       propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = stringValue
     )) ++

@@ -1,8 +1,9 @@
 package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
-import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.h2.queries.raw.PropertyValueQueries
+import scalikejdbc.*
 
-import scalikejdbc._
 import java.time.ZonedDateTime
 import java.util.UUID
 
@@ -15,7 +16,7 @@ case class PropertyValueVarchar
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: String = "",
-) extends entity.PropertyValueVarchar
+) extends traits.entity.PropertyValueVarchar
 
 class PropertyValueVarcharSQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueVarchar](tableName):
   override def apply(pv: scalikejdbc.ResultName[PropertyValueVarchar])(rs: WrappedResultSet): PropertyValueVarchar =

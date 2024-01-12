@@ -1,9 +1,10 @@
 package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
 import com.oopman.collectioneer.db.entity
-import scalikejdbc._
+import com.oopman.collectioneer.db.traits.entity.PropertyValue
+import scalikejdbc.*
 
-abstract class PropertyValueSQLSyntaxSupport[T <: entity.PropertyValue[?]](override val tableName: String) extends SQLSyntaxSupport[T]:
+abstract class PropertyValueSQLSyntaxSupport[T <: PropertyValue[?]](override val tableName: String) extends SQLSyntaxSupport[T]:
   override val schemaName = Some("public")
 
   def apply(pv: ResultName[T])(rs: WrappedResultSet): T
