@@ -8,7 +8,7 @@ import scalikejdbc.*
 
 import java.sql.Connection
 
-object PropertyDAO:
+object PropertyDAO extends traits.dao.raw.PropertyDAO:
 
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     PropertyQueries
@@ -29,20 +29,4 @@ object PropertyDAO:
       .list
       .apply()
 
-
-class PropertyDAO(val dbProvider: () => DBConnection):
-  def this(connectionPoolName: String) =
-    this(() => NamedDB(connectionPoolName))
-
-  def this(connection: Connection, autoclose: Boolean = false) =
-    this(() => DB(connection).autoClose(autoclose))
-
-  def createProperties(properties: Seq[Property]): Array[Int] =
-    dbProvider() localTx { implicit session => PropertyDAO.createProperties(properties) }
-
-  def createOrUpdateProperties(properties: Seq[Property]): Array[Int] =
-    dbProvider() localTx { implicit session => PropertyDAO.createOrUpdateProperties(properties) }
-
-  def getAll: List[entity.raw.Property] =
-    dbProvider() readOnly { implicit session => PropertyDAO.getAll() }
   

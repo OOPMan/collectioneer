@@ -1,11 +1,5 @@
 package com.oopman.collectioneer.db.h2
 
-import com.oopman.collectioneer.db.traits.dao.projected.PropertyValueDAO
-import com.oopman.collectioneer.db.traits.dao.raw.CollectionDAO
-import com.oopman.collectioneer.db.traits.dao.{DAOObjects, ProjectedDAOObjects, RawDAOObjects}
-import com.oopman.collectioneer.db.traits.queries.projected.PropertyValueQueries
-import com.oopman.collectioneer.db.traits.queries.raw.{CollectionQueries, PropertyCollectionQueries, PropertyQueries, PropertyValueSetQueries}
-import com.oopman.collectioneer.db.traits.queries.{ProjectedQueryObjects, QueryObjects, RawQueryObjects, raw}
 import distage.*
 import com.oopman.collectioneer.db.{h2, traits}
 
@@ -52,7 +46,10 @@ case class H2ProjectedDAOObjects
 
 case class H2RawDAOObjects
 (
-  override val CollectionDAO: traits.dao.raw.CollectionDAO
+  override val CollectionDAO: traits.dao.raw.CollectionDAO,
+  override val PropertyCollectionDAO: traits.dao.raw.PropertyCollectionDAO,
+  override val PropertyDAO: traits.dao.raw.PropertyDAO,
+  override val PropertyValueSetDAO: traits.dao.raw.PropertyValueSetDAO,
 ) extends traits.dao.RawDAOObjects
 
 case class H2DAOObjects
@@ -80,6 +77,9 @@ val H2DatabaseBackendModule = new ModuleDef:
   make[traits.dao.RawDAOObjects].from[H2RawDAOObjects]
   make[traits.dao.projected.PropertyValueDAO].from(h2.dao.projected.PropertyValueDAO)
   make[traits.dao.raw.CollectionDAO].from(h2.dao.raw.CollectionDAO)
+  make[traits.dao.raw.PropertyDAO].from(h2.dao.raw.PropertyDAO)
+  make[traits.dao.raw.PropertyCollectionDAO].from(h2.dao.raw.PropertyCollectionDAO)
+  make[traits.dao.raw.PropertyValueSetDAO].from(h2.dao.raw.PropertyValueSetDAO)
   make[traits.queries.QueryObjects].from[H2QueryObjects]
   make[traits.queries.ProjectedQueryObjects].from[H2ProjectedQueryObjects]
   make[traits.queries.RawQueryObjects].from[H2RawQueryObjects]
@@ -105,4 +105,3 @@ val H2DatabaseBackendModule = new ModuleDef:
   make[traits.queries.raw.PropertyValueQueries].named("BLOB").from(h2.queries.raw.PropertyValueBLOBQueries)
   make[traits.queries.raw.PropertyValueQueries].named("UUID").from(h2.queries.raw.PropertyValueUUIDQueries)
   make[traits.queries.raw.PropertyValueQueries].named("JSON").from(h2.queries.raw.PropertyValueJSONQueries)
-

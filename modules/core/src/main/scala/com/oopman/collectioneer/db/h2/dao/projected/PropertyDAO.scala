@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.db.h2.dao.projected
 
-import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc._
 
-object PropertyDAO:
+object PropertyDAO extends traits.dao.projected.PropertyDAO:
   def createProperties(properties: Seq[entity.projected.Property])(implicit session: DBSession = AutoSession) = ???
 
   def createOrUpdateProperties(properties: Seq[entity.projected.Property])(implicit session: DBSession = AutoSession) = ???

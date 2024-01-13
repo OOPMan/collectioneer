@@ -15,6 +15,7 @@ class V2__initial_data extends BaseJavaMigration:
   override def migrate(context: Context): Unit =
     val connection = context.getConnection
     val db = DB(connection).autoClose(false)
+    /*
     val propertyDAO = new PropertyDAO(() => db)
     val collectionDAO = new CollectionDAO(() => db)
     val propertyValueSetDAO = new PropertyValueSetDAO(() => db)
@@ -57,6 +58,8 @@ class V2__initial_data extends BaseJavaMigration:
     propertyCollectionDAO.createPropertyCollections(
       propertiesOfCollections ++ propertiesOfProperties
     )
+    
+     */
 //    // TODO: Insert PropertyValues for the properties of name and description to set in place sensible defaults
 //    val insertPropertyValueVarchars = connection.prepareStatement(
 //      "INSERT INTO property_value_varchar(property_value_set_pk, property_pk, property_value) VALUES (?, ?, ?)"

@@ -37,21 +37,3 @@ object CollectionDAO extends traits.dao.raw.CollectionDAO:
       .list
       .apply()
 
-class CollectionDAO(val dbProvider: () => DBConnection):
-  def this(connectionPoolName: String) =
-    this(() => NamedDB(connectionPoolName))
-
-  def this(connection: Connection, autoclose: Boolean = false) =
-    this(() => DB(connection).autoClose(autoclose))
-
-  def createCollections(collections: Seq[Collection]): Array[Int] =
-    dbProvider() localTx { implicit session => CollectionDAO.createCollections(collections) }
-
-  def createOrUpdateCollections(collections: Seq[Collection]): Array[Int] =
-    dbProvider() localTx { implicit session => CollectionDAO.createOrUpdateCollections(collections) }
-
-  def getAll: List[entity.raw.Collection] =
-    dbProvider() readOnly { implicit session => CollectionDAO.getAll }
-
-  def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[entity.raw.Collection] =
-    dbProvider() readOnly { implicit session => CollectionDAO.getAllMatchingPKs(collectionPKs) }
