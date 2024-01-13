@@ -1,20 +1,69 @@
 package com.oopman.collectioneer.db.h2.migrations
 
-import com.oopman.collectioneer.db.{entity, traits}
-import com.oopman.collectioneer.db.h2.dao.raw.{CollectionDAO, PropertyCollectionDAO, PropertyDAO, PropertyValueSetDAO}
-import com.oopman.collectioneer.db.traits.entity.PropertyCollectionRelationship
+import com.oopman.collectioneer.db.{dao, entity, traits, Injection}
+//import com.oopman.collectioneer.db.h2.dao.raw.{CollectionDAO, PropertyCollectionDAO, PropertyDAO, PropertyValueSetDAO}
+//import com.oopman.collectioneer.db.traits.entity.PropertyCollectionRelationship
 import com.oopman.collectioneer.{CoreCollections, CoreProperties}
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 import scalikejdbc.DB
+import distage._
+import izumi.fundamentals.platform.functional.Identity
 
 /**
  *
  */
 class V2__initial_data extends BaseJavaMigration:
+  def executeMigration(DAOs: dao.DAOs): Unit =
+    val propertyDAO = DAOs.raw.propertyDAO
+    val propertyCollectionDAO = DAOs.raw.propertyCollectionDAO
+    val propertyValueSetDAO = DAOs.raw.propertyValueSetDAO
+    val collectionDAO = DAOs.raw.collectionDAO
+    // Insert Property rows
+    propertyDAO.createProperties(CoreProperties.values.toList.map(_.property))
+    // Insert PropertyValueSet row
+    propertyValueSetDAO.createPropertyValueSets(
+      CoreProperties.values.map(p => entity.raw.PropertyValueSet(pk = p.property.pk)) ++
+        CoreCollections.values.map(c => entity.raw.PropertyValueSet(pk = c.collection.pk))
+    )
+    // Insert Collection rows
+    collectionDAO.createCollections(CoreCollections.values.toList.map(_.collection))
+    // Associate Properties with Collections
+    val propertiesOfCollections = CoreCollections.values.flatMap(
+      c => c.collection.properties.map(
+        p => entity.raw.PropertyCollection(
+          propertyPK = p.pk,
+          collectionPK = c.collection.pk,
+          propertyValueSetPK = c.collection.pk
+        )
+      )
+    ).toList
+    // Associate commonPropertiesOfProperties Collection with name and description Core Properties
+    val propertiesOfProperties = List(
+      entity.raw.PropertyCollection(
+        propertyPK = CoreProperties.name.property.pk,
+        collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
+        propertyValueSetPK = CoreProperties.name.property.pk,
+        relationship = traits.entity.PropertyCollectionRelationship.CollectionOfPropertiesOfProperty
+      ),
+      entity.raw.PropertyCollection(
+        propertyPK = CoreProperties.description.property.pk,
+        collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
+        propertyValueSetPK = CoreProperties.description.property.pk,
+        relationship = traits.entity.PropertyCollectionRelationship.CollectionOfPropertiesOfProperty,
+      )
+    )
+    // Save associations
+    propertyCollectionDAO.createPropertyCollections(
+      propertiesOfCollections ++ propertiesOfProperties
+    )
+
   override def canExecuteInTransaction: Boolean = false
   override def migrate(context: Context): Unit =
     val connection = context.getConnection
-    val db = DB(connection).autoClose(false)
+//    val (injector, module) = Injection.getInjectorAndModule(connection)
+//    val result = injector.produceRun(module)( (DAOs: dao.DAOs) => executeMigration(DAOs))
+    val f: Functoid[Identity[Unit]] = (DAOs: dao.DAOs) => executeMigration(DAOs)
+    Injection.produceRun(connection)(f)
     /*
     val propertyDAO = new PropertyDAO(() => db)
     val collectionDAO = new CollectionDAO(() => db)
@@ -58,7 +107,7 @@ class V2__initial_data extends BaseJavaMigration:
     propertyCollectionDAO.createPropertyCollections(
       propertiesOfCollections ++ propertiesOfProperties
     )
-    
+
      */
 //    // TODO: Insert PropertyValues for the properties of name and description to set in place sensible defaults
 //    val insertPropertyValueVarchars = connection.prepareStatement(
