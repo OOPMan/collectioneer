@@ -1,12 +1,11 @@
 package com.oopman.collectioneer.db.h2.migrations
 
-import com.oopman.collectioneer.db.{dao, entity, traits, Injection}
-//import com.oopman.collectioneer.db.h2.dao.raw.{CollectionDAO, PropertyCollectionDAO, PropertyDAO, PropertyValueSetDAO}
-//import com.oopman.collectioneer.db.traits.entity.PropertyCollectionRelationship
+import com.oopman.collectioneer.db.traits.entity.raw
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationship
+import com.oopman.collectioneer.db.{Injection, dao, entity, h2, traits}
 import com.oopman.collectioneer.{CoreCollections, CoreProperties}
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
-import scalikejdbc.DB
-import distage._
+import distage.*
 import izumi.fundamentals.platform.functional.Identity
 
 /**
@@ -22,15 +21,15 @@ class V2__initial_data extends BaseJavaMigration:
     propertyDAO.createProperties(CoreProperties.values.toList.map(_.property))
     // Insert PropertyValueSet row
     propertyValueSetDAO.createPropertyValueSets(
-      CoreProperties.values.map(p => entity.raw.PropertyValueSet(pk = p.property.pk)) ++
-        CoreCollections.values.map(c => entity.raw.PropertyValueSet(pk = c.collection.pk))
+      CoreProperties.values.map(p => h2.entity.raw.PropertyValueSet(pk = p.property.pk)) ++
+        CoreCollections.values.map(c => h2.entity.raw.PropertyValueSet(pk = c.collection.pk))
     )
     // Insert Collection rows
     collectionDAO.createCollections(CoreCollections.values.toList.map(_.collection))
     // Associate Properties with Collections
     val propertiesOfCollections = CoreCollections.values.flatMap(
       c => c.collection.properties.map(
-        p => entity.raw.PropertyCollection(
+        p => h2.entity.raw.PropertyCollection(
           propertyPK = p.pk,
           collectionPK = c.collection.pk,
           propertyValueSetPK = c.collection.pk
@@ -39,17 +38,17 @@ class V2__initial_data extends BaseJavaMigration:
     ).toList
     // Associate commonPropertiesOfProperties Collection with name and description Core Properties
     val propertiesOfProperties = List(
-      entity.raw.PropertyCollection(
+      h2.entity.raw.PropertyCollection(
         propertyPK = CoreProperties.name.property.pk,
         collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
         propertyValueSetPK = CoreProperties.name.property.pk,
-        relationship = traits.entity.PropertyCollectionRelationship.CollectionOfPropertiesOfProperty
+        relationship = PropertyCollectionRelationship.CollectionOfPropertiesOfProperty
       ),
-      entity.raw.PropertyCollection(
+      h2.entity.raw.PropertyCollection(
         propertyPK = CoreProperties.description.property.pk,
         collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
         propertyValueSetPK = CoreProperties.description.property.pk,
-        relationship = traits.entity.PropertyCollectionRelationship.CollectionOfPropertiesOfProperty,
+        relationship = raw.PropertyCollectionRelationship.CollectionOfPropertiesOfProperty,
       )
     )
     // Save associations

@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.db.traits.dao.projected
 
+import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 import scalikejdbc._
 import java.util.UUID
-import com.oopman.collectioneer.db.entity.projected.PropertyValue
 
 trait PropertyValueDAO:
 

@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.h2.queries.raw
 
-import com.oopman.collectioneer.db.entity.raw.{Property, p1}
+import com.oopman.collectioneer.db.h2.entity.raw.{Property, p1}
 import com.oopman.collectioneer.db.traits.queries.raw.PropertyQueries
 import scalikejdbc.*
 

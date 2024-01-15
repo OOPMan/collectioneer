@@ -1,7 +1,8 @@
 package com.oopman.collectioneer
 
+import com.oopman.collectioneer.db.h2.entity.projected
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
+import com.oopman.collectioneer.db.h2.entity.projected.{Collection, PropertyValue}
 
 import java.util.UUID
 
@@ -47,7 +48,7 @@ private object CoreCollectionUUIDs:
   val commonPropertiesOfProperties = "4a3dfbf0-3d68-4604-a471-5c4451a3ee5a"
 
 enum CoreCollections(val collection: Collection):
-  case commonProperties extends CoreCollections(Collection(
+  case commonProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonProperties,
     properties = List(
       CoreProperties.name,
@@ -67,7 +68,7 @@ enum CoreCollections(val collection: Collection):
     )
   ))
 
-  case commonPropertiesOfProperties extends CoreCollections(Collection(
+  case commonPropertiesOfProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonPropertiesOfProperties,
     properties = List(
       CoreProperties.defaultValue,

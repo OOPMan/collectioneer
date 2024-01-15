@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.entity
 
-import com.oopman.collectioneer.db.traits.entity.PropertyType
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*
 
 import scala.reflect.ClassTag

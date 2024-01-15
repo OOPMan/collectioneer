@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.h2.queries.raw
 
-import com.oopman.collectioneer.db.entity.raw.c1
-import com.oopman.collectioneer.db.entity.raw.Collection
+import com.oopman.collectioneer.db.h2.entity.raw.c1
+import com.oopman.collectioneer.db.h2.entity.raw.Collection
 import com.oopman.collectioneer.db.traits.queries.raw.CollectionQueries
 import scalikejdbc.*
 
