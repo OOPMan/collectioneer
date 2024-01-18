@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.h2.entity.raw
+package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
@@ -15,6 +15,7 @@ case class PropertyValueSet
 object PropertyValueSet extends SQLSyntaxSupport[PropertyValueSet]:
   override val schemaName = Some("public")
   override val tableName = "property_value_set"
+  val pvc1 = PropertyValueSet.syntax("pvc1")
 
   def apply(pvc: ResultName[PropertyValueSet])(rs: WrappedResultSet) =
     new PropertyValueSet(
@@ -22,4 +23,3 @@ object PropertyValueSet extends SQLSyntaxSupport[PropertyValueSet]:
       created = rs.zonedDateTime(pvc.created)
     )
 
-val pvc1 = PropertyValueSet.syntax("pvc1")

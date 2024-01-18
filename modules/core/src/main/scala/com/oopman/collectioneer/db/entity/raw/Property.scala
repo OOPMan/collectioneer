@@ -1,10 +1,10 @@
-package com.oopman.collectioneer.db.h2.entity.raw
+package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.{entity, traits}
+import scalikejdbc.*
 
 import java.time.ZonedDateTime
 import java.util.UUID
-import scalikejdbc.*
 
 case class Property
 (
@@ -19,6 +19,8 @@ case class Property
 object Property extends SQLSyntaxSupport[Property]:
   override val schemaName = Some("public")
   override val tableName = "property"
+  val p1 = Property.syntax("p1")
+  val p2 = Property.syntax("p2")
 
   def apply(p: ResultName[Property])(rs: WrappedResultSet) =
     val propertyType = rs
@@ -35,6 +37,3 @@ object Property extends SQLSyntaxSupport[Property]:
       created = rs.zonedDateTime(p.created),
       modified = rs.zonedDateTime(p.modified)
     )
-
-val p1 = Property.syntax("p1")
-val p2 = Property.syntax("p2")

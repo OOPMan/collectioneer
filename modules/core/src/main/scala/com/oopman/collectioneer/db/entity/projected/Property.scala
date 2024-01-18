@@ -1,18 +1,17 @@
-package com.oopman.collectioneer.db.h2.entity.projected
+package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity.Utils.resultSetArrayToPropertyTypeList
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
-import com.oopman.collectioneer.db.{entity, traits}
-import scalikejdbc.*
+import com.oopman.collectioneer.db.traits
 
 import java.time.ZonedDateTime
 import java.util.UUID
+import scalikejdbc.*
 
 case class Property
 (
   pk: UUID = UUID.randomUUID(),
   propertyName: String = "",
-  propertyTypes: List[PropertyType] = Nil,
+  propertyTypes: List[traits.entity.raw.PropertyType] = Nil,
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
@@ -22,6 +21,8 @@ case class Property
 object Property extends SQLSyntaxSupport[Property]:
   override val schemaName = Some("public")
   override val tableName = "property"
+  val p1 = Property.syntax("p1")
+  val p2 = Property.syntax("p2")
 
   def apply(p: ResultName[Property], propertyValues: List[PropertyValue])(rs: WrappedResultSet) =
     val propertyType = resultSetArrayToPropertyTypeList(rs, p.propertyTypes)
@@ -34,6 +35,3 @@ object Property extends SQLSyntaxSupport[Property]:
       modified = rs.zonedDateTime(p.modified),
       propertyValues = propertyValues
     )
-
-val p1 = Property.syntax("p1")
-val p2 = Property.syntax("p2")

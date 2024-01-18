@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.h2.entity.raw
+package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.traits
 

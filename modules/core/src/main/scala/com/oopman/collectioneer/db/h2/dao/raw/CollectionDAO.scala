@@ -23,17 +23,17 @@ object CollectionDAO extends traits.dao.raw.CollectionDAO:
       .batch(traits.entity.raw.Collection.collectionsListToBatchUpsertSeqList(collections): _*)
       .apply()
 
-  def getAll(implicit session: DBSession = AutoSession): List[h2.entity.raw.Collection] =
+  def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     raw.CollectionQueries
       .all
-      .map(h2.entity.raw.Collection(h2.entity.raw.c1.resultName))
+      .map(entity.raw.Collection(entity.raw.Collection.c1.resultName))
       .list
       .apply()
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[h2.entity.raw.Collection] =
+  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     raw.CollectionQueries
       .allMatchingPKs(collectionPKs)
-      .map(h2.entity.raw.Collection(h2.entity.raw.c1.resultName))
+      .map(entity.raw.Collection(entity.raw.Collection.c1.resultName))
       .list
       .apply()
 

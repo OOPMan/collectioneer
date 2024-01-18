@@ -21,15 +21,15 @@ class V2__initial_data extends BaseJavaMigration:
     propertyDAO.createProperties(CoreProperties.values.toList.map(_.property))
     // Insert PropertyValueSet row
     propertyValueSetDAO.createPropertyValueSets(
-      CoreProperties.values.map(p => h2.entity.raw.PropertyValueSet(pk = p.property.pk)) ++
-        CoreCollections.values.map(c => h2.entity.raw.PropertyValueSet(pk = c.collection.pk))
+      CoreProperties.values.map(p => entity.raw.PropertyValueSet(pk = p.property.pk)) ++
+        CoreCollections.values.map(c => entity.raw.PropertyValueSet(pk = c.collection.pk))
     )
     // Insert Collection rows
     collectionDAO.createCollections(CoreCollections.values.toList.map(_.collection))
     // Associate Properties with Collections
     val propertiesOfCollections = CoreCollections.values.flatMap(
       c => c.collection.properties.map(
-        p => h2.entity.raw.PropertyCollection(
+        p => entity.raw.PropertyCollection(
           propertyPK = p.pk,
           collectionPK = c.collection.pk,
           propertyValueSetPK = c.collection.pk
@@ -38,13 +38,13 @@ class V2__initial_data extends BaseJavaMigration:
     ).toList
     // Associate commonPropertiesOfProperties Collection with name and description Core Properties
     val propertiesOfProperties = List(
-      h2.entity.raw.PropertyCollection(
+      entity.raw.PropertyCollection(
         propertyPK = CoreProperties.name.property.pk,
         collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
         propertyValueSetPK = CoreProperties.name.property.pk,
         relationship = PropertyCollectionRelationship.CollectionOfPropertiesOfProperty
       ),
-      h2.entity.raw.PropertyCollection(
+      entity.raw.PropertyCollection(
         propertyPK = CoreProperties.description.property.pk,
         collectionPK = CoreCollections.commonPropertiesOfProperties.collection.pk,
         propertyValueSetPK = CoreProperties.description.property.pk,

@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.h2.entity.raw.propertyvalue
+package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
 import com.oopman.collectioneer.db.traits.entity.raw
 import com.oopman.collectioneer.db.{entity, traits}
@@ -7,7 +7,7 @@ import scalikejdbc.*
 import java.time.ZonedDateTime
 import java.util.UUID
 
-case class PropertyValueJSON
+case class PropertyValueVarbinary
 (
   pk: UUID = UUID.randomUUID(),
   propertyValueSetPK: UUID,
@@ -16,14 +16,14 @@ case class PropertyValueJSON
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: Array[Byte] = Array.empty,
-) extends raw.PropertyValueJSON
+) extends raw.PropertyValueVarbinary
 
-class PropertyValueJSONSQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueJSON](tableName):
-  override def apply(pv: scalikejdbc.ResultName[PropertyValueJSON])(rs: WrappedResultSet): PropertyValueJSON =
+class PropertyValueVarbinarySQLSyntaxSupport(override val tableName: String) extends PropertyValueSQLSyntaxSupport[PropertyValueVarbinary](tableName):
+  override def apply(pv: scalikejdbc.ResultName[PropertyValueVarbinary])(rs: WrappedResultSet): PropertyValueVarbinary =
     // TODO: Implement properly
-    PropertyValueJSON(
+    PropertyValueVarbinary(
       propertyValueSetPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 
-object PropertyValueJSON extends PropertyValueJSONSQLSyntaxSupport("PROPERTY_VALUE_JSON")
+object PropertyValueVarbinary extends PropertyValueVarbinarySQLSyntaxSupport("PROPERTY_VALUE_VARBINARY")

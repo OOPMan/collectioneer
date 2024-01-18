@@ -1,6 +1,6 @@
 package com.oopman.collectioneer
 
-import com.oopman.collectioneer.db.h2.entity.projected.Property
+import com.oopman.collectioneer.db.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 

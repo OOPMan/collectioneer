@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.h2.queries.raw
 import scalikejdbc.*
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.entity
-import com.oopman.collectioneer.db.h2.entity.raw.propertyvalue
+import com.oopman.collectioneer.db.entity.raw.propertyvalue
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
 import com.oopman.collectioneer.db.traits.queries.raw.PropertyValueQueries
 

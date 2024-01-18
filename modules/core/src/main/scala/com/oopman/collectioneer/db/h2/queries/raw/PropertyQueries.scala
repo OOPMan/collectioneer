@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.h2.queries.raw
 
-import com.oopman.collectioneer.db.h2.entity.raw.{Property, p1}
+import com.oopman.collectioneer.db.entity.raw.Property
 import com.oopman.collectioneer.db.traits.queries.raw.PropertyQueries
 import scalikejdbc.*
 
@@ -21,6 +21,6 @@ object PropertyQueries extends PropertyQueries:
 
   val all =
     sql"""
-          SELECT ${p1.result.*}
-          FROM ${Property.as(p1)}
+          SELECT ${Property.p1.result.*}
+          FROM ${Property.as(Property.p1)}
      """

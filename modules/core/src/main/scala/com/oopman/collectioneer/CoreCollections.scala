@@ -1,8 +1,8 @@
 package com.oopman.collectioneer
 
-import com.oopman.collectioneer.db.h2.entity.projected
+import com.oopman.collectioneer.db.entity.projected
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.h2.entity.projected.{Collection, PropertyValue}
+import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 
 import java.util.UUID
 

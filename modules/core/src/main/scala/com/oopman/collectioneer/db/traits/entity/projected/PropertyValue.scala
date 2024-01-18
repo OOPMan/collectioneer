@@ -1,7 +1,5 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
-import com.oopman.collectioneer.db.h2.entity.projected.Property
-
 import java.sql.{Blob, Clob}
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID

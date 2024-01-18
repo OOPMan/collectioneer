@@ -1,8 +1,8 @@
-package com.oopman.collectioneer.db.h2.entity.raw.propertyvalue
+package com.oopman.collectioneer.db.entity.raw.propertyvalue
 
-import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.db.h2.queries.raw.PropertyValueQueries
 import com.oopman.collectioneer.db.traits.entity.raw
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
 
 import java.time.ZonedDateTime
