@@ -59,10 +59,7 @@ class V2__initial_data extends BaseJavaMigration:
   override def canExecuteInTransaction: Boolean = false
   override def migrate(context: Context): Unit =
     val connection = context.getConnection
-//    val (injector, module) = Injection.getInjectorAndModule(connection)
-//    val result = injector.produceRun(module)( (DAOs: dao.DAOs) => executeMigration(DAOs))
-    val f: Functoid[Identity[Unit]] = (DAOs: dao.DAOs) => executeMigration(DAOs)
-    Injection.produceRun(connection)(f)
+    Injection.produceRun(connection)(executeMigration.asInstanceOf[Functoid[Identity[Unit]]])
     /*
     val propertyDAO = new PropertyDAO(() => db)
     val collectionDAO = new CollectionDAO(() => db)
