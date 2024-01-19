@@ -5,6 +5,7 @@ import distage.*
 import izumi.fundamentals.platform.functional.Identity
 
 import java.sql.Connection
+import javax.sql.DataSource
 
 type DBConnectionProvider = () => DBConnection
 
@@ -20,8 +21,11 @@ object Injection:
   def getInjectorAndModule[F[_], A](datasourceUri: String): (Injector[Identity], ModuleDef) =
     getInjectorAndModule(() => NamedDB(datasourceUri))
 
-  def getInjectorAndModule[F[_], A](connection: Connection, autoclose: Boolean = false): (Injector[Identity], ModuleDef) =
+  def getInjectorAndModule[F[_], A](connection: Connection, autoclose: Boolean): (Injector[Identity], ModuleDef) =
     getInjectorAndModule(() => DB(connection).autoClose(autoclose))
+
+  def getInjectorAndModule[F[_], A](dataSource: DataSource, autoclose: Boolean): (Injector[Identity], ModuleDef) =
+    getInjectorAndModule(() => DB(dataSource.getConnection).autoClose(autoclose))
 
   // The following methods don't seem to work...
   def produceRun[F[_], A](dbProvider: DBConnectionProvider)(function: Functoid[F[A]]): F[A] =
@@ -31,8 +35,11 @@ object Injection:
   def produceRun[F[_], A](datasourceUri: String)(function: Functoid[F[A]]): F[A] =
     produceRun(() => NamedDB(datasourceUri))(function)
 
-  def produceRun[F[_], A](connection: Connection, autoclose: Boolean = false)(function: Functoid[F[A]]): F[A] =
+  def produceRun[F[_], A](connection: Connection, autoclose: Boolean)(function: Functoid[F[A]]): F[A] =
     produceRun(() => DB(connection).autoClose(autoclose))(function)
+    
+  def produceRun[F[_], A](dataSource: DataSource, autoclose: Boolean)(function: Functoid[F[A]]): F[A] =
+    produceRun(() => DB(dataSource.getConnection).autoClose(autoclose))(function)
 
   def main(args: Array[String]): Unit =
     produceRun("jdbc:h2:./test") { (p: dao.projected.PropertyValueDAO) => p.getPropertyValuesByPropertyValueSet(Seq()) }
