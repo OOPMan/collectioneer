@@ -67,7 +67,7 @@ case class H2DatabaseBackend
 ) extends traits.DatabaseBackend:
   override val migrationLocations: Seq[String] = Seq(
     "classpath:migrations/h2",
-    "classpath:com/oopman/collectioneer/db/migrations/h2"
+    "classpath:com/oopman/collectioneer/db/h2/migrations"
   )
 
 val H2DatabaseBackendModule = new ModuleDef:
