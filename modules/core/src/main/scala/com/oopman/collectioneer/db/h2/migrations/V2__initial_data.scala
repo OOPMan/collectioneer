@@ -12,7 +12,7 @@ import izumi.fundamentals.platform.functional.Identity
  *
  */
 class V2__initial_data extends BaseJavaMigration:
-  def executeMigration(DAOs: dao.DAOs): Unit =
+  val executeMigration: Functoid[Identity[Unit]] = (DAOs: dao.DAOs) =>
     val propertyDAO = DAOs.raw.propertyDAO
     val propertyCollectionDAO = DAOs.raw.propertyCollectionDAO
     val propertyValueSetDAO = DAOs.raw.propertyValueSetDAO
@@ -55,11 +55,12 @@ class V2__initial_data extends BaseJavaMigration:
     propertyCollectionDAO.createPropertyCollections(
       propertiesOfCollections ++ propertiesOfProperties
     )
+    ()
 
   override def canExecuteInTransaction: Boolean = false
   override def migrate(context: Context): Unit =
     val connection = context.getConnection
-    Injection.produceRun(connection)(executeMigration.asInstanceOf[Functoid[Identity[Unit]]])
+    Injection.produceRun(connection, false)(executeMigration)
     /*
     val propertyDAO = new PropertyDAO(() => db)
     val collectionDAO = new CollectionDAO(() => db)
