@@ -7,20 +7,20 @@ import scalikejdbc.*
 import java.util.UUID
 
 object CollectionQueries extends CollectionQueries:
-  val insert =
+  def insert =
     sql"""
           INSERT INTO COLLECTION(pk, virtual, deleted)
           VALUES ( ?, ?, ? );
        """
 
-  val upsert =
+  def upsert =
     sql"""
           MERGE INTO COLLECTION(pk, virtual, deleted, modified)
           KEY (pk)
           VALUES ( ?, ?, ?, ? );
        """
 
-  val all =
+  def all =
     sql"""
          SELECT ${Collection.c1.result.*}
          FROM ${Collection.as(Collection.c1)}

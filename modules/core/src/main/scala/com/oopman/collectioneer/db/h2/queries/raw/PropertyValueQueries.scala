@@ -8,26 +8,26 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
 import com.oopman.collectioneer.db.traits.queries.raw.PropertyValueQueries
 
 class PropertyValueQueries[T <: PropertyValue[?]](val pv: propertyvalue.PropertyValueSQLSyntaxSupport[T]) extends traits.queries.raw.PropertyValueQueries:
-  val insert =
+  def insert =
     sql"""
           INSERT INTO ${pv.table} (pk, property_value_set_pk, property_pk, property_value, index)
           VALUES ( ?, ?, ?, ?, ? )
        """
 
-  val upsert =
+  def upsert =
     sql"""
           MERGE INTO ${pv.table} (pk, property_value_set_pk, property_pk, property_value, index, modified)
           KEY (pk)
           VALUES (?, ?, ?, ?, ?, ?)
        """
 
-  val deleteByPK =
+  def deleteByPK =
     sql"""
           DELETE FROM ${pv.table}
           WHERE PK IN (?)
        """
 
-  val deleteByPropertyValueSetPksAndPropertyPKs =
+  def deleteByPropertyValueSetPksAndPropertyPKs =
     sql"""
           DELETE FROM ${pv.table}
           WHERE PROPERTY_VALUE_SET_PK IN (?)
@@ -53,7 +53,7 @@ object PropertyValueUUIDQueries extends PropertyValueQueries(propertyvalue.Prope
 object PropertyValueJSONQueries extends PropertyValueQueries(propertyvalue.PropertyValueJSON)
 
 object PropertyValueQueries:
-  val propertyValueQueryObjects = List(
+  def propertyValueQueryObjects = List(
     PropertyValueVarcharQueries,
     PropertyValueVarbinaryQueries,
     PropertyValueTinyintQueries,

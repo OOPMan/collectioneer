@@ -22,7 +22,7 @@ object PropertyDAO extends traits.dao.raw.PropertyDAO:
       .batch(traits.entity.raw.Property.propertiesSeqToBatchUpsertSeqSeq(properties): _*)
       .apply()
 
-  def getAll()(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
+  def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
     raw.PropertyQueries
       .all
       .map(entity.raw.Property(entity.raw.Property.p1.resultName))

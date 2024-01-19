@@ -8,4 +8,4 @@ trait PropertyDAO:
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int]
   def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int]
 
-  def getAll()(implicit session: DBSession = AutoSession): List[Property]
+  def getAll(implicit session: DBSession = AutoSession): List[Property]

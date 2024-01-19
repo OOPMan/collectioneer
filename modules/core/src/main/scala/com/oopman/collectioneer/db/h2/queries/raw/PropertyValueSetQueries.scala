@@ -4,13 +4,13 @@ import com.oopman.collectioneer.db.traits
 import scalikejdbc._
 
 object PropertyValueSetQueries extends traits.queries.raw.PropertyValueSetQueries:
-  val insert =
+  def insert =
     sql"""
           INSERT INTO PROPERTY_VALUE_SET (PK)
           VALUES (?)
        """
 
-  val upsert =
+  def upsert =
     sql"""
           MERGE INTO PROPERTY_VALUE_SET (PK)
           KEY (PK)

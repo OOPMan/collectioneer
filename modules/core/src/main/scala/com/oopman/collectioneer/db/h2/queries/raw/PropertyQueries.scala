@@ -6,20 +6,20 @@ import scalikejdbc.*
 
 object PropertyQueries extends PropertyQueries:
 
-  val insert =
+  def insert =
     sql"""
           INSERT INTO PROPERTY(pk, property_name, property_types, deleted)
           VALUES ( ?, ?, ?, ? );
     """
 
-  val upsert =
+  def upsert =
     sql"""
           MERGE INTO PROPERTY(pk, property_name, property_types, deleted, modified)
           KEY (pk)
           VALUES ( ?, ?, ?, ?, ? );
     """
 
-  val all =
+  def all =
     sql"""
           SELECT ${Property.p1.result.*}
           FROM ${Property.as(Property.p1)}
