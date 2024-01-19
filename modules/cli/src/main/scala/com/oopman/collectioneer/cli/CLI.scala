@@ -2,8 +2,6 @@ package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer.cli.{Config, Subject, Verb}
 import com.oopman.collectioneer.db.migrations.executeMigrations
-import com.oopman.collectioneer.db.dao.CollectionsDAO
-import com.oopman.collectioneer.db.entity.Collection
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
 import scopt.{OParser, OParserBuilder}
@@ -15,7 +13,7 @@ import io.circe.generic.auto.*
 import io.circe.syntax.*
 import cats.syntax.either.*
 import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
-import com.oopman.collectioneer.cli.actions.imprt.{importDatabase}
+import com.oopman.collectioneer.cli.actions.imprt.importDatabase
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.{Injector, ModuleBase}
 import distage.plugins.PluginConfig
@@ -159,8 +157,6 @@ object CLI:
         dataSource.setURL(config.datasourceUri)
         dataSource.setUser(config.datasourceUsername)
         dataSource.setPassword(config.datasourcePassword)
-        // Execute Flyway Migrations
-        executeMigrations(dataSource)
         // Configure ScalikeJDBC
         GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
           enabled = config.debug,
@@ -168,6 +164,8 @@ object CLI:
         )
         ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
         ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
+        // Execute Flyway Migrations
+        executeMigrations(dataSource)
         // Process CLI arguments
         val action = for {
           verb <- config.verb

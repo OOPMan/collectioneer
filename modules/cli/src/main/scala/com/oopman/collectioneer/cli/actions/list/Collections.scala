@@ -1,16 +1,24 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.dao.projected.PropertyValueDAO
-import com.oopman.collectioneer.db.dao.raw.CollectionDAO
-import com.oopman.collectioneer.db.entity.projected.PropertyValue
-import com.oopman.collectioneer.db.entity.raw.Collection
+import com.oopman.collectioneer.db.{Injection, traits}
+import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
+import izumi.fundamentals.platform.functional.Identity
 
 import java.time.ZonedDateTime
 import java.util.{HexFormat, UUID}
+
+implicit val encodeCollection: Encoder[traits.entity.raw.Collection] = (c: traits.entity.raw.Collection) =>
+  Json.obj(
+    ("pk", Json.fromString(c.pk.toString)),
+    ("virtual", Json.fromBoolean(c.virtual)),
+    ("deleted", Json.fromBoolean(c.deleted)),
+    ("created", Json.fromString(c.created.toString)),
+    ("modified", Json.fromString(c.modified.toString))
+  )
 
 
 case class ListCollectionsResult
@@ -24,23 +32,24 @@ case class ListCollectionsVerboseResult
 (
   dataSourceUri: String,
   count: Int,
-  collections: List[Collection]
+  collections: List[traits.entity.raw.Collection]
 )
 
 def listCollections(config: Config) =
-  val collectionDAO = new CollectionDAO(config.datasourceUri)
-  val collections = collectionDAO.getAll
-  config.verbose match
-    case true => ListCollectionsVerboseResult(
-      dataSourceUri = config.datasourceUri,
-      count = collections.size,
-      collections = collections
-    ).asJson
-    case false => ListCollectionsResult(
-      dataSourceUri = config.datasourceUri,
-      count = collections.size,
-      uuids = collections.map(_.pk)
-    ).asJson
+  def listCollections(collectionDAO: traits.dao.raw.CollectionDAO) =
+    val collections = collectionDAO.getAll
+    config.verbose match
+      case true => ListCollectionsVerboseResult(
+        dataSourceUri = config.datasourceUri,
+        count = collections.size,
+        collections = collections
+      ).asJson
+      case false => ListCollectionsResult(
+        dataSourceUri = config.datasourceUri,
+        count = collections.size,
+        uuids = collections.map(_.pk)
+      ).asJson
+  Injection.produceRun(config.datasourceUri)(listCollections.asInstanceOf[Functoid[Identity[Json]]])
 
 case class CollectionWithPropertyValues
 (
@@ -59,7 +68,7 @@ case class GetCollectionsResult
   collections: List[CollectionWithPropertyValues]
 )
 
-def propertyValuesToMapTuple(propertyValue: PropertyValue): (String, List[String]) =
+def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValue): (String, List[String]) =
   val hexFormat = HexFormat.of()
   propertyValue.property.propertyName -> (
     propertyValue.varcharValues ++
@@ -81,23 +90,24 @@ def propertyValuesToMapTuple(propertyValue: PropertyValue): (String, List[String
     propertyValue.jsonValues.map(hexFormat.formatHex)
   )
 
+
 def getCollections(config: Config): Json =
-  val collectionDAO = new CollectionDAO(config.datasourceUri)
-  val propertyValueDAO = new PropertyValueDAO(config.datasourceUri)
-  val collections = collectionDAO.getAllMatchingPKs(config.uuids)
-  val propertyValues = propertyValueDAO.getPropertyValuesByPropertyValueSet(config.uuids)
-  val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
-  GetCollectionsResult(
-    dataSourceUri = config.datasourceUri,
-    count = collections.size,
-    collections = collections
-      .map(collection => CollectionWithPropertyValues(
-        pk = collection.pk,
-        virtual = collection.virtual,
-        deleted = collection.deleted,
-        created = collection.created,
-        modified = collection.modified,
-        properties = Map.from(propertyValuesByPVSUUID
-          .getOrElse(collection.pk, Nil)
-          .map(propertyValuesToMapTuple))
-      ))).asJson
+  def getCollections(collectionDAO: traits.dao.raw.CollectionDAO, propertyValueDAO: traits.dao.projected.PropertyValueDAO) =
+    val collections = collectionDAO.getAllMatchingPKs(config.uuids)
+    val propertyValues = propertyValueDAO.getPropertyValuesByPropertyValueSets(config.uuids)
+    val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
+    GetCollectionsResult(
+      dataSourceUri = config.datasourceUri,
+      count = collections.size,
+      collections = collections
+        .map(collection => CollectionWithPropertyValues(
+          pk = collection.pk,
+          virtual = collection.virtual,
+          deleted = collection.deleted,
+          created = collection.created,
+          modified = collection.modified,
+          properties = Map.from(propertyValuesByPVSUUID
+            .getOrElse(collection.pk, Nil)
+            .map(propertyValuesToMapTuple))
+        ))).asJson
+  Injection.produceRun(config.datasourceUri)(getCollections.asInstanceOf[Functoid[Identity[Json]]])
