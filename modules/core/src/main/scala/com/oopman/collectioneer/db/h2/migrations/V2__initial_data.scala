@@ -12,7 +12,7 @@ import izumi.fundamentals.platform.functional.Identity
  *
  */
 class V2__initial_data extends BaseJavaMigration:
-  val executeMigration: Functoid[Identity[Unit]] = (DAOs: dao.DAOs) =>
+  def executeMigration(DAOs: dao.DAOs) =
     val propertyDAO = DAOs.raw.propertyDAO
     val propertyCollectionDAO = DAOs.raw.propertyCollectionDAO
     val propertyValueSetDAO = DAOs.raw.propertyValueSetDAO

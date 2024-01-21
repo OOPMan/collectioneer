@@ -36,15 +36,16 @@ case class ListPropertiesVerboseResult
 def listProperties(config: Config) =
   def listProperties(propertyDAO: traits.dao.raw.PropertyDAO) =
     val properties = propertyDAO.getAll
-    config.verbose match
-      case true => ListPropertiesVerboseResult(
+    if config.verbose then
+      ListPropertiesVerboseResult(
         datasourceUri = config.datasourceUri,
         count = properties.size,
         properties = properties
       ).asJson
-      case false => ListPropertiesResult(
+    else
+      ListPropertiesResult(
         datasourceUri = config.datasourceUri,
         count = properties.size,
         propertyNamesAndUUIDs = properties.map(property => s"${property.propertyName} (${property.pk})")
       ).asJson
-  Injection.produceRun(config.datasourceUri)(listProperties.asInstanceOf[Functoid[Identity[Json]]])
+  Injection.produceRun(config.datasourceUri)(listProperties)

@@ -38,18 +38,19 @@ case class ListCollectionsVerboseResult
 def listCollections(config: Config) =
   def listCollections(collectionDAO: traits.dao.raw.CollectionDAO) =
     val collections = collectionDAO.getAll
-    config.verbose match
-      case true => ListCollectionsVerboseResult(
+    if config.verbose then
+      ListCollectionsVerboseResult(
         dataSourceUri = config.datasourceUri,
         count = collections.size,
         collections = collections
       ).asJson
-      case false => ListCollectionsResult(
+    else
+      ListCollectionsResult(
         dataSourceUri = config.datasourceUri,
         count = collections.size,
         uuids = collections.map(_.pk)
       ).asJson
-  Injection.produceRun(config.datasourceUri)(listCollections.asInstanceOf[Functoid[Identity[Json]]])
+  Injection.produceRun(config.datasourceUri)(listCollections)
 
 case class CollectionWithPropertyValues
 (
@@ -110,4 +111,4 @@ def getCollections(config: Config): Json =
             .getOrElse(collection.pk, Nil)
             .map(propertyValuesToMapTuple))
         ))).asJson
-  Injection.produceRun(config.datasourceUri)(getCollections.asInstanceOf[Functoid[Identity[Json]]])
+  Injection.produceRun(config.datasourceUri)(getCollections)

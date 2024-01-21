@@ -10,17 +10,12 @@ import javax.sql.DataSource
 
 
 def executeMigrations(dataSource: DataSource): MigrateResult =
-  // TODO: Determine migrations path based on DataSource type
-  val f: Functoid[Identity[MigrateResult]] = (db: traits.DatabaseBackend) =>
+  def executeMigrations(db: traits.DatabaseBackend) =
     Flyway
       .configure()
       .dataSource(dataSource)
-      .locations(
-        db.migrationLocations: _*,
-//        "classpath:migrations/h2", // TODO: Determine correct location based on database driver
-//        "classpath:com/oopman/collectioneer/db/migrations/h2" // TODO: Determine correct location based on database driver
-      )
+      .locations(db.migrationLocations: _*)
       .load()
       .migrate()
-  Injection.produceRun(dataSource, false)(f)
+  Injection.produceRun(dataSource, false)(executeMigrations)
 

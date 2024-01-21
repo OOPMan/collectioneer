@@ -27,19 +27,15 @@ object Injection:
   def getInjectorAndModule[F[_], A](dataSource: DataSource, autoclose: Boolean): (Injector[Identity], ModuleDef) =
     getInjectorAndModule(() => DB(dataSource.getConnection).autoClose(autoclose))
 
-  // The following methods don't seem to work...
-  def produceRun[F[_], A](dbProvider: DBConnectionProvider)(function: Functoid[F[A]]): F[A] =
+  def produceRun[F[_], A](dbProvider: DBConnectionProvider): Functoid[Identity[A]] => Identity[A] =
     val (injector, module) = getInjectorAndModule(dbProvider)
-    injector.produceRun(module)(function)
+    injector.produceRun(module)
 
-  def produceRun[F[_], A](datasourceUri: String)(function: Functoid[F[A]]): F[A] =
-    produceRun(() => NamedDB(datasourceUri))(function)
+  def produceRun[F[_], A](datasourceUri: String): Functoid[Identity[A]] => Identity[A] =
+    produceRun(() => NamedDB(datasourceUri))
 
-  def produceRun[F[_], A](connection: Connection, autoclose: Boolean)(function: Functoid[F[A]]): F[A] =
-    produceRun(() => DB(connection).autoClose(autoclose))(function)
-    
-  def produceRun[F[_], A](dataSource: DataSource, autoclose: Boolean)(function: Functoid[F[A]]): F[A] =
-    produceRun(() => DB(dataSource.getConnection).autoClose(autoclose))(function)
+  def produceRun[F[_], A](connection: Connection, autoclose: Boolean): Functoid[Identity[A]] => Identity[A] =
+    produceRun(() => DB(connection).autoClose(autoclose))
 
-  def main(args: Array[String]): Unit =
-    produceRun("jdbc:h2:./test") { (p: dao.projected.PropertyValueDAO) => p.getPropertyValuesByPropertyValueSet(Seq()) }
+  def produceRun[F[_], A](dataSource: DataSource, autoclose: Boolean): Functoid[Identity[A]] => Identity[A] =
+    produceRun(() => DB(dataSource.getConnection).autoClose(autoclose))
