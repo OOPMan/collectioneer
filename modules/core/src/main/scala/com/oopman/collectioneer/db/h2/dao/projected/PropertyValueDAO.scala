@@ -15,12 +15,33 @@ object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
       .list
       .apply()
 
-  def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Unit =
+  def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
     val propertyPks = propertyValues.map(_.property.pk)
     val propertyValueSetPks = propertyValues.map(_.propertyValueSetPk)
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     h2.queries.raw.PropertyValueQueries.propertyValueQueryObjects
-      .map(_.deleteByPropertyValueSetPksAndPropertyPKs.bind(propertyValueSetPks, propertyPks).execute)
-  // TODO: Insert new PropertyValues into relevant property value tables by property and properyValueSet
-//    val t  = propertyValues.flatMap(_.toRawPropertyValues)
+      .map(_.deleteByPropertyValueSetPksAndPropertyPKs.bind(propertyValueSetPks, propertyPks).execute.apply())
+    // Insert new PropertyValues into relevant property value tables by property and properyValueSet
+    propertyValues
+      .flatMap(entity.projected.PropertyValue.toRawPropertyValues)
+      .map {
+        case pv: traits.entity.raw.PropertyValueVarchar => (pv, h2.queries.raw.PropertyValueVarcharQueries.insert)
+        case pv: traits.entity.raw.PropertyValueVarbinary => (pv, h2.queries.raw.PropertyValueVarbinaryQueries.insert)
+        case pv: traits.entity.raw.PropertyValueTinyint => (pv, h2.queries.raw.PropertyValueTinyintQueries.insert)
+        case pv: traits.entity.raw.PropertyValueSmallint => (pv, h2.queries.raw.PropertyValueSmallintQueries.insert)
+        case pv: traits.entity.raw.PropertyValueInt => (pv, h2.queries.raw.PropertyValueIntQueries.insert)
+        case pv: traits.entity.raw.PropertyValueBigint => (pv, h2.queries.raw.PropertyValueBigintQueries.insert)
+        case pv: traits.entity.raw.PropertyValueNumeric => (pv, h2.queries.raw.PropertyValueNumericQueries.insert)
+        case pv: traits.entity.raw.PropertyValueFloat => (pv, h2.queries.raw.PropertyValueFloatQueries.insert)
+        case pv: traits.entity.raw.PropertyValueDouble => (pv, h2.queries.raw.PropertyValueDoubleQueries.insert)
+        case pv: traits.entity.raw.PropertyValueBoolean => (pv, h2.queries.raw.PropertyValueBooleanQueries.insert)
+        case pv: traits.entity.raw.PropertyValueDate => (pv, h2.queries.raw.PropertyValueDateQueries.insert)
+        case pv: traits.entity.raw.PropertyValueTime => (pv, h2.queries.raw.PropertyValueTimeQueries.insert)
+        case pv: traits.entity.raw.PropertyValueTimestamp => (pv, h2.queries.raw.PropertyValueTimestampQueries.insert)
+        case pv: traits.entity.raw.PropertyValueCLOB => (pv, h2.queries.raw.PropertyValueCLOBQueries.insert)
+        case pv: traits.entity.raw.PropertyValueBLOB => (pv, h2.queries.raw.PropertyValueBLOBQueries.insert)
+        case pv: traits.entity.raw.PropertyValueUUID => (pv, h2.queries.raw.PropertyValueUUIDQueries.insert)
+        case pv: traits.entity.raw.PropertyValueJSON => (pv, h2.queries.raw.PropertyValueJSONQueries.insert)
+      }
+      .map((pv, query) => query.bind(pv.pk, pv.propertyValueSetPK, pv.propertyPK, pv.propertyValue, pv.index, pv.modified).execute.apply())
 
