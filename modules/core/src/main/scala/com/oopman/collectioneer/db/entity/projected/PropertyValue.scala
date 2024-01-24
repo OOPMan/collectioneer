@@ -29,61 +29,7 @@ case class PropertyValue
   blobValues: List[Blob] = Nil,
   uuidValues: List[UUID] = Nil,
   jsonValues: List[Array[Byte]] = Nil
-) extends traits.entity.projected.PropertyValue:
-
-  // TODO: Move this off the case class?
-  def toRawPropertyValues: List[traits.entity.raw.PropertyValue[?]] =
-    varcharValues.map(stringValue => entity.raw.propertyvalue.PropertyValueVarchar(
-      propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = stringValue
-    )) ++
-      varbinaryValues.map(byteValues => entity.raw.propertyvalue.PropertyValueVarbinary(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = byteValues
-      )) ++
-      tinyintValues.map(byteValue => entity.raw.propertyvalue.PropertyValueTinyint(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = byteValue
-      )) ++
-      smallintValues.map(intValue => entity.raw.propertyvalue.PropertyValueSmallint(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = intValue
-      )) ++
-      intValues.map(intValue => entity.raw.propertyvalue.PropertyValueInt(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = intValue
-      )) ++
-      bigintValues.map(bigIntValue => entity.raw.propertyvalue.PropertyValueBigint(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = bigIntValue
-      )) ++
-      numericValues.map(numericValue => entity.raw.propertyvalue.PropertyValueNumeric(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = numericValue
-      )) ++
-      floatValues.map(floatValue => entity.raw.propertyvalue.PropertyValueFloat(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = floatValue
-      )) ++
-      doubleValues.map(doubleValue => entity.raw.propertyvalue.PropertyValueDouble(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = doubleValue
-      )) ++
-      booleanValues.map(booleanValue => entity.raw.propertyvalue.PropertyValueBoolean(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = booleanValue
-      )) ++
-      dateValues.map(dateValue => entity.raw.propertyvalue.PropertyValueDate(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = dateValue
-      )) ++
-      timeValues.map(timeValue => entity.raw.propertyvalue.PropertyValueTime(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = timeValue
-      )) ++
-      timestampValues.map(timestampValue => entity.raw.propertyvalue.PropertyValueTimestamp(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = timestampValue
-      )) ++
-      clobValues.map(clobValue => entity.raw.propertyvalue.PropertyValueCLOB(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = clobValue
-      )) ++
-      blobValues.map(blobValue => entity.raw.propertyvalue.PropertyValueBLOB(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = blobValue
-      )) ++
-      uuidValues.map(uuidValue => entity.raw.propertyvalue.PropertyValueUUID(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = uuidValue
-      )) ++
-      jsonValues.map(jsonValue => entity.raw.propertyvalue.PropertyValueJSON(
-        propertyValueSetPK = propertyValueSetPk, propertyPK = property.pk, propertyValue = jsonValue
-      ))
+) extends traits.entity.projected.PropertyValue
 
 object PropertyValue:
   def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
@@ -134,3 +80,56 @@ object PropertyValue:
       jsonValues = jsonValues
     )
 
+  // TODO: Move this?
+  def toRawPropertyValues(propertyValue: traits.entity.projected.PropertyValue): List[traits.entity.raw.PropertyValue[?]] =
+    propertyValue.varcharValues.map(stringValue => entity.raw.propertyvalue.PropertyValueVarchar(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = stringValue
+    )) ++
+    propertyValue.varbinaryValues.map(byteValues => entity.raw.propertyvalue.PropertyValueVarbinary(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValues
+    )) ++
+    propertyValue.tinyintValues.map(byteValue => entity.raw.propertyvalue.PropertyValueTinyint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValue
+    )) ++
+    propertyValue.smallintValues.map(intValue => entity.raw.propertyvalue.PropertyValueSmallint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue
+    )) ++
+    propertyValue.intValues.map(intValue => entity.raw.propertyvalue.PropertyValueInt(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue
+    )) ++
+    propertyValue.bigintValues.map(bigIntValue => entity.raw.propertyvalue.PropertyValueBigint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = bigIntValue
+    )) ++
+    propertyValue.numericValues.map(numericValue => entity.raw.propertyvalue.PropertyValueNumeric(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = numericValue
+    )) ++
+    propertyValue.floatValues.map(floatValue => entity.raw.propertyvalue.PropertyValueFloat(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = floatValue
+    )) ++
+    propertyValue.doubleValues.map(doubleValue => entity.raw.propertyvalue.PropertyValueDouble(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = doubleValue
+    )) ++
+    propertyValue.booleanValues.map(booleanValue => entity.raw.propertyvalue.PropertyValueBoolean(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = booleanValue
+    )) ++
+    propertyValue.dateValues.map(dateValue => entity.raw.propertyvalue.PropertyValueDate(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = dateValue
+    )) ++
+    propertyValue.timeValues.map(timeValue => entity.raw.propertyvalue.PropertyValueTime(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timeValue
+    )) ++
+    propertyValue.timestampValues.map(timestampValue => entity.raw.propertyvalue.PropertyValueTimestamp(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timestampValue
+    )) ++
+    propertyValue.clobValues.map(clobValue => entity.raw.propertyvalue.PropertyValueCLOB(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = clobValue
+    )) ++
+    propertyValue.blobValues.map(blobValue => entity.raw.propertyvalue.PropertyValueBLOB(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = blobValue
+    )) ++
+    propertyValue.uuidValues.map(uuidValue => entity.raw.propertyvalue.PropertyValueUUID(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = uuidValue
+    )) ++
+    propertyValue.jsonValues.map(jsonValue => entity.raw.propertyvalue.PropertyValueJSON(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = jsonValue
+    ))
