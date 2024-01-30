@@ -4,7 +4,7 @@ import distage._
 
 case class ProjectedDAOs
 (
-  propertyValue: projected.PropertyValueDAO
+  propertyValueDAO: projected.PropertyValueDAO
 )
 
 case class RawDAOs

@@ -13,6 +13,6 @@ class PropertyValueDAO(val dbProvider: DBConnectionProvider, db: traits.Database
 
   def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
     dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
-//
-//  def updatePropertyValues(propertyValues: Seq[entity.projected.PropertyValue]) =
-//    dbProvider() localTx { implicit session => db.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues) }
+
+  def updatePropertyValues(propertyValues: Seq[entity.projected.PropertyValue]): Seq[Boolean] =
+    dbProvider() localTx { implicit session => db.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues) }

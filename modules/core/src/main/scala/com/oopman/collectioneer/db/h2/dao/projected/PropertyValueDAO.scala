@@ -43,5 +43,5 @@ object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
         case pv: traits.entity.raw.PropertyValueUUID => (pv, h2.queries.raw.PropertyValueUUIDQueries.insert)
         case pv: traits.entity.raw.PropertyValueJSON => (pv, h2.queries.raw.PropertyValueJSONQueries.insert)
       }
-      .map((pv, query) => query.bind(pv.pk, pv.propertyValueSetPK, pv.propertyPK, pv.propertyValue, pv.index, pv.modified).execute.apply())
+      .map((pv, query) => query.bind(pv.pk, pv.propertyValueSetPK, pv.propertyPK, pv.propertyValue, pv.index).execute.apply())
 
