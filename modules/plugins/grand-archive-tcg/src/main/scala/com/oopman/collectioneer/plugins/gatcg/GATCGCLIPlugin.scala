@@ -1,6 +1,8 @@
 package com.oopman.collectioneer.plugins.gatcg
 
+import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.raw.{Property, PropertyType}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import izumi.distage.plugins.PluginDef
@@ -15,6 +17,8 @@ class GATCGCLIPlugin extends CLIPlugin:
   override def getShortName: String = "GATCG"
 
   override def getVersion: String = "master"
+
+  override def getMigrationLocations(databaseBackend: DatabaseBackend): Seq[String] = Nil
 
   override def getDefaultSubconfig: Subconfig = GATCGPluginConfig()
 
@@ -33,3 +37,4 @@ class GATCGCLIPlugin extends CLIPlugin:
 
 object GATCGCLIPlugin extends PluginDef:
   many[CLIPlugin].add(GATCGCLIPlugin())
+  many[Plugin].add(GATCGCLIPlugin())
