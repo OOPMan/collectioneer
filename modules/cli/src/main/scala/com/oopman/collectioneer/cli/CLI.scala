@@ -1,13 +1,10 @@
 package com.oopman.collectioneer.cli
 
-import com.oopman.collectioneer.cli.{Config, Subject, Verb}
 import com.oopman.collectioneer.db.migrations.executeMigrations
-import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcDataSource
 import scopt.{OParser, OParserBuilder}
 import scalikejdbc.*
 
-import java.io.File
 import java.util.UUID
 import io.circe.generic.auto.*
 import io.circe.syntax.*
