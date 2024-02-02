@@ -12,9 +12,14 @@ enum GATCGProperties(val property: Property):
     propertyName = "Reserve Cost",
     propertyTypes = List(PropertyType.tinyint),
     propertyValues = List(
-//      PropertyValues(
-//        property = CoreProperties.min_values
-//      )
+      PropertyValue(
+        property = CoreProperties.minValues.property,
+        tinyintValues = List(1)
+      ),
+      PropertyValue(
+        property = CoreProperties.maxValues.property,
+        tinyintValues = List(1)
+      )
     )
   ))
   case memoryCost extends GATCGProperties(Property(

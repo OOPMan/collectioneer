@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.db.h2.H2DatabaseBackend
 import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.raw.{Property, PropertyType}
 import com.oopman.collectioneer.plugins.CLIPlugin
@@ -18,7 +19,8 @@ class GATCGCLIPlugin extends CLIPlugin:
 
   override def getVersion: String = "master"
 
-  override def getMigrationLocations(databaseBackend: DatabaseBackend): Seq[String] = Nil
+  override def getMigrationLocations(databaseBackend: DatabaseBackend): Seq[String] = databaseBackend match
+    case _: H2DatabaseBackend => Seq("classpath:com/oopman/collectioneer/plugins/gatcg/migrations/h2")
 
   override def getDefaultSubconfig: Subconfig = GATCGPluginConfig()
 
