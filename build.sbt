@@ -56,6 +56,7 @@ lazy val cliCore = project
       "-Xmax-inlines", "64"
     ),
   )
+  .dependsOn(core)
 
 lazy val cli = project
   .in(file("modules/cli"))
