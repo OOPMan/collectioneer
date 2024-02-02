@@ -14,6 +14,7 @@ def executeMigrations(dataSource: DataSource): Set[MigrateResult] =
   def executeMigrations(db: traits.DatabaseBackend, plugins: Set[Plugin]) =
     val migrationResult = Flyway
       .configure()
+      .table("collectioneer_migration_history")
       .dataSource(dataSource)
       .locations(db.migrationLocations: _*)
       .load()
@@ -25,7 +26,8 @@ def executeMigrations(dataSource: DataSource): Set[MigrateResult] =
         Flyway
           .configure()
           .baselineOnMigrate(true)
-          .table(shortName)
+          .baselineVersion("0")
+          .table(s"${shortName}_plugin_migration_history")
           .dataSource(dataSource)
           .locations(migrationLocations: _*)
           .load()
