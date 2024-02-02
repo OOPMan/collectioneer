@@ -2,6 +2,8 @@ package com.oopman.collectioneer.db
 
 import scalikejdbc.*
 import distage.*
+import distage.plugins.PluginConfig
+import izumi.distage.plugins.load.PluginLoader
 import izumi.fundamentals.platform.functional.Identity
 
 import java.sql.Connection
@@ -12,8 +14,12 @@ type DBConnectionProvider = () => DBConnection
 object Injection:
   def getInjectorAndModule[F[_A], A](dbProvider: DBConnectionProvider): (Injector[Identity], ModuleDef) =
     val injector = Injector()
+    val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
+    val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
     val module = new ModuleDef:
       include(dao.DAOModule)
+      include(pluginModules)
+      // TODO: Database backend should be selected based on the actual database connection type
       include(h2.H2DatabaseBackendModule)
       make[DBConnectionProvider].from(dbProvider)
     (injector, module)
