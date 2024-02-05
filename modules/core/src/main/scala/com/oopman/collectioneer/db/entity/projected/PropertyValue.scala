@@ -82,54 +82,54 @@ object PropertyValue:
 
   // TODO: Move this?
   def toRawPropertyValues(propertyValue: traits.entity.projected.PropertyValue): List[traits.entity.raw.PropertyValue[?]] =
-    propertyValue.varcharValues.map(stringValue => entity.raw.propertyvalue.PropertyValueVarchar(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = stringValue
+    propertyValue.varcharValues.zipWithIndex.map((stringValue, index) => entity.raw.propertyvalue.PropertyValueVarchar(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = stringValue, index = index
     )) ++
-    propertyValue.varbinaryValues.map(byteValues => entity.raw.propertyvalue.PropertyValueVarbinary(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValues
+    propertyValue.varbinaryValues.zipWithIndex.map((byteValues, index) => entity.raw.propertyvalue.PropertyValueVarbinary(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValues, index = index
     )) ++
-    propertyValue.tinyintValues.map(byteValue => entity.raw.propertyvalue.PropertyValueTinyint(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValue
+    propertyValue.tinyintValues.zipWithIndex.map((byteValue, index) => entity.raw.propertyvalue.PropertyValueTinyint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = byteValue, index = index
     )) ++
-    propertyValue.smallintValues.map(intValue => entity.raw.propertyvalue.PropertyValueSmallint(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue
+    propertyValue.smallintValues.zipWithIndex.map((intValue, index) => entity.raw.propertyvalue.PropertyValueSmallint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue, index = index
     )) ++
-    propertyValue.intValues.map(intValue => entity.raw.propertyvalue.PropertyValueInt(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue
+    propertyValue.intValues.zipWithIndex.map((intValue, index) => entity.raw.propertyvalue.PropertyValueInt(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = intValue, index = index
     )) ++
-    propertyValue.bigintValues.map(bigIntValue => entity.raw.propertyvalue.PropertyValueBigint(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = bigIntValue
+    propertyValue.bigintValues.zipWithIndex.map((bigIntValue, index) => entity.raw.propertyvalue.PropertyValueBigint(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = bigIntValue, index = index
     )) ++
-    propertyValue.numericValues.map(numericValue => entity.raw.propertyvalue.PropertyValueNumeric(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = numericValue
+    propertyValue.numericValues.zipWithIndex.map((numericValue, index) => entity.raw.propertyvalue.PropertyValueNumeric(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = numericValue, index = index
     )) ++
-    propertyValue.floatValues.map(floatValue => entity.raw.propertyvalue.PropertyValueFloat(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = floatValue
+    propertyValue.floatValues.zipWithIndex.map((floatValue, index) => entity.raw.propertyvalue.PropertyValueFloat(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = floatValue, index = index
     )) ++
-    propertyValue.doubleValues.map(doubleValue => entity.raw.propertyvalue.PropertyValueDouble(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = doubleValue
+    propertyValue.doubleValues.zipWithIndex.map((doubleValue, index) => entity.raw.propertyvalue.PropertyValueDouble(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = doubleValue, index = index
     )) ++
-    propertyValue.booleanValues.map(booleanValue => entity.raw.propertyvalue.PropertyValueBoolean(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = booleanValue
+    propertyValue.booleanValues.zipWithIndex.map((booleanValue, index) => entity.raw.propertyvalue.PropertyValueBoolean(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = booleanValue, index = index
     )) ++
-    propertyValue.dateValues.map(dateValue => entity.raw.propertyvalue.PropertyValueDate(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = dateValue
+    propertyValue.dateValues.zipWithIndex.map((dateValue, index) => entity.raw.propertyvalue.PropertyValueDate(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = dateValue, index = index
     )) ++
-    propertyValue.timeValues.map(timeValue => entity.raw.propertyvalue.PropertyValueTime(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timeValue
+    propertyValue.timeValues.zipWithIndex.map((timeValue, index) => entity.raw.propertyvalue.PropertyValueTime(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timeValue, index = index
     )) ++
-    propertyValue.timestampValues.map(timestampValue => entity.raw.propertyvalue.PropertyValueTimestamp(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timestampValue
+    propertyValue.timestampValues.zipWithIndex.map((timestampValue, index) => entity.raw.propertyvalue.PropertyValueTimestamp(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = timestampValue, index = index
     )) ++
-    propertyValue.clobValues.map(clobValue => entity.raw.propertyvalue.PropertyValueCLOB(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = clobValue
+    propertyValue.clobValues.zipWithIndex.map((clobValue, index) => entity.raw.propertyvalue.PropertyValueCLOB(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = clobValue, index = index
     )) ++
-    propertyValue.blobValues.map(blobValue => entity.raw.propertyvalue.PropertyValueBLOB(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = blobValue
+    propertyValue.blobValues.zipWithIndex.map((blobValue, index) => entity.raw.propertyvalue.PropertyValueBLOB(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = blobValue, index = index
     )) ++
-    propertyValue.uuidValues.map(uuidValue => entity.raw.propertyvalue.PropertyValueUUID(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = uuidValue
+    propertyValue.uuidValues.zipWithIndex.map((uuidValue, index) => entity.raw.propertyvalue.PropertyValueUUID(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = uuidValue, index = index
     )) ++
-    propertyValue.jsonValues.map(jsonValue => entity.raw.propertyvalue.PropertyValueJSON(
-      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = jsonValue
+    propertyValue.jsonValues.zipWithIndex.map((jsonValue, index) => entity.raw.propertyvalue.PropertyValueJSON(
+      propertyValueSetPK = propertyValue.propertyValueSetPk, propertyPK = propertyValue.property.pk, propertyValue = jsonValue, index = index
     ))
