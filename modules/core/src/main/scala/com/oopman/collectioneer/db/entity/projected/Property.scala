@@ -15,7 +15,8 @@ case class Property
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValues: List[PropertyValue] = Nil
+  propertyValues: List[PropertyValue] = Nil,
+  propertyValueSets: List[PropertyValueSet] = Nil
 ) extends traits.entity.projected.Property
 
 object Property extends SQLSyntaxSupport[Property]:

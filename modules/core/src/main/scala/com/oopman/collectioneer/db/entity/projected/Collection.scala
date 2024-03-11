@@ -12,7 +12,6 @@ class Collection
   val deleted: Boolean = false,
   val created: ZonedDateTime = ZonedDateTime.now(),
   val modified: ZonedDateTime = ZonedDateTime.now(),
-  val properties: List[Property] = Nil,
-  val propertyValues: List[PropertyValue] = Nil
+  val propertyValueSets: List[PropertyValueSet] = Nil,
 ) extends traits.entity.projected.Collection
 
