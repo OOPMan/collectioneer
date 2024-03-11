@@ -44,6 +44,20 @@ create table collection
         primary key (pk)
 );
 
+// TODO: Document
+create table collection__property_value_set
+(
+    collection_pk uuid not null,
+    property_value_set_pk uuid not null,
+    index int not null default 0,
+    constraint collection__property_value_set__pk
+        primary key (collection_pk, property_value_set_pk),
+    constraint collection__property_value_set__collection_pk__fk
+        foreign key (collection_pk) references collection(pk),
+    constraint collection__property_value_set__property_value_set_pk
+        foreign key (property_value_set_pk) references property_value_set(pk)
+);
+
 /**
   A Property is a named, typed information storage element that may have Values stored against it. Values stored
   against a Property are not associated solely with that Property as doing so would essentially mean that for a given
@@ -67,6 +81,42 @@ create table property
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
     constraint property__pk
         primary key (pk)
+);
+
+/**
+  The property__property_value_set table defines relationships between different Property Value Sets and Properties
+  within the dataset.
+
+  The relationship between a Property Value Set, the Properties associated with it and the Property Values associated
+  with it define the concept of a Property Value Set as a whole:
+
+  A Property Value Set encapsulates a Set of Properties as well as any Property Values associated with any (or all)
+  of those Properties.
+
+  Collections, Properties and the relationships between Collections are associated with Property Value Sets in order
+  to define the Properties associated with them as well as the Property Values associated with said Properties. Grouping
+  Properties and Property Values together in this fashion allows for the re-use of Property Data between multiple
+  Collections with minimal duplication.
+
+  The `relationship` column in this table determines whether the row indicates that a Property is a member of a Property
+  Value Set, `property_in_property_value_set`, or denotes a Property Value Set associating Property Values with a Property,
+  `property_value_set_of_property`.
+
+  The former option is more common whereas the latter is used specifically in lieu of creating a duplicate table to
+  indicate Property Value Sets associating Property Value data with Properties (I.e. for properties of properties)
+ */
+create table property__property_value_set
+(
+    property_pk uuid not null,
+    property_value_set_pk uuid not null,
+    index int not null default 0,
+    relationship enum('propertyInPropertyValueSet', 'propertyValueSetOfProperty') not null default 'propertyInPropertyValueSet',
+    constraint property__property_value_set__pk
+        primary key (property_pk, property_value_set_pk),
+    constraint property__property_value_set__property_value_set_pk_fk
+        foreign key (property_value_set_pk) references property_value_set(pk),
+    constraint property__property_value_set__property_pk_fk
+        foreign key (property_pk) references property(pk)
 );
 
 /**
@@ -102,7 +152,7 @@ create table collection__related_collection
     pk uuid not null default RANDOM_UUID(),
     collection_pk uuid not null,
     related_collection_pk uuid not null,
-    relationship enum('parent_collection', 'source_of_properties', 'source_of_child_collections') not null default 'parent_collection',
+    relationship enum('ParentCollection', 'SourceOfProperties', 'SourceOfChildCollections') not null default 'ParentCollection',
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
@@ -112,6 +162,20 @@ create table collection__related_collection
         foreign key (collection_pk) references collection(pk),
     constraint collection__related_collection__related_collection_pk_fk
         foreign key (related_collection_pk) references collection(pk)
+);
+
+// TODO: Document
+create table collection__related_collection__property_value_set
+(
+    collection__related_collection_pk uuid not null,
+    property_value_set_pk uuid not null,
+    index int not null default 0,
+    constraint collection__related_collection__property_value_set__pk
+        primary key (collection__related_collection_pk, property_value_set_pk),
+    constraint collection__related_collection__property_value_set__collection__related_collection_pk__fk
+        foreign key (collection__related_collection_pk) references collection__related_collection(pk),
+    constraint collection__related_collection__property_value_set__property_value_set_pk
+        foreign key (property_value_set_pk) references property_value_set(pk)
 );
 
 /**
@@ -126,24 +190,24 @@ create table collection__related_collection
     are grouped as Properties of the associated Collection. Examples include metadata related to a specific Property,
     such as a default value, value constraints and similar elements.
  */
-create table property__collection
-(
-    property_pk uuid not null,
-    collection_pk uuid not null,
-    property_value_set_pk uuid not null,
-    index int not null default 0,
-    relationship enum('property_of_collection', 'collection_of_properties_of_property') not null default 'property_of_collection',
-    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property__collection__pk
-        primary key (property_pk, collection_pk),
-    constraint property__collection__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property__collection__property_pk_fk
-        foreign key (property_pk) references property(pk),
-    constraint property__collection__collection_pk_fk
-        foreign key (collection_pk) references collection(pk)
-);
+-- create table property__collection
+-- (
+--     property_pk uuid not null,
+--     collection_pk uuid not null,
+--     property_value_set_pk uuid not null,
+--     index int not null default 0,
+--     relationship enum('property_of_collection', 'collection_of_properties_of_property') not null default 'property_of_collection',
+--     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+--     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+--     constraint property__collection__pk
+--         primary key (property_pk, collection_pk),
+--     constraint property__collection__property_value_set_pk_fk
+--         foreign key (property_value_set_pk) references property_value_set(pk),
+--     constraint property__collection__property_pk_fk
+--         foreign key (property_pk) references property(pk),
+--     constraint property__collection__collection_pk_fk
+--         foreign key (collection_pk) references collection(pk)
+-- );
 
 /**
   This table associates Properties with relationships between Collections as stored by the `collection__related_collection`
@@ -164,24 +228,24 @@ create table property__collection
   the entire Collection of MTG cards and a `property_value_set_pk` referencing a Property Value Set storing data
   that includes the `quantity` property.
  */
-create table property__collection__related_collection
-(
-    property_pk uuid not null,
-    collection__related_collection_pk uuid not null,
-    property_value_set_pk uuid not null,
-    relationship enum('property_of_relationship', 'property_of_collection', 'property_of_related_collection') not null default 'property_of_relationship',
-    index int not null default 0,
-    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property__collection__related_collection__pk
-        primary key (property_pk, collection__related_collection_pk),
-    constraint collection__related_collection__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property__collection__related_collection_property_pk_fk
-        foreign key (property_pk) references property(pk),
-    constraint property__collection__related_collection_collection__related_collection_pk_fk
-        foreign key (collection__related_collection_pk) references collection__related_collection(pk)
-);
+-- create table property__collection__related_collection
+-- (
+--     property_pk uuid not null,
+--     collection__related_collection_pk uuid not null,
+--     property_value_set_pk uuid not null,
+--     relationship enum('property_of_relationship', 'property_of_collection', 'property_of_related_collection') not null default 'property_of_relationship',
+--     index int not null default 0,
+--     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+--     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+--     constraint property__collection__related_collection__pk
+--         primary key (property_pk, collection__related_collection_pk),
+--     constraint collection__related_collection__property_value_set_pk_fk
+--         foreign key (property_value_set_pk) references property_value_set(pk),
+--     constraint property__collection__related_collection_property_pk_fk
+--         foreign key (property_pk) references property(pk),
+--     constraint property__collection__related_collection_collection__related_collection_pk_fk
+--         foreign key (collection__related_collection_pk) references collection__related_collection(pk)
+-- );
 
 create table property_value_varchar
 (
