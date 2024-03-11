@@ -6,7 +6,7 @@ import java.util.UUID
 
 trait PropertyValue:
   val property: Property
-  val propertyValueSetPk: UUID
+  val propertyValueSet: PropertyValueSet
   val varcharValues: List[String]
   val varbinaryValues: List[Array[Byte]]
   val tinyintValues: List[Byte]
