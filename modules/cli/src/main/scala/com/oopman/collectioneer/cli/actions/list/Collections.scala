@@ -95,8 +95,9 @@ def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValu
 def getCollections(config: Config): Json =
   def getCollections(collectionDAO: traits.dao.raw.CollectionDAO, propertyValueDAO: traits.dao.projected.PropertyValueDAO) =
     val collections = collectionDAO.getAllMatchingPKs(config.uuids)
+    // TODO: Retrieve PropertyValueSets associated with Collection
     val propertyValues = propertyValueDAO.getPropertyValuesByPropertyValueSets(config.uuids)
-    val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSetPk)
+    val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSet.pk)
     GetCollectionsResult(
       dataSourceUri = config.datasourceUri,
       count = collections.size,
