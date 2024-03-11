@@ -5,8 +5,10 @@ trait ProjectedQueryObjects:
 
 trait RawQueryObjects:
   val CollectionQueries: raw.CollectionQueries
-  val PropertyCollectionQueries: raw.PropertyCollectionQueries
+  val CollectionPropertyValueSetQueries: raw.CollectionPropertyValueSetQueries
+  val CollectionRelatedCollectionPropertyValueSetQueries: raw.CollectionRelatedCollectionPropertyValueSetQueries
   val PropertyQueries: raw.PropertyQueries
+  val PropertyPropertyValueSetQueries: raw.PropertyPropertyValueSetQueries
   val PropertyValueVarcharQueries: raw.PropertyValueQueries
   val PropertyValueVarbinaryQueries: raw.PropertyValueQueries
   val PropertyValueTinyintQueries: raw.PropertyValueQueries
