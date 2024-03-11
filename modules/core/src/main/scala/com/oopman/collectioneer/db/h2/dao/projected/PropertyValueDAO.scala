@@ -17,7 +17,7 @@ object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
 
   def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
     val propertyPks = propertyValues.map(_.property.pk)
-    val propertyValueSetPks = propertyValues.map(_.propertyValueSetPk)
+    val propertyValueSetPks = propertyValues.map(_.propertyValueSet.pk)
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     h2.queries.raw.PropertyValueQueries.propertyValueQueryObjects
       .map(_.deleteByPropertyValueSetPksAndPropertyPKs.bind(propertyValueSetPks, propertyPks).execute.apply())
