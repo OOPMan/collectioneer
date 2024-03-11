@@ -8,3 +8,4 @@ import java.util.UUID
 
 trait Property extends traits.entity.raw.Property:
   val propertyValues: List[PropertyValue]
+  val propertyValueSets: List[PropertyValueSet]
