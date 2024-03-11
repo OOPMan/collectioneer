@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.traits.dao.raw
 
 import scalikejdbc.*
-import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.traits.entity.raw.Collection
 
 import java.util.UUID
