@@ -7,6 +7,7 @@ import java.util.UUID
 
 object PropertyValueQueries extends PropertyValueQueries:
 
+  // TODO: Modify query to run from property__property_value_set table...
   def propertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID], deleted: Seq[Boolean] = List(false)): SQL[Nothing, NoExtractor] =
     sql"""
       SELECT
