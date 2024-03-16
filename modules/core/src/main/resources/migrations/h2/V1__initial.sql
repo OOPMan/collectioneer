@@ -1,18 +1,3 @@
-
-/**
-  Property Value Sets are used to group multiple Property Value rows together, allowing them to be associated with rows
-  in the `property__collection__related_collection` and `property__collection` tables without the need to
-  create numerous M2M tables for each combination of the above tables and the numerous type-specific Property Value
-  tables below.
- */
-create table property_value_set
-(
-    pk uuid not null default RANDOM_UUID(),
-    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_set__pk
-        primary key (pk)
-);
-
 /**
   The core concept within Collectioneer is that of the Collection.
 
@@ -44,18 +29,70 @@ create table collection
         primary key (pk)
 );
 
-// TODO: Document
-create table collection__property_value_set
+/**
+  The collection__related_collection table is used to define relationships between different Collections
+  within the dataset.
+
+  The relationship column defines the relationship between the Collection and the Related Collection. The possible
+  values for this column function as follows:
+
+  * `ParentCollection` is the simplest value and simply indicates that the Related Collection functions as a parent
+    of the Collection. For example, Collection A might represent a users Collection of MTG cards. Each child
+    Collection of this would represent a specific MTG card. Another Collection X might represent a specific set of
+    MTG cards (E.g. Tempest) and yet another Collection Y  might represent a users boardgame Collection with each child
+    Collection being a specific boardgame within that Collection Y.
+    // TODO: Rewrite
+  * `SourceOfPropertiesAndPropertyValues` indicates that the Related Collection functions as a source of Properties that the Collection
+    may make use of in addition to any explicitly associated with it via the `property__collection` table. For
+    example, we may have Collection A that is associated with the property common to all boardgames via the
+    `property__collection` table (E.g. Minimum number of players, Maximum number of players, Genres, etc). If we have
+    a Collection B, representing an actual specific boardgame it in turn can associate itself with Collection A and
+    indicate Collection A to be a `source_of_property` which in turn allows the application to determine that for
+    Collection B the property associated with Collection A may be used.
+    // TODO: Maybe rewrite?
+  * `SourceOfChildCollections` indicates that the Related Collection functions as a source of Collections that
+    that may in turn be associated with the Collection as child Collections in turn. This sounds complicated
+    but that's really just due to the wording. If we have Collection A, representing a users Collection of MTG cards,
+    and create Collection B, representing a specific deck that the user is building, then we can define the relationship
+    to indicate that the parent Collection, Collection A, is a `source_of_child_collection` for the child Collection,
+    Collection B. This in turn allows Collection B to associate itself with child Collections of Collection A
+ */
+create table relationship
 (
+    pk uuid not null default RANDOM_UUID(),
     collection_pk uuid not null,
-    property_value_set_pk uuid not null,
+    related_collection_pk uuid not null,
+    relationship_type enum('ParentCollection', 'SourceOfPropertiesAndPropertyValues', 'SourceOfChildCollections') not null default 'ParentCollection',
     index int not null default 0,
-    constraint collection__property_value_set__pk
-        primary key (collection_pk, property_value_set_pk),
-    constraint collection__property_value_set__collection_pk__fk
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint collection__related_collection__pk
+        primary key (pk),
+    constraint collection__related_collection__collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint collection__property_value_set__property_value_set_pk
-        foreign key (property_value_set_pk) references property_value_set(pk)
+    constraint collection__related_collection__related_collection_pk_fk
+        foreign key (related_collection_pk) references collection(pk)
+);
+
+/**
+  The relationship__collection table is used to define relationships between Relationships themselves and individual
+  Collections for the purpose of allowing Properties and Property Values to be associated with the Relationship object.
+
+  This allows for metadata about the Relationship between two Collections to be stored and interacted with
+ */
+create table relationship__collection
+(
+    relationship_pk uuid not null,
+    collection_pk uuid not null,
+    index int not null default 0,
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint relationship__collection__pk
+        primary key (relationship_pk, collection_pk),
+    constraint relationship__collection__relationship_pk_fk
+        foreign key (relationship_pk) references relationship(pk),
+    constraint relationship__collection__collection_pk_fk
+        foreign key (collection_pk) references collection(pk)
 );
 
 /**
@@ -84,454 +121,318 @@ create table property
 );
 
 /**
-  The property__property_value_set table defines relationships between different Property Value Sets and Properties
-  within the dataset.
-
-  The relationship between a Property Value Set, the Properties associated with it and the Property Values associated
-  with it define the concept of a Property Value Set as a whole:
-
-  A Property Value Set encapsulates a Set of Properties as well as any Property Values associated with any (or all)
-  of those Properties.
-
-  Collections, Properties and the relationships between Collections are associated with Property Value Sets in order
-  to define the Properties associated with them as well as the Property Values associated with said Properties. Grouping
-  Properties and Property Values together in this fashion allows for the re-use of Property Data between multiple
-  Collections with minimal duplication.
-
-  The `relationship` column in this table determines whether the row indicates that a Property is a member of a Property
-  Value Set, `property_in_property_value_set`, or denotes a Property Value Set associating Property Values with a Property,
-  `property_value_set_of_property`.
-
-  The former option is more common whereas the latter is used specifically in lieu of creating a duplicate table to
-  indicate Property Value Sets associating Property Value data with Properties (I.e. for properties of properties)
- */
-create table property__property_value_set
-(
-    property_pk uuid not null,
-    property_value_set_pk uuid not null,
-    index int not null default 0,
-    relationship enum('propertyInPropertyValueSet', 'propertyValueSetOfProperty') not null default 'propertyInPropertyValueSet',
-    constraint property__property_value_set__pk
-        primary key (property_pk, property_value_set_pk),
-    constraint property__property_value_set__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property__property_value_set__property_pk_fk
-        foreign key (property_pk) references property(pk)
-);
-
-/**
-  The collection__related_collection table is used to define relationships between different Collections
-  within the dataset.
-
-  The relationship column defines the relationship between the Collection and the Related Collection. The possible
-  values for this column function as follows:
-
-  * `parent_collection` is the simplest value and simply indicates that the Related Collection functions as a parent
-    of the Collection. For example, Collection A might represent a users Collection of MTG cards. Each child
-    Collection of this would represent a specific MTG card. Another Collection X might represent a specific set of
-    MTG cards (E.g. Tempest) and yet another Collection Y  might represent a users boardgame Collection with each child
-    Collection being a specific boardgame within that Collection Y.
-
-  * `source_of_property` indicates that the Related Collection functions as a source of Properties that the Collection
-    may make use of in addition to any explicitly associated with it via the `property__collection` table. For
-    example, we may have Collection A that is associated with the property common to all boardgames via the
-    `property__collection` table (E.g. Minimum number of players, Maximum number of players, Genres, etc). If we have
-    a Collection B, representing an actual specific boardgame it in turn can associate itself with Collection A and
-    indicate Collection A to be a `source_of_property` which in turn allows the application to determine that for
-    Collection B the property associated with Collection A may be used.
-
-  * `source_of_child_collection` indicates that the Related Collection functions as a source of Collections that
-    that may in turn be associated with the Collection as child Collections in turn. This sounds complicated
-    but that's really just due to the wording. If we have Collection A, representing a users Collection of MTG cards,
-    and create Collection B, representing a specific deck that the user is building, then we can define the relationship
-    to indicate that the parent Collection, Collection A, is a `source_of_child_collection` for the child Collection,
-    Collection B. This in turn allows Collection B to associate itself with child Collections of Collection A
- */
-create table collection__related_collection
-(
-    pk uuid not null default RANDOM_UUID(),
-    collection_pk uuid not null,
-    related_collection_pk uuid not null,
-    relationship enum('ParentCollection', 'SourceOfProperties', 'SourceOfChildCollections') not null default 'ParentCollection',
-    index int not null default 0,
-    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint collection__related_collection__pk
-        primary key (pk),
-    constraint collection__related_collection__collection_pk_fk
-        foreign key (collection_pk) references collection(pk),
-    constraint collection__related_collection__related_collection_pk_fk
-        foreign key (related_collection_pk) references collection(pk)
-);
-
-// TODO: Document
-create table collection__related_collection__property_value_set
-(
-    collection__related_collection_pk uuid not null,
-    property_value_set_pk uuid not null,
-    index int not null default 0,
-    constraint collection__related_collection__property_value_set__pk
-        primary key (collection__related_collection_pk, property_value_set_pk),
-    constraint collection__related_collection__property_value_set__collection__related_collection_pk__fk
-        foreign key (collection__related_collection_pk) references collection__related_collection(pk),
-    constraint collection__related_collection__property_value_set__property_value_set_pk
-        foreign key (property_value_set_pk) references property_value_set(pk)
-);
-
-/**
   The property__collection table is used to define define relationships between Collections and Properties.
 
   The relationship column defines the relationship between the Property and the Collection. The possible values for this
   column function as follows:
 
-  * `property_of_collection` indicates that the Property is a property of the Collection. Examples of such a Property
+  * `PropertyOfCollection` indicates that the Property is a property of the Collection. Examples of such a Property
     include the name of the Collection as well as a description of the Collection.
-  * `collection_of_property_of_property` indicate that the Property has Properties of its own and that these Properties
+  * `CollectionOfPropertiesOfProperty` indicate that the Property has Properties of its own and that these Properties
     are grouped as Properties of the associated Collection. Examples include metadata related to a specific Property,
     such as a default value, value constraints and similar elements.
  */
--- create table property__collection
--- (
---     property_pk uuid not null,
---     collection_pk uuid not null,
---     property_value_set_pk uuid not null,
---     index int not null default 0,
---     relationship enum('property_of_collection', 'collection_of_properties_of_property') not null default 'property_of_collection',
---     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
---     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
---     constraint property__collection__pk
---         primary key (property_pk, collection_pk),
---     constraint property__collection__property_value_set_pk_fk
---         foreign key (property_value_set_pk) references property_value_set(pk),
---     constraint property__collection__property_pk_fk
---         foreign key (property_pk) references property(pk),
---     constraint property__collection__collection_pk_fk
---         foreign key (collection_pk) references collection(pk)
--- );
-
-/**
-  This table associates Properties with relationships between Collections as stored by the `collection__related_collection`
-  table. It may also associated Properties with a specific Collection in the relationship that are only valid in the
-  context of the relationship.
-
-  This allows for meta-data about the relationship to be stored without adding additional columns to the
-  `collection__related_collection` table that may not make sense for all values of the `relationship` column of that
-  table.
-
-  The `property_value_set_pk` column allows the relationship between the two Collections to have Property Values
-  associated with it. This allows for metadata pertaining to the relationship to be stored. For example, if the
-  `parent_collection` relationship is used then a Property like `quantity` might be applied to the relationship
-  between the Collections to indicate that a given quantity of the child collection is part of the parent Collection.
-  For example, a MTG deck may contain 3 of some specific card. This would be modelled using a row in the
-  `collection__related_collection` table with a `relationship` of `parent_collection`, `collection_pk` referencing
-  the Collection associated with the specific card, `relation_collection_pk` referencing the Collection associated with
-  the entire Collection of MTG cards and a `property_value_set_pk` referencing a Property Value Set storing data
-  that includes the `quantity` property.
- */
--- create table property__collection__related_collection
--- (
---     property_pk uuid not null,
---     collection__related_collection_pk uuid not null,
---     property_value_set_pk uuid not null,
---     relationship enum('property_of_relationship', 'property_of_collection', 'property_of_related_collection') not null default 'property_of_relationship',
---     index int not null default 0,
---     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
---     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
---     constraint property__collection__related_collection__pk
---         primary key (property_pk, collection__related_collection_pk),
---     constraint collection__related_collection__property_value_set_pk_fk
---         foreign key (property_value_set_pk) references property_value_set(pk),
---     constraint property__collection__related_collection_property_pk_fk
---         foreign key (property_pk) references property(pk),
---     constraint property__collection__related_collection_collection__related_collection_pk_fk
---         foreign key (collection__related_collection_pk) references collection__related_collection(pk)
--- );
+create table property__collection
+(
+    property_pk uuid not null,
+    collection_pk uuid not null,
+    index int not null default 0,
+    property_collection_relationship_type enum('PropertyOfCollection', 'CollectionOfPropertiesOfProperty') not null default 'PropertyOfCollection',
+    created timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
+    constraint property__collection__pk
+        primary key (property_pk, collection_pk),
+    constraint property__collection__property_pk_fk
+        foreign key (property_pk) references property(pk),
+    constraint property__collection__collection_pk_fk
+        foreign key (collection_pk) references collection(pk)
+);
 
 create table property_value_varchar
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value varchar not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_varchars__pk
+    constraint property_value_varchar__pk
         primary key (pk),
-    constraint property_value_varchars__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_varchars__property_pk_fk
+    constraint property_value_varchar__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_varchar__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_varbinary
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value varbinary not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_varbinarys__pk
+    constraint property_value_varbinary__pk
         primary key (pk),
-    constraint property_value_varbinarys__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_varbinarys__property_pk_fk
+    constraint property_value_varbinary__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_varbinary__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_tinyint
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value tinyint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_tinyints__pk
+    constraint property_value_tinyint__pk
         primary key (pk),
-    constraint property_value_tinyints__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_tinyints__property_pk_fk
+    constraint property_value_tinyint__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_tinyint__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_smallint
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value smallint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_smallints__pk
+    constraint property_value_smallint__pk
         primary key (pk),
-    constraint property_value_smallints__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_smallints__property_pk_fk
+    constraint property_value_smallint__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_smallint__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_int
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value int not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_ints__pk
+    constraint property_value_int__pk
         primary key (pk),
-    constraint property_value_ints__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_ints__property_pk_fk
+    constraint property_value_int__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_int__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_bigint
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value bigint not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_bigints__pk
+    constraint property_value_bigint__pk
         primary key (pk),
-    constraint property_value_bigints__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_bigints__property_pk_fk
+    constraint property_value_bigint__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_bigint__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_numeric
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value numeric not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_numerics__pk
+    constraint property_value_numeric__pk
         primary key (pk),
-    constraint property_value_numerics__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_numerics__property_pk_fk
+    constraint property_value_numeric__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_numeric__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_float
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value float not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_floats__pk
+    constraint property_value_float__pk
         primary key (pk),
-    constraint property_value_floats__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_floats__property_pk_fk
+    constraint property_value_float__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_float__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_double
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value double not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_doubles__pk
+    constraint property_value_double__pk
         primary key (pk),
-    constraint property_value_doubles__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_doubles__property_pk_fk
+    constraint property_value_double__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_double__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_boolean
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value boolean not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_booleans__pk
+    constraint property_value_boolean__pk
         primary key (pk),
-    constraint property_value_booleans__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_booleans__property_pk_fk
+    constraint property_value_boolean__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_boolean__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_date
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value date not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_dates__pk
+    constraint property_value_date__pk
         primary key (pk),
-    constraint property_value_dates__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_dates__property_pk_fk
+    constraint property_value_date__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_date__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_time
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value time with time zone not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_times__pk
+    constraint property_value_time__pk
         primary key (pk),
-    constraint property_value_times__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_times__property_pk_fk
+    constraint property_value_time__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_time__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_timestamp
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value timestamp with time zone not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_timestamps__pk
+    constraint property_value_timestamp__pk
         primary key (pk),
-    constraint property_value_timestamps__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_timestamps__property_pk_fk
+    constraint property_value_timestamp__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_timestamp__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_clob
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value clob not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_clobs__pk
+    constraint property_value_clob__pk
         primary key (pk),
-    constraint property_value_clobs__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_clobs__property_pk_fk
+    constraint property_value_clob__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_clob__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_blob
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value blob not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_blobs__pk
+    constraint property_value_blob__pk
         primary key (pk),
-    constraint property_value_blobs__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_blobs__property_pk_fk
+    constraint property_value_blob__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_blob__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_uuid
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value uuid not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_uuids__pk
+    constraint property_value_uuid__pk
         primary key (pk),
-    constraint property_value_uuids__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_uuids__property_pk_fk
+    constraint property_value_uuid__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_uuid__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
 create table property_value_json
 (
     pk uuid not null default RANDOM_UUID(),
-    property_value_set_pk uuid not null,
+    collection_pk uuid not null,
     property_pk uuid not null,
     property_value json not null,
     index int not null default 0,
     created timestamp with time zone not null default CURRENT_TIMESTAMP(),
     modified timestamp with time zone not null default CURRENT_TIMESTAMP(),
-    constraint property_value_jsons__pk
+    constraint property_value_json__pk
         primary key (pk),
-    constraint property_value_jsons__property_value_set_pk_fk
-        foreign key (property_value_set_pk) references property_value_set(pk),
-    constraint property_value_jsons__property_pk_fk
+    constraint property_value_json__collection_pk_fk
+        foreign key (collection_pk) references collection(pk),
+    constraint property_value_json__property_pk_fk
         foreign key (property_pk) references property(pk)
 );
