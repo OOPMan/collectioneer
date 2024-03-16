@@ -92,6 +92,7 @@ val H2DatabaseBackendModule = new ModuleDef:
   make[traits.queries.RawQueryObjects].from[H2RawQueryObjects]
   make[traits.queries.projected.PropertyValueQueries].from(h2.queries.projected.PropertyValueQueries)
   make[traits.queries.raw.CollectionQueries].from(h2.queries.raw.CollectionQueries)
+  make[traits.queries.raw.PropertyCollectionQueries].from(h2.queries.raw.PropertyCollectionQueries)
   make[traits.queries.raw.PropertyQueries].from(h2.queries.raw.PropertyQueries)
   make[traits.queries.raw.PropertyValueQueries].named("Varchar").from(h2.queries.raw.PropertyValueVarcharQueries)
   make[traits.queries.raw.PropertyValueQueries].named("Varbinary").from(h2.queries.raw.PropertyValueVarbinaryQueries)
@@ -110,3 +111,5 @@ val H2DatabaseBackendModule = new ModuleDef:
   make[traits.queries.raw.PropertyValueQueries].named("BLOB").from(h2.queries.raw.PropertyValueBLOBQueries)
   make[traits.queries.raw.PropertyValueQueries].named("UUID").from(h2.queries.raw.PropertyValueUUIDQueries)
   make[traits.queries.raw.PropertyValueQueries].named("JSON").from(h2.queries.raw.PropertyValueJSONQueries)
+  make[traits.queries.raw.RelationshipCollectionQueries].from(h2.queries.raw.RelationshipCollectionQueries)
+  make[traits.queries.raw.RelationshipQueries].from(h2.queries.raw.RelationshipQueries)

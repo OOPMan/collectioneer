@@ -20,7 +20,7 @@ object PropertyValueQueries extends PropertyValueQueries:
       INNER JOIN (
           /* Varchar Property Values */
             SELECT
-              property_value_set_pk,
+              collection_pk,
               property_pk,
               ARRAY_AGG(property_value) AS varchar_values,
               ARRAY[] AS varbinary_values,

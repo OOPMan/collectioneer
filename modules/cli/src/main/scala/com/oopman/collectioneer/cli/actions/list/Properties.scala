@@ -1,12 +1,11 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.{traits, Injection}
-import distage._
+import com.oopman.collectioneer.db.{Injection, dao, traits}
+import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import izumi.fundamentals.platform.functional.Identity
 
 implicit val encodePropertyTypes: Encoder[traits.entity.raw.PropertyType] = (a: traits.entity.raw.PropertyType) => Json.fromString(a.toString)
 implicit val encodeProperty: Encoder[traits.entity.raw.Property] = (p: traits.entity.raw.Property) =>
@@ -34,7 +33,7 @@ case class ListPropertiesVerboseResult
 )
 
 def listProperties(config: Config) =
-  def listProperties(propertyDAO: traits.dao.raw.PropertyDAO) =
+  def listProperties(propertyDAO: dao.raw.PropertyDAO) =
     val properties = propertyDAO.getAll
     if config.verbose then
       ListPropertiesVerboseResult(

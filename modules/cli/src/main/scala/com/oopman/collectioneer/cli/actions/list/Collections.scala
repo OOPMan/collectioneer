@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.{Injection, traits}
+import com.oopman.collectioneer.db.{Injection, dao, traits}
 import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
@@ -36,7 +36,7 @@ case class ListCollectionsVerboseResult
 )
 
 def listCollections(config: Config) =
-  def listCollections(collectionDAO: traits.dao.raw.CollectionDAO) =
+  def listCollections(collectionDAO: dao.raw.CollectionDAO) =
     val collections = collectionDAO.getAll
     if config.verbose then
       ListCollectionsVerboseResult(
@@ -93,11 +93,11 @@ def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValu
 
 
 def getCollections(config: Config): Json =
-  def getCollections(collectionDAO: traits.dao.raw.CollectionDAO, propertyValueDAO: traits.dao.projected.PropertyValueDAO) =
+  def getCollections(collectionDAO: dao.raw.CollectionDAO, propertyValueDAO: dao.projected.PropertyValueDAO) =
     val collections = collectionDAO.getAllMatchingPKs(config.uuids)
     // TODO: Retrieve PropertyValueSets associated with Collection
-    val propertyValues = propertyValueDAO.getPropertyValuesByPropertyValueSets(config.uuids)
-    val propertyValuesByPVSUUID = propertyValues.groupBy(_.propertyValueSet.pk)
+    val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(config.uuids)
+    val propertyValuesByPVSUUID = propertyValues.groupBy(_.collection.pk)
     GetCollectionsResult(
       dataSourceUri = config.datasourceUri,
       count = collections.size,

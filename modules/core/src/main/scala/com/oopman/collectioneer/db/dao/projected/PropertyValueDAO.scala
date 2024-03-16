@@ -9,7 +9,7 @@ import java.util.UUID
 
 class PropertyValueDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend):
 
-  def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
+  def getPropertyValuesByCollectionUUIDs(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
     dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByCollectionUUIDs(pvsUUIDs) }
 
   def updatePropertyValues(propertyValues: Seq[PropertyValue]): Seq[Boolean] =
