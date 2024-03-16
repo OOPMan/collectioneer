@@ -17,7 +17,7 @@ object CollectionQueries extends CollectionQueries:
     sql"""
           MERGE INTO COLLECTION(pk, virtual, deleted, modified)
           KEY (pk)
-          VALUES ( ?, ?, ?, ? );
+          VALUES (?, ?, ?, CURRENT_TIMESTAMP());
        """
 
   def all =

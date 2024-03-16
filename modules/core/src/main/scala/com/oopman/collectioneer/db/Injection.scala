@@ -1,10 +1,10 @@
 package com.oopman.collectioneer.db
 
-import scalikejdbc.*
 import distage.*
 import distage.plugins.PluginConfig
 import izumi.distage.plugins.load.PluginLoader
 import izumi.fundamentals.platform.functional.Identity
+import scalikejdbc.*
 
 import java.sql.Connection
 import javax.sql.DataSource

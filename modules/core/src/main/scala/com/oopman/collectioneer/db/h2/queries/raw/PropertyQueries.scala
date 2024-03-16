@@ -8,15 +8,15 @@ object PropertyQueries extends PropertyQueries:
 
   def insert =
     sql"""
-          INSERT INTO PROPERTY(pk, property_name, property_types, deleted)
+          INSERT INTO property(pk, property_name, property_types, deleted)
           VALUES ( ?, ?, ?, ? );
     """
 
   def upsert =
     sql"""
-          MERGE INTO PROPERTY(pk, property_name, property_types, deleted, modified)
+          MERGE INTO property(pk, property_name, property_types, deleted, modified)
           KEY (pk)
-          VALUES ( ?, ?, ?, ?, ? );
+          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());
     """
 
   def all =

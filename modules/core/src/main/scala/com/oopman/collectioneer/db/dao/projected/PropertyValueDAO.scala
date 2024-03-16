@@ -1,15 +1,16 @@
 package com.oopman.collectioneer.db.dao.projected
 
-import com.oopman.collectioneer.db.{DBConnectionProvider, entity, traits}
-import scalikejdbc._
+import com.oopman.collectioneer.db.DBConnectionProvider
+import com.oopman.collectioneer.db.traits.DatabaseBackend
+import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 
 import java.util.UUID
 
 
-class PropertyValueDAO(val dbProvider: DBConnectionProvider, db: traits.DatabaseBackend):
+class PropertyValueDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend):
 
-  def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[traits.entity.projected.PropertyValue] =
-    dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByPropertyValueSets(pvsUUIDs) }
+  def getPropertyValuesByPropertyValueSet(pvsUUIDs: Seq[UUID]): List[PropertyValue] =
+    dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByCollectionUUIDs(pvsUUIDs) }
 
-  def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue]): Seq[Boolean] =
+  def updatePropertyValues(propertyValues: Seq[PropertyValue]): Seq[Boolean] =
     dbProvider() localTx { implicit session => db.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues) }

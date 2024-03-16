@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.dao
 
-import distage._
+import distage.*
 
 case class ProjectedDAOs
 (
@@ -12,8 +12,6 @@ case class RawDAOs
 (
   collectionDAO: raw.CollectionDAO,
   propertyDAO: raw.PropertyDAO,
-  propertyValueSetDAO: raw.PropertyValueSetDAO,
-  propertyPropertyValueSetDAO: raw.PropertyPropertyValueSetDAO
 )
 
 case class DAOs
@@ -27,8 +25,6 @@ val DAOModule = new ModuleDef:
   make[projected.PropertyValueDAO]
   make[raw.CollectionDAO]
   make[raw.PropertyDAO]
-  make[raw.PropertyValueSetDAO]
-  make[raw.PropertyPropertyValueSetDAO]
   make[ProjectedDAOs]
   make[RawDAOs]
   make[DAOs]

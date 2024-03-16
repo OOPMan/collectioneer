@@ -5,13 +5,14 @@ import com.oopman.collectioneer.db.traits
 import java.time.ZonedDateTime
 import java.util.UUID
 
-class Collection
+case class Collection
 (
-  val pk: UUID = UUID.randomUUID(),
-  val virtual: Boolean = false,
-  val deleted: Boolean = false,
-  val created: ZonedDateTime = ZonedDateTime.now(),
-  val modified: ZonedDateTime = ZonedDateTime.now(),
-  val propertyValueSets: List[PropertyValueSet] = Nil,
+  pk: UUID = UUID.randomUUID(),
+  virtual: Boolean = false,
+  deleted: Boolean = false,
+  created: ZonedDateTime = ZonedDateTime.now(),
+  modified: ZonedDateTime = ZonedDateTime.now(),
+  properties: List[Property] = Nil,
+  propertyValues: List[PropertyValue] = Nil
 ) extends traits.entity.projected.Collection
 

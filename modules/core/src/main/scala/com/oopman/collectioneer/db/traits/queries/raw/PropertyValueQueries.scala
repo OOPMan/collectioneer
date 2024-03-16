@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.traits.queries.raw
 
-import scalikejdbc._
+import scalikejdbc.*
 
 trait PropertyValueQueries:
   def insert: SQL[Nothing, NoExtractor]
@@ -9,4 +9,4 @@ trait PropertyValueQueries:
 
   def deleteByPK: SQL[Nothing, NoExtractor]
 
-  def deleteByPropertyValueSetPksAndPropertyPKs: SQL[Nothing, NoExtractor]
+  def deleteByCollectionPksAndPropertyPKs: SQL[Nothing, NoExtractor]

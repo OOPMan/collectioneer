@@ -1,8 +1,8 @@
 package com.oopman.collectioneer
 
 import com.oopman.collectioneer.db.entity.projected
+import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue, PropertyValueSet}
 
 import java.util.UUID
 
@@ -19,19 +19,16 @@ enum CoreCollections(val collection: Collection):
    */
   case commonProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonProperties,
-    propertyValueSets = List(PropertyValueSet(
-      pk = CoreCollectionUUIDs.commonProperties,
-      propertyValues = List(
-        PropertyValue(
-          property = CoreProperties.name.property,
-          varcharValues = List("Common Properties")
-        ),
-        PropertyValue(
-          property = CoreProperties.description.property,
-          varcharValues = List("A Collection of Properties automatically available to all other Collections")
-        )
+    propertyValues = List(
+      PropertyValue(
+        property = CoreProperties.name.property,
+        varcharValues = List("Common Properties")
+      ),
+      PropertyValue(
+        property = CoreProperties.description.property,
+        varcharValues = List("A Collection of Properties automatically available to all other Collections")
       )
-    ))
+    )
   ))
   /**
    * CommonPropertiesOfProperties encapsulates those Properties that are always common to all Properties:
@@ -45,12 +42,9 @@ enum CoreCollections(val collection: Collection):
    */
   case commonPropertiesOfProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonPropertiesOfProperties,
-    propertyValueSets = List(PropertyValueSet(
-      pk = CoreCollectionUUIDs.commonPropertiesOfProperties,
-      properties = List(
-        CoreProperties.defaultValue,
-        CoreProperties.minValues,
-        CoreProperties.maxValues
-      ).map(_.property)
-    ))
+    properties = List(
+      CoreProperties.defaultValue,
+      CoreProperties.minValues,
+      CoreProperties.maxValues
+    ).map(_.property)
   ))

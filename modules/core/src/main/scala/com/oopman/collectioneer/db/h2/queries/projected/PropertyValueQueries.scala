@@ -7,444 +7,443 @@ import java.util.UUID
 
 object PropertyValueQueries extends PropertyValueQueries:
 
-  // TODO: Modify query to run from property__property_value_set table...
-  def propertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID], deleted: Seq[Boolean] = List(false)): SQL[Nothing, NoExtractor] =
+  def propertyValuesByCollectionPKs(collectionPKs: Seq[UUID], deleted: Seq[Boolean] = List(false)): SQL[Nothing, NoExtractor] =
     sql"""
       SELECT
-        p.PROPERTY_NAME,
-        p.PROPERTY_TYPES,
-        p.DELETED,
-        p.CREATED,
-        p.MODIFIED,
+        p.property_name,
+        p.property_types,
+        p.deleted,
+        p.created,
+        p.modified,
         pv.*
-      FROM PROPERTY AS p
+      FROM property AS p
       INNER JOIN (
           /* Varchar Property Values */
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY_AGG(PROPERTY_VALUE) AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_VARCHAR
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              property_value_set_pk,
+              property_pk,
+              ARRAY_AGG(property_value) AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_varchar
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Varbinary Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_VARBINARY
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY_AGG(property_value) AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_varbinary
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Tinyint Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_TINYINT
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY_AGG(property_value) AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_tinyint
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Smallint Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-          FROM PROPERTY_VALUE_SMALLINT
-          WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-          GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY_AGG(property_value) AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+          FROM property_value_smallint
+          WHERE collection_pk IN (${collectionPKs})
+          GROUP BY collection_pk, property_pk
           /* Int Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_INT
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY_AGG(property_value) AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_int
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Bigint Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_BIGINT
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY_AGG(property_value) AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_bigint
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Numeric Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_NUMERIC
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY_AGG(property_value) AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_numeric
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Float Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_FLOAT
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY_AGG(property_value) AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_float
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Double Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_DOUBLE
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY_AGG(property_value) AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_double
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Boolean Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_BOOLEAN
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY_AGG(property_value) AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_boolean
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Date Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_DATE
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY_AGG(property_value) AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_date
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Time Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_TIME
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY_AGG(property_value) AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_time
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* Timestamp Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_TIMESTAMP
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY_AGG(property_value) AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_timestamp
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* CLOB Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_CLOB
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY_AGG(property_value) AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_clob
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* BLOB Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_BLOB
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY_AGG(property_value) AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_blob
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* UUID Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS UUID_VALUES,
-              ARRAY[] AS JSON_VALUES
-            FROM PROPERTY_VALUE_UUID
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY_AGG(property_value) AS uuid_values,
+              ARRAY[] AS json_values
+            FROM property_value_uuid
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
           /* JSON Property Values */
           UNION
             SELECT
-              PROPERTY_VALUE_SET_PK,
-              PROPERTY_PK,
-              ARRAY[] AS VARCHAR_VALUES,
-              ARRAY[] AS VARBINARY_VALUES,
-              ARRAY[] AS TINYINT_VALUES,
-              ARRAY[] AS SMALLINT_VALUES,
-              ARRAY[] AS INT_VALUES,
-              ARRAY[] AS BIGINT_VALUES,
-              ARRAY[] AS NUMERIC_VALUES,
-              ARRAY[] AS FLOAT_VALUES,
-              ARRAY[] AS DOUBLE_VALUES,
-              ARRAY[] AS BOOLEAN_VALUES,
-              ARRAY[] AS DATE_VALUES,
-              ARRAY[] AS TIME_VALUES,
-              ARRAY[] AS TIMESTAMP_VALUES,
-              ARRAY[] AS CLOB_VALUES,
-              ARRAY[] AS BLOB_VALUES,
-              ARRAY[] AS UUID_VALUES,
-              ARRAY_AGG(PROPERTY_VALUE) AS JSON_VALUES
-            FROM PROPERTY_VALUE_JSON
-            WHERE PROPERTY_VALUE_SET_PK IN (${pvsUUIDs})
-            GROUP BY PROPERTY_VALUE_SET_PK, PROPERTY_PK
-      ) AS pv ON pv.PROPERTY_PK = p.PK
-      WHERE p.DELETED IN (${deleted})
-      ORDER BY pv.PROPERTY_VALUE_SET_PK, pv.PROPERTY_PK
+              collection_pk,
+              property_pk,
+              ARRAY[] AS varchar_values,
+              ARRAY[] AS varbinary_values,
+              ARRAY[] AS tinyint_values,
+              ARRAY[] AS smallint_values,
+              ARRAY[] AS int_values,
+              ARRAY[] AS bigint_values,
+              ARRAY[] AS numeric_values,
+              ARRAY[] AS float_values,
+              ARRAY[] AS double_values,
+              ARRAY[] AS boolean_values,
+              ARRAY[] AS date_values,
+              ARRAY[] AS time_values,
+              ARRAY[] AS timestamp_values,
+              ARRAY[] AS clob_values,
+              ARRAY[] AS blob_values,
+              ARRAY[] AS uuid_values,
+              ARRAY_AGG(property_value) AS json_values
+            FROM property_value_json
+            WHERE collection_pk IN (${collectionPKs})
+            GROUP BY collection_pk, property_pk
+      ) AS pv ON pv.property_pk = p.PK
+      WHERE p.deleted IN (${deleted})
+      ORDER BY pv.collection_pk, pv.property_pk
        """
 

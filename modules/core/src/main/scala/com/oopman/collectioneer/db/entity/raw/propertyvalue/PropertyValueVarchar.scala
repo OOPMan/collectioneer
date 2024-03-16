@@ -11,7 +11,7 @@ import java.util.UUID
 case class PropertyValueVarchar
 (
   pk: UUID = UUID.randomUUID(),
-  propertyValueSetPK: UUID,
+  collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
@@ -23,7 +23,7 @@ class PropertyValueVarcharSQLSyntaxSupport(override val tableName: String) exten
   override def apply(pv: scalikejdbc.ResultName[PropertyValueVarchar])(rs: WrappedResultSet): PropertyValueVarchar =
     // TODO: Implement properly
     PropertyValueVarchar(
-      propertyValueSetPK = UUID.randomUUID(),
+      collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 

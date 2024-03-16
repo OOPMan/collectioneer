@@ -1,37 +1,36 @@
 package com.oopman.collectioneer.db.h2.queries.raw
 
-import scalikejdbc.*
-import com.oopman.collectioneer.db.traits
-import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.entity.raw.propertyvalue
+import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
 import com.oopman.collectioneer.db.traits.queries.raw.PropertyValueQueries
+import scalikejdbc.*
 
 class PropertyValueQueries[T <: PropertyValue[?]](val pv: propertyvalue.PropertyValueSQLSyntaxSupport[T]) extends traits.queries.raw.PropertyValueQueries:
   def insert =
     sql"""
-          INSERT INTO ${pv.table} (pk, property_value_set_pk, property_pk, property_value, index)
+          INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)
           VALUES ( ?, ?, ?, ?, ? )
        """
 
   def upsert =
     sql"""
-          MERGE INTO ${pv.table} (pk, property_value_set_pk, property_pk, property_value, index, modified)
+          MERGE INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index, modified)
           KEY (pk)
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP())
        """
 
   def deleteByPK =
     sql"""
           DELETE FROM ${pv.table}
-          WHERE PK IN (?)
+          WHERE pk IN (?)
        """
 
-  def deleteByPropertyValueSetPksAndPropertyPKs =
+  def deleteByCollectionPksAndPropertyPKs =
     sql"""
           DELETE FROM ${pv.table}
-          WHERE PROPERTY_VALUE_SET_PK IN (?)
-          AND PROPERTY_PK IN (?)
+          WHERE collection_pk IN (?)
+          AND property_pk IN (?)
        """
 
 object PropertyValueVarcharQueries extends PropertyValueQueries(propertyvalue.PropertyValueVarchar)

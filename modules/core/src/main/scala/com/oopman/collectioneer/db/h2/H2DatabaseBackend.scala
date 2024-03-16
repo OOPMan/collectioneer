@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.h2
 
-import distage.*
 import com.oopman.collectioneer.db.{h2, traits}
+import distage.*
 
 case class H2ProjectedQueryObjects
 (
@@ -11,11 +11,8 @@ case class H2ProjectedQueryObjects
 case class H2RawQueryObjects
 (
   CollectionQueries: traits.queries.raw.CollectionQueries,
-  CollectionPropertyValueSetQueries: traits.queries.raw.CollectionPropertyValueSetQueries,
-  CollectionRelatedCollectionPropertyValueSetQueries: traits.queries.raw.CollectionRelatedCollectionPropertyValueSetQueries,
-  PropertyPropertyValueSetQueries: traits.queries.raw.PropertyPropertyValueSetQueries,
+  PropertyCollectionQueries: traits.queries.raw.PropertyCollectionQueries,
   PropertyQueries: traits.queries.raw.PropertyQueries,
-  PropertyValueSetQueries: traits.queries.raw.PropertyValueSetQueries,
   PropertyValueVarcharQueries: traits.queries.raw.PropertyValueQueries @Id("Varchar"),
   PropertyValueVarbinaryQueries: traits.queries.raw.PropertyValueQueries @Id("Varbinary"),
   PropertyValueTinyintQueries: traits.queries.raw.PropertyValueQueries @Id("Tinyint"),
@@ -33,6 +30,8 @@ case class H2RawQueryObjects
   PropertyValueBLOBQueries: traits.queries.raw.PropertyValueQueries @Id("BLOB"),
   PropertyValueUUIDQueries: traits.queries.raw.PropertyValueQueries @Id("UUID"),
   PropertyValueJSONQueries: traits.queries.raw.PropertyValueQueries @Id("JSON"),
+  RelationshipCollectionQueries: traits.queries.raw.RelationshipCollectionQueries,
+  RelationshipQueries: traits.queries.raw.RelationshipQueries
 ) extends traits.queries.RawQueryObjects
 
 case class H2QueryObjects
@@ -51,9 +50,10 @@ case class H2ProjectedDAOObjects
 case class H2RawDAOObjects
 (
   CollectionDAO: traits.dao.raw.CollectionDAO,
+  PropertyCollectionDAO: traits.dao.raw.PropertyCollectionDAO,
   PropertyDAO: traits.dao.raw.PropertyDAO,
-  PropertyValueSetDAO: traits.dao.raw.PropertyValueSetDAO,
-  PropertyPropertyValueSetDAO: traits.dao.raw.PropertyPropertyValueSetDAO
+  RelationshipCollectionDAO: traits.dao.raw.RelationshipCollectionDAO,
+  RelationshipDAO: traits.dao.raw.RelationshipDAO
 ) extends traits.dao.RawDAOObjects
 
 case class H2DAOObjects
@@ -83,19 +83,16 @@ val H2DatabaseBackendModule = new ModuleDef:
   make[traits.dao.projected.PropertyDAO].from(h2.dao.projected.PropertyDAO)
   make[traits.dao.projected.PropertyValueDAO].from(h2.dao.projected.PropertyValueDAO)
   make[traits.dao.raw.CollectionDAO].from(h2.dao.raw.CollectionDAO)
+  make[traits.dao.raw.PropertyCollectionDAO].from(h2.dao.raw.PropertyCollectionDAO)
   make[traits.dao.raw.PropertyDAO].from(h2.dao.raw.PropertyDAO)
-  make[traits.dao.raw.PropertyValueSetDAO].from(h2.dao.raw.PropertyValueSetDAO)
-  make[traits.dao.raw.PropertyPropertyValueSetDAO].from(h2.dao.raw.PropertyPropertyValueSetDAO)
+  make[traits.dao.raw.RelationshipCollectionDAO].from(h2.dao.raw.RelationshipCollectionDAO)
+  make[traits.dao.raw.RelationshipDAO].from(h2.dao.raw.RelationshipDAO)
   make[traits.queries.QueryObjects].from[H2QueryObjects]
   make[traits.queries.ProjectedQueryObjects].from[H2ProjectedQueryObjects]
   make[traits.queries.RawQueryObjects].from[H2RawQueryObjects]
   make[traits.queries.projected.PropertyValueQueries].from(h2.queries.projected.PropertyValueQueries)
   make[traits.queries.raw.CollectionQueries].from(h2.queries.raw.CollectionQueries)
-  make[traits.queries.raw.CollectionPropertyValueSetQueries].from(h2.queries.raw.CollectionPropertyValueSetQueries)
-  make[traits.queries.raw.CollectionRelatedCollectionPropertyValueSetQueries].from(h2.queries.raw.CollectionRelatedCollectionPropertyValueSetQueries)
   make[traits.queries.raw.PropertyQueries].from(h2.queries.raw.PropertyQueries)
-  make[traits.queries.raw.PropertyPropertyValueSetQueries].from(h2.queries.raw.PropertyPropertyValueSetQueries)
-  make[traits.queries.raw.PropertyValueSetQueries].from(h2.queries.raw.PropertyValueSetQueries)
   make[traits.queries.raw.PropertyValueQueries].named("Varchar").from(h2.queries.raw.PropertyValueVarcharQueries)
   make[traits.queries.raw.PropertyValueQueries].named("Varbinary").from(h2.queries.raw.PropertyValueVarbinaryQueries)
   make[traits.queries.raw.PropertyValueQueries].named("Tinyint").from(h2.queries.raw.PropertyValueTinyintQueries)

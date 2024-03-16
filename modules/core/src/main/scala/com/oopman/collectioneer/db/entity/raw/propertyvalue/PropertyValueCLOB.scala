@@ -11,7 +11,7 @@ import java.util.UUID
 case class PropertyValueCLOB
 (
   pk: UUID = UUID.randomUUID(),
-  propertyValueSetPK: UUID,
+  collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
@@ -23,7 +23,7 @@ class PropertyValueCLOBSQLSyntaxSupport(override val tableName: String) extends 
   override def apply(pv: scalikejdbc.ResultName[PropertyValueCLOB])(rs: WrappedResultSet): PropertyValueCLOB =
     // TODO: Implement properly
     PropertyValueCLOB(
-      propertyValueSetPK = UUID.randomUUID(),
+      collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
       propertyValue = rs.clob(0)
     )

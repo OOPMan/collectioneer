@@ -10,7 +10,7 @@ import java.util.UUID
 case class PropertyValueBigint
 (
   pk: UUID = UUID.randomUUID(),
-  propertyValueSetPK: UUID,
+  collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
@@ -22,7 +22,7 @@ class PropertyValueBigintSQLSyntaxSupport(override val tableName: String) extend
   override def apply(pv: scalikejdbc.ResultName[PropertyValueBigint])(rs: WrappedResultSet): PropertyValueBigint =
     // TODO: Implement properly
     PropertyValueBigint(
-      propertyValueSetPK = UUID.randomUUID(),
+      collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 

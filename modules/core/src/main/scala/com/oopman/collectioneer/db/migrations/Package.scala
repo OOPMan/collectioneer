@@ -19,6 +19,7 @@ def executeMigrations(dataSource: DataSource): Set[MigrateResult] =
       .locations(db.migrationLocations: _*)
       .load()
       .migrate()
+    // TODO: Plugin migrations should only be executed if a plugin is actually used...
     val pluginMigrationResults = plugins
       .map( plugin => (plugin.getShortName, plugin.getMigrationLocations(db)))
       .filter(_._2.nonEmpty)

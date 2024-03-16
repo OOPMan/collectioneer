@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.traits.queries.raw
 
 import scalikejdbc.{NoExtractor, SQL}
 
-trait CollectionRelatedCollectionPropertyValueSetQueries:
+trait RelationshipQueries:
   def insert: SQL[Nothing, NoExtractor]
 
   def upsert: SQL[Nothing, NoExtractor]

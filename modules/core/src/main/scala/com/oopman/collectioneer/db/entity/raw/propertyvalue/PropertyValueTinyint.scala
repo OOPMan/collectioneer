@@ -10,7 +10,7 @@ import java.util.UUID
 case class PropertyValueTinyint
 (
   pk: UUID = UUID.randomUUID(),
-  propertyValueSetPK: UUID,
+  collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
@@ -22,7 +22,7 @@ class PropertyValueTinyintSQLSyntaxSupport(override val tableName: String) exten
   override def apply(pv: scalikejdbc.ResultName[PropertyValueTinyint])(rs: WrappedResultSet): PropertyValueTinyint =
     // TODO: Implement properly
     PropertyValueTinyint(
-      propertyValueSetPK = UUID.randomUUID(),
+      collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 

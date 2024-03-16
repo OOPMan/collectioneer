@@ -6,7 +6,7 @@ import java.util.UUID
 
 sealed trait PropertyValue[T]:
   val pk: UUID
-  val propertyValueSetPK: UUID
+  val collectionPK: UUID
   val propertyPK: UUID
   val index: Int
   val created: ZonedDateTime

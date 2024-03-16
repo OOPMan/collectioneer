@@ -1,12 +1,12 @@
 package com.oopman.collectioneer.db.traits.dao.projected
 
-import com.oopman.collectioneer.db.{entity, traits}
-import scalikejdbc.*
+import com.oopman.collectioneer.db.traits.entity.projected.Property
+import scalikejdbc.DBSession
 
 trait PropertyDAO:
-  def createProperties(properties: Seq[traits.entity.projected.Property])(implicit session: DBSession = AutoSession): Array[Int]
+  def createProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
 
-  def createOrUpdateProperties(properties: Seq[traits.entity.projected.Property])(implicit session: DBSession = AutoSession): Array[Int]
+  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
 
-  def getAll()(implicit session: DBSession = AutoSession): List[traits.entity.projected.Property]
+  def getAll()(implicit session: DBSession): List[Property]
 

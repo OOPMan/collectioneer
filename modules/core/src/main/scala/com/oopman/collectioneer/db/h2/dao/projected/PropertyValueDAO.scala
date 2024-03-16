@@ -1,26 +1,25 @@
 package com.oopman.collectioneer.db.h2.dao.projected
 
-import com.oopman.collectioneer.db.{h2, traits, entity}
-
-import java.sql.Connection
-import java.util.UUID
+import com.oopman.collectioneer.db.{entity, h2, traits}
 import scalikejdbc.*
+
+import java.util.UUID
 
 
 object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
-  def getPropertyValuesByPropertyValueSets(pvsUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[traits.entity.projected.PropertyValue] =
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[traits.entity.projected.PropertyValue] =
     h2.queries.projected.PropertyValueQueries
-      .propertyValuesByPropertyValueSets(pvsUUIDs)
+      .propertyValuesByCollectionPKs(collectionUUIDs)
       .map(entity.projected.PropertyValue.generatePropertyValuesFromWrappedResultSet)
       .list
       .apply()
 
   def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
-    val propertyPks = propertyValues.map(_.property.pk)
-    val propertyValueSetPks = propertyValues.map(_.propertyValueSet.pk)
+    val propertyPKs = propertyValues.map(_.property.pk)
+    val collectionPKs = propertyValues.map(_.collection.pk)
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     h2.queries.raw.PropertyValueQueries.propertyValueQueryObjects
-      .map(_.deleteByPropertyValueSetPksAndPropertyPKs.bind(propertyValueSetPks, propertyPks).execute.apply())
+      .map(_.deleteByCollectionPksAndPropertyPKs.bind(collectionPKs, propertyPKs).execute.apply())
     // Insert new PropertyValues into relevant property value tables by property and properyValueSet
     propertyValues
       .flatMap(entity.projected.PropertyValue.toRawPropertyValues)
@@ -43,5 +42,5 @@ object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
         case pv: traits.entity.raw.PropertyValueUUID => (pv, h2.queries.raw.PropertyValueUUIDQueries.insert)
         case pv: traits.entity.raw.PropertyValueJSON => (pv, h2.queries.raw.PropertyValueJSONQueries.insert)
       }
-      .map((pv, query) => query.bind(pv.pk, pv.propertyValueSetPK, pv.propertyPK, pv.propertyValue, pv.index).execute.apply())
+      .map((pv, query) => query.bind(pv.pk, pv.collectionPK, pv.propertyPK, pv.propertyValue, pv.index).execute.apply())
 

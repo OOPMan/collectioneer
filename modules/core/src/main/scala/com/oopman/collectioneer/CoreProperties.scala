@@ -1,10 +1,8 @@
 package com.oopman.collectioneer
 
-import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValueSet}
+import com.oopman.collectioneer.db.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
-
-import java.util.UUID
 
 private object CorePropertyUUIDs:
   val name = "f65d1d21-3542-48f9-a9d5-f96921e4ba15"
@@ -23,42 +21,35 @@ enum CoreProperties(val property: Property):
     pk = CorePropertyUUIDs.name,
     propertyName = "Name",
     propertyTypes = List(PropertyType.varchar),
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.name))
   ))
   case description extends CoreProperties(Property(
     pk = CorePropertyUUIDs.description,
     propertyName = "Description",
     propertyTypes = List(PropertyType.varchar, PropertyType.clob),
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.description))
   ))
   case defaultValue extends CoreProperties(Property(
     pk = CorePropertyUUIDs.defaultValue,
     propertyName = "Default Value",
     propertyTypes = PropertyType.values.toList,
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.defaultValue))
   ))
   case minValue extends CoreProperties(Property(
     pk = CorePropertyUUIDs.minValue,
     propertyName = "Minimum Value",
     propertyTypes = PropertyType.values.toList,
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.minValue))
   ))
   case maxValue extends CoreProperties(Property(
     pk = CorePropertyUUIDs.maxValue,
     propertyName = "Maximum Value",
     propertyTypes = PropertyType.values.toList,
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.maxValue))
   ))
   case minValues extends CoreProperties(Property(
     pk = CorePropertyUUIDs.minValues,
     propertyName = "Minimum Number of Values",
     propertyTypes = List(PropertyType.int),
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.minValues))
   ))
   case maxValues extends CoreProperties(Property(
     pk = CorePropertyUUIDs.maxValues,
     propertyName = "Maximum Number of Values",
     propertyTypes = List(PropertyType.int),
-    propertyValueSets = List(PropertyValueSet(pk = CorePropertyUUIDs.maxValues))
   ))
 

@@ -1,12 +1,12 @@
 package com.oopman.collectioneer.db.h2.dao.raw
 
-import com.oopman.collectioneer.db.{entity, h2, traits}
 import com.oopman.collectioneer.db.h2.queries.raw
 import com.oopman.collectioneer.db.h2.queries.raw.PropertyQueries
 import com.oopman.collectioneer.db.traits.entity.raw.Property
+import com.oopman.collectioneer.db.{entity, h2, traits}
 import scalikejdbc.*
 
-import java.sql.Connection
+import java.util.UUID
 
 object PropertyDAO extends traits.dao.raw.PropertyDAO:
 
@@ -29,4 +29,4 @@ object PropertyDAO extends traits.dao.raw.PropertyDAO:
       .list
       .apply()
 
-  
+  def getAllMatchingPKs(uuids: Seq[UUID])(session: DBSession): List[Property] = ???

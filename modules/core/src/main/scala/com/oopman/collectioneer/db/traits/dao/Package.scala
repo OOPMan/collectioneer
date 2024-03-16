@@ -7,9 +7,10 @@ trait ProjectedDAOObjects:
 
 trait RawDAOObjects:
   val CollectionDAO: raw.CollectionDAO
+  val PropertyCollectionDAO: raw.PropertyCollectionDAO
   val PropertyDAO: raw.PropertyDAO
-  val PropertyValueSetDAO: raw.PropertyValueSetDAO
-  val PropertyPropertyValueSetDAO: raw.PropertyPropertyValueSetDAO
+  val RelationshipCollectionDAO: raw.RelationshipCollectionDAO
+  val RelationshipDAO: raw.RelationshipDAO
 
 trait DAOObjects:
   val projected: ProjectedDAOObjects

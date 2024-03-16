@@ -1,12 +1,12 @@
 package com.oopman.collectioneer.db.dao.raw
 
+import com.oopman.collectioneer.db.DBConnectionProvider
+import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.raw.Collection
-import com.oopman.collectioneer.db.{DBConnectionProvider, entity, traits}
-import scalikejdbc.*
 
 import java.util.UUID
 
-class CollectionDAO(val dbProvider: DBConnectionProvider, db: traits.DatabaseBackend):
+class CollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend):
 
   def createCollections(collections: Seq[Collection]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.CollectionDAO.createCollections(collections) }

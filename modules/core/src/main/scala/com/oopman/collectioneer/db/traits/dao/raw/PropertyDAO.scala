@@ -1,11 +1,12 @@
 package com.oopman.collectioneer.db.traits.dao.raw
 
 import com.oopman.collectioneer.db.traits.entity.raw.Property
-import com.oopman.collectioneer.db.{entity, traits}
-import scalikejdbc.*
+import scalikejdbc.DBSession
+
+import java.util.UUID
 
 trait PropertyDAO:
-  def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int]
-  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int]
-
-  def getAll(implicit session: DBSession = AutoSession): List[Property]
+  def createProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
+  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
+  def getAll(implicit session: DBSession): List[Property]
+  def getAllMatchingPKs(uuids: Seq[UUID])(session: DBSession): List[Property]

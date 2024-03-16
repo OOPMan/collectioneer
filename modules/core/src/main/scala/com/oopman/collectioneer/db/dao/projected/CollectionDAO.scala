@@ -1,10 +1,11 @@
 package com.oopman.collectioneer.db.dao.projected
 
-import com.oopman.collectioneer.db.{DBConnectionProvider, entity, traits}
-import scalikejdbc._
+import com.oopman.collectioneer.db.DBConnectionProvider
+import com.oopman.collectioneer.db.traits.DatabaseBackend
+import com.oopman.collectioneer.db.traits.entity.projected.Collection
 
-class CollectionDAO(val dbProvider: DBConnectionProvider, db: traits.DatabaseBackend):
-  def createCollections(collections: Seq[traits.entity.projected.Collection]) =
+class CollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend):
+  def createCollections(collections: Seq[Collection]) =
     dbProvider() localTx { implicit session => db.dao.projected.CollectionDAO.createCollections(collections) }
 
-  def createOrUpdateCollections(collections: Seq[traits.entity.projected.Collection]) = ???
+  def createOrUpdateCollections(collections: Seq[Collection]) = ???
