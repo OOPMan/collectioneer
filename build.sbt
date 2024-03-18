@@ -2,6 +2,16 @@ import scala.collection.Seq
 
 lazy val scala213Version      = "2.13.10"
 lazy val scala3Version        = "3.3.1"
+lazy val circeLibraryDependencies = Seq(
+  "io.circe" %% "circe-core"    % "0.14.2",
+  "io.circe" %% "circe-generic" % "0.14.2",
+  "io.circe" %% "circe-parser"  % "0.14.2",
+  "io.circe" %% "circe-yaml"    % "0.14.2",
+)
+lazy val sttpLibraryDependencies = Seq(
+  "com.softwaremill.sttp.client3"   %% "core"  % "3.9.4",
+  "com.softwaremill.sttp.client3"   %% "circe" % "3.9.4"
+)
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
@@ -16,7 +26,6 @@ lazy val commonSettings = Seq(
     "com.h2database"                  % "h2"                          % "2.2.222",
     "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
-    "com.softwaremill.sttp.client3"   %% "core"                       % "3.9.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
   ),
 )
@@ -47,11 +56,8 @@ lazy val cliCore = project
     name := "Collectioneer CLI Core",
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "io.circe" %% "circe-core" % "0.14.2",
-      "io.circe" %% "circe-generic" % "0.14.2",
-      "io.circe" %% "circe-parser" % "0.14.2",
-      "io.circe" %% "circe-yaml" % "0.14.2",
     ),
+    libraryDependencies ++= circeLibraryDependencies,
     scalacOptions ++= Seq(
       "-Xmax-inlines", "64"
     ),
@@ -113,6 +119,8 @@ lazy val grandArchiveTCG = project
   .settings(commonSettings)
   .settings(
     name := "Grand Archive TCG Plugin",
-    exportJars := true
+    exportJars := true,
+    libraryDependencies ++= sttpLibraryDependencies,
+    libraryDependencies ++= circeLibraryDependencies,
   )
   .dependsOn(core, cliCore)
