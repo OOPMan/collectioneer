@@ -22,6 +22,7 @@ lazy val commonSettings = Seq(
     "-Yretain-trees",
   ),
   libraryDependencies ++= Seq(
+    "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
     "ch.qos.logback"                  % "logback-classic"             % "1.2.3",
     "org.flywaydb"                    % "flyway-core"                 % "9.22.0",
     "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
@@ -122,6 +123,9 @@ lazy val grandArchiveTCG = project
   .settings(
     name := "Grand Archive TCG Plugin",
     exportJars := true,
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "os-lib" % "0.9.3"
+    ),
     libraryDependencies ++= sttpLibraryDependencies,
     libraryDependencies ++= circeLibraryDependencies,
   )
