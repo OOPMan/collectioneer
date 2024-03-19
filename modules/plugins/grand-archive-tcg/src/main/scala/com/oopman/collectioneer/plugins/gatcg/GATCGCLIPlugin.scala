@@ -5,6 +5,7 @@ import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
 import com.oopman.collectioneer.db.h2.H2DatabaseBackend
 import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.plugins.CLIPlugin
+import com.typesafe.scalalogging.LazyLogging
 import io.circe.*
 import io.circe.optics.JsonPath.*
 import io.circe.syntax.*
@@ -15,7 +16,7 @@ import sttp.client3.circe.*
 
 import scala.language.postfixOps
 
-class GATCGCLIPlugin extends CLIPlugin:
+class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
   def getName: String = "Grand Archive TCG"
 
   def getShortName: String = "GATCG"
@@ -30,7 +31,36 @@ class GATCGCLIPlugin extends CLIPlugin:
   def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[_, Config]])] =
     List(
       (Verb.imprt, Subject.database, importDatabase, List()),
+      // TODO: Need a better verb?
+      (Verb("download", ""), Subject.database, downloadDatabase, List())
     )
+
+  def getData
+  (
+    client: SimpleHttpClient = SimpleHttpClient(),
+    baseUri: String = "https://api.gatcg.com",
+    page: Int = 1,
+    pageSize: Int = 50,
+    delayBetweenRequests: Long = 500
+  ): Vector[Json] =
+    logger.info(s"Retrieving page $page with page size $pageSize from $baseUri")
+    val request = basicRequest
+      .get(uri"$baseUri/cards/search?page=$page&page_size=$pageSize")
+      .response(asJson[io.circe.Json])
+    val response = client.send(request)
+    response.body match
+      case Left(body) =>
+        logger.error(s"Error downloading $page with page size $pageSize from $baseUri: ${response.code}")
+        Vector()
+      case Right(body) =>
+        val hasMore = root.has_more.boolean.getOption(body).getOrElse(false)
+        val data = root.data.arr.getOption(body).getOrElse(Vector())
+        if hasMore then
+          this.synchronized {
+            wait(delayBetweenRequests)
+          }
+          data :++ getData(client, baseUri, page + 1, pageSize)
+        else data
 
   def importDatabase(config: Config) =
 //    val propertiesDAO = new PropertyDAO(config.datasourceUri)
@@ -40,39 +70,14 @@ class GATCGCLIPlugin extends CLIPlugin:
     "Something".asJson
 
   def downloadDatabase(config: Config) =
-    val client = SimpleHttpClient()
-    def getData(page: Int = 1, pageSize: Int = 50, delayBetweenRequests: Long = 500): Vector[Json] =
-      // TODO: Print progress
-      wait(delayBetweenRequests)
-      val request = basicRequest
-        .get(uri"https://api.gatcg.com/cards/search?page=$page&page_size=$pageSize")
-        .response(asJson[io.circe.Json])
-      val response = client.send(request)
-      response.body match
-        case Left(body) =>
-          // TODO: Log errors
-          Vector()
-        case Right(body) =>
-          val hasMore = root.has_more.boolean.getOption(body).getOrElse(false)
-          val data = root.data.arr.getOption(body).getOrElse(Vector())
-          if hasMore then data :++ getData(page + 1, pageSize) else data
+    logger.info("Downloading GATCG dataaset")
     val data = getData()
+    logger.info(s"Download ${data.length} GATCG cards")
     val s = data.asJson.spaces2SortKeys
     // TODO: Save data to file
-//      response
-//        .body
-//        .map(json => {
-//          val hasMore = root.has_more.boolean.getOption(json).getOrElse(false)
-//          val data = root.data.arr.getOption(json).getOrElse(Vector())
-//          data
-//          if hasMore:
-//            val z = "Something".asJson
-//            // TODO: Recurive call
-//          data
-//        })
-
-
-
+    val workingDirectory = os.pwd
+    os.write(workingDirectory / "test.json", s)
+    // TODO: Return useful data
     "Something".asJson
 
 object GATCGCLIPlugin extends PluginDef:
