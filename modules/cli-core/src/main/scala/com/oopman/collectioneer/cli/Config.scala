@@ -4,9 +4,7 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
-import java.io.File
 import java.util.UUID
-import scala.collection.immutable.Map.from
 
 case class Verb
 (
@@ -18,12 +16,14 @@ object Verb:
   def apply(name: String, help: String) =
     new Verb(name.toLowerCase, help)
 
-  val create = Verb("create", "Create objects within the Database")
-  val delete = Verb("delete", "Delete objects from the Database")
-  val update = Verb("update", "Update objects within the Database")
-  val list = Verb("list", "List objects wtihin the Database")
-  val get = Verb("get", "Retrieve objects from the Database")
-  val imprt = Verb("import", "Import objects into the Database")
+  val create = Verb("create", "Create operations using the Database")
+  val delete = Verb("delete", "Delete operations using the Database")
+  val update = Verb("update", "Update operations using the Database")
+  val list = Verb("list", "List operations using the Database")
+  val get = Verb("get", "Retrieve operations using the Database")
+  val imprt = Verb("import", "Import operations using the Database")
+  val exprt = Verb("export", "Export operations using the Database")
+  val download = Verb("download", "Download operations")
 
 case class Subject
 (
@@ -35,9 +35,13 @@ object Subject:
   def apply(name: String, help: Map[Verb, String]) =
     new Subject(name.toLowerCase, help)
 
+  val dataset = Subject("dataset", Map())
   val database = Subject("database", Map())
   val collections = Subject("collections", Map())
   val properties = Subject("properties", Map())
+  val propertyValues = Subject("property-values", Map())
+  val relationships = Subject("relationships", Map())
+  val relationshipCollections = Subject("relationship-collections", Map())
   val plugins = Subject("plugins", Map())
 
 enum OutputFormat:
