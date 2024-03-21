@@ -6,6 +6,7 @@ import com.oopman.collectioneer.given
 
 private object SetPropertiesUUIDs:
   val prefix = "c5e5a0c3-6c99-4d82-8c82-9da6c127e4e7"
+  val language = "69d415ec-4862-47ae-81bf-712411459138"
 
 enum SetProperties(val property: Property):
   case prefix extends SetProperties(Property(
