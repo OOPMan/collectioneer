@@ -24,7 +24,7 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
   def createOrUpdateProperties(properties: Seq[traits.entity.projected.Property])(implicit session: DBSession = AutoSession) =
     val distinctProperties = Property.collectProperties(properties)
     h2.dao.raw.PropertyDAO.createOrUpdateProperties(distinctProperties)
-    val collections = properties.map(property => entity.raw.Collection(pk=property.pk))
+    val collections = properties.map(property => entity.raw.Collection(pk=property.pk)).distinctBy(_.pk)
     h2.dao.raw.CollectionDAO.createOrUpdateCollections(collections)
     val propertyValues = properties.flatMap(property => property.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = Collection(pk = property.pk))
