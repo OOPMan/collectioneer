@@ -22,6 +22,5 @@ object Collection:
     collections.map(c => Seq(
       c.pk.toString,
       c.virtual,
-      c.deleted,
-      c.modified
+      c.deleted
     ))

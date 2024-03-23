@@ -44,6 +44,5 @@ object Property:
       p.pk.toString,
       p.propertyName,
       p.propertyTypes.map(_.toString).toArray,
-      p.deleted,
-      p.modified
+      p.deleted
     ))
