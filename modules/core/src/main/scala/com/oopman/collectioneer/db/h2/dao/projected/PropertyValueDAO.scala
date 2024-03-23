@@ -15,11 +15,11 @@ object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
       .apply()
 
   def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
-    val propertyPKs = propertyValues.map(_.property.pk)
-    val collectionPKs = propertyValues.map(_.collection.pk)
+    val propertyPKs = propertyValues.map(_.property.pk).distinct
+    val collectionPKs = propertyValues.map(_.collection.pk).distinct
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     h2.queries.raw.PropertyValueQueries.propertyValueQueryObjects
-      .map(_.deleteByCollectionPksAndPropertyPKs.bind(collectionPKs, propertyPKs).execute.apply())
+      .map(_.deleteByCollectionPksAndPropertyPKs.bind(collectionPKs, propertyPKs).update.apply())
     // Insert new PropertyValues into relevant property value tables by property and properyValueSet
     propertyValues
       .flatMap(entity.projected.PropertyValue.toRawPropertyValues)
