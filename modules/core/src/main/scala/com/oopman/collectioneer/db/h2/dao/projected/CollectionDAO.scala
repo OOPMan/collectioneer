@@ -13,11 +13,10 @@ object CollectionDAO extends traits.dao.projected.CollectionDAO:
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
     })
-
-    // Insert rows
     h2.dao.raw.CollectionDAO.createCollections(collections.distinctBy(_.pk))
     h2.dao.raw.PropertyDAO.createProperties(properties.distinctBy(_.pk))
     h2.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
+    // TODO: Return a more useful result?
     Array.empty
 
   def createOrUpdateCollections(collections: Seq[traits.entity.projected.Collection])(implicit session: DBSession = AutoSession): Array[Int] = ???

@@ -23,13 +23,10 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
    */
   def createOrUpdateProperties(properties: Seq[traits.entity.projected.Property])(implicit session: DBSession = AutoSession) =
     val distinctProperties = Property.collectProperties(properties)
-    h2.dao.raw.PropertyDAO.createOrUpdateProperties(distinctProperties)
-    val collections = properties.map(property => entity.raw.Collection(pk=property.pk)).distinctBy(_.pk)
-    h2.dao.raw.CollectionDAO.createOrUpdateCollections(collections)
     val propertyValues = properties.flatMap(property => property.propertyValues.map {
-      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = Collection(pk = property.pk))
+      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = property.pk))
     })
-    h2.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
+    val collections = propertyValues.map(_.collection).distinctBy(_.pk)
     val propertyCollections = propertyValues
       .groupBy(_.collection.pk)
       .flatMap((_, propertyValues) => propertyValues.zipWithIndex.map((propertyValue, index) => entity.raw.PropertyCollection(
@@ -39,6 +36,9 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
         propertyCollectionRelationshipType = traits.entity.raw.PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
       )))
       .toSeq
+    h2.dao.raw.PropertyDAO.createOrUpdateProperties(distinctProperties)
+    h2.dao.raw.CollectionDAO.createOrUpdateCollections(collections)
+    h2.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
     h2.dao.raw.PropertyCollectionDAO.createOrUpdatePropertyCollections(propertyCollections)
 
   def getAll()(implicit session: DBSession = AutoSession): List[traits.entity.projected.Property] = ???
