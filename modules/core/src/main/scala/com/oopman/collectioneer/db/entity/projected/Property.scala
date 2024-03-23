@@ -16,7 +16,6 @@ case class Property
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValues: List[PropertyValue] = Nil,
-  collections: List[Collection] = Nil,
 ) extends traits.entity.projected.Property
 
 object Property extends SQLSyntaxSupport[Property]:
@@ -35,5 +34,4 @@ object Property extends SQLSyntaxSupport[Property]:
       created = rs.zonedDateTime(p.created),
       modified = rs.zonedDateTime(p.modified),
       propertyValues = propertyValues,
-      collections = collections
     )
