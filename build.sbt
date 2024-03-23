@@ -24,9 +24,9 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
     "ch.qos.logback"                  % "logback-classic"             % "1.2.3",
-    "org.flywaydb"                    % "flyway-core"                 % "9.22.0",
+    "org.flywaydb"                    % "flyway-core"                 % "10.6.0",
     "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
-    "com.h2database"                  % "h2"                          % "2.2.222",
+    "com.h2database"                  % "h2"                          % "2.2.224",
     "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
