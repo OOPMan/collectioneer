@@ -6,7 +6,6 @@ import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import izumi.fundamentals.platform.functional.Identity
 
 import java.time.ZonedDateTime
 import java.util.{HexFormat, UUID}

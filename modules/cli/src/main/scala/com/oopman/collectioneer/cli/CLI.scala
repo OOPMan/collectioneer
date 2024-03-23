@@ -1,24 +1,24 @@
 package com.oopman.collectioneer.cli
 
+import cats.syntax.either.*
+import com.oopman.collectioneer.cli.actions.imprt.importDatabase
+import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
 import com.oopman.collectioneer.db.migrations.executeMigrations
-import org.h2.jdbcx.JdbcDataSource
-import scopt.{OParser, OParserBuilder}
-import scalikejdbc.*
-
-import java.util.UUID
+import com.oopman.collectioneer.plugins.CLIPlugin
+import distage.plugins.PluginConfig
+import distage.{Injector, ModuleBase}
+import io.circe.Json
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import cats.syntax.either.*
-import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
-import com.oopman.collectioneer.cli.actions.imprt.importDatabase
-import com.oopman.collectioneer.plugins.CLIPlugin
-import distage.{Injector, ModuleBase}
-import distage.plugins.PluginConfig
-import io.circe.Json
 import io.circe.yaml.*
 import io.circe.yaml.syntax.*
 import izumi.distage.model.exceptions.runtime.ProvisioningException
 import izumi.distage.plugins.load.PluginLoader
+import org.h2.jdbcx.JdbcDataSource
+import scalikejdbc.*
+import scopt.{OParser, OParserBuilder}
+
+import java.util.UUID
 
 type Action = Config => Json
 type ActionListItem = (Verb, Subject, Option[String], Action, List[OParser[_, Config]])
@@ -31,6 +31,14 @@ def cliSafeName(name: String): String = name
   .replaceAll("[^a-z- ]", "")
   .replaceAll("\\s+", "-")
 
+/**
+ * TODO: Document this property so I don't forget what it does
+ * @param builder
+ * @param particle
+ * @param subject
+ * @param pluginNameActionListItemMap
+ * @return
+ */
 def generateSubjectCmds
 (builder: OParserBuilder[Config], verb: Verb)
 (subject: Subject, pluginNameActionListItemMap: PluginNameActionListItemMap) =
@@ -116,7 +124,7 @@ object CLI:
     )
 
   val parser: OParser[Unit, Config] =
-    import builder._
+    import builder.*
 
     val oParserItems: List[OParser[_, Config]] = List(
       head("collectioneer-cli", "master"),
