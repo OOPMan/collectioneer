@@ -5,6 +5,7 @@ import distage.*
 case class ProjectedDAOs
 (
   collectionDAO: projected.CollectionDAO,
+  propertyDAO: projected.PropertyValueDAO,
   propertyValueDAO: projected.PropertyValueDAO
 )
 
@@ -25,6 +26,7 @@ case class DAOs
 
 val DAOModule = new ModuleDef:
   make[projected.CollectionDAO]
+  make[projected.PropertyDAO]
   make[projected.PropertyValueDAO]
   make[raw.CollectionDAO]
   make[raw.PropertyCollectionDAO]
