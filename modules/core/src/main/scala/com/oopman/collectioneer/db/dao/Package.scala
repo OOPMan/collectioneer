@@ -5,7 +5,7 @@ import distage.*
 case class ProjectedDAOs
 (
   collectionDAO: projected.CollectionDAO,
-  propertyDAO: projected.PropertyValueDAO,
+  propertyDAO: projected.PropertyDAO,
   propertyValueDAO: projected.PropertyValueDAO
 )
 
