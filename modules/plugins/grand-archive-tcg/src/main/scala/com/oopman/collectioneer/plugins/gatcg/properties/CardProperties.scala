@@ -22,39 +22,81 @@ private object CardPropertiesUUIDs:
   val flavourText = "6edcb854-eab6-4f38-9544-a31ba6e5c448"
 
 enum CardProperties(val property: Property):
-  case cost extends CardProperties(Property(
-    pk = CardPropertiesUUIDs.reserveCost,
-    propertyName = "Cost",
-    propertyTypes = List(PropertyType.tinyint),
+  case uuid extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.uuid,
+    propertyName = "UUID",
+    propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
   ))
   case element extends CardProperties(Property(
     pk = CardPropertiesUUIDs.element,
     propertyName = "Element",
     propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
   ))
   case types extends CardProperties(Property(
     pk = CardPropertiesUUIDs.types,
     propertyName = "Card Typeline",
     propertyTypes = List(PropertyType.varchar),
   ))
+  case classes extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.classes,
+    propertyName = "Classes",
+    propertyTypes = List(PropertyType.varchar)
+  ))
+  case subTypes extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.subTypes,
+    propertyName = "Subtypes",
+    propertyTypes = List(PropertyType.varchar)
+  ))
+  case effect extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.effect,
+    propertyName = "Effect",
+    propertyTypes = List(PropertyType.varchar)
+  ))
+  case memoryCost extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.memoryCost,
+    propertyName = "Memory Cost",
+    propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case reserveCost extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.reserveCost,
+    propertyName = "Reserve Cost",
+    propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case level extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.level,
+    propertyName = "Level",
+    propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
+  ))
   case speed extends CardProperties(Property(
     pk = CardPropertiesUUIDs.speed,
     propertyName = "Speed",
     propertyTypes = List(PropertyType.varchar),
   ))
+  case legality extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.legality,
+    propertyName = "Legality",
+    propertyTypes = List(PropertyType.json),
+  ))
   case power extends CardProperties(Property(
     pk = CardPropertiesUUIDs.power,
     propertyName = "Power",
     propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
   ))
   case life extends CardProperties(Property(
     pk = CardPropertiesUUIDs.life,
     propertyName = "Life",
     propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
   ))
   case durability extends CardProperties(Property(
     pk = CardPropertiesUUIDs.durability,
     propertyName = "Durability",
     propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
   ))

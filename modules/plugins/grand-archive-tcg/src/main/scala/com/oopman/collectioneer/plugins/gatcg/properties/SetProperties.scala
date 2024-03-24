@@ -14,3 +14,8 @@ enum SetProperties(val property: Property):
     propertyName = "Prefix",
     propertyTypes = List(PropertyType.varchar)
   ))
+  case language extends SetProperties(Property(
+    pk = SetPropertiesUUIDs.language,
+    propertyName = "Language",
+    propertyTypes = List(PropertyType.varchar)
+  ))

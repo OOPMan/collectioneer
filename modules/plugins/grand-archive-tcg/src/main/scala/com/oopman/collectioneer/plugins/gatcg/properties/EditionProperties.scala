@@ -19,13 +19,49 @@ private object EditionPropertiesUUIDs:
   val flavourText = "49aa3c45-2a44-4e52-9e9b-b4ef7513498f"
 
 enum EditionProperties(val property: Property):
+  case uuid extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.uuid,
+    propertyName = "UUID",
+    propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case cardId extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.cardId,
+    propertyName = "Card UUID",
+    propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
+  ))
   case collectorNumber extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.collectorNumber,
     propertyName = "Collector Number",
-    propertyTypes = List(PropertyType.varchar)
+    propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
   ))
   case illustrator extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.illustrator,
     propertyName = "Artist",
+    propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case slug extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.slug,
+    propertyName = "Slug",
+    propertyTypes = List(PropertyType.varchar),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case rarity extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.rarity,
+    propertyName = "Rarity",
+    propertyTypes = List(PropertyType.tinyint),
+    propertyValues = PropertyValues.singleValue
+  ))
+  case effect extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.effect,
+    propertyName = "Effect",
+    propertyTypes = List(PropertyType.varchar),
+  ))
+  case flavourText extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.flavourText,
+    propertyName = "Flavour text",
     propertyTypes = List(PropertyType.varchar)
   ))
