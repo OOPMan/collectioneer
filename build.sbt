@@ -2,12 +2,12 @@ import scala.collection.Seq
 
 lazy val scala213Version      = "2.13.10"
 lazy val scala3Version        = "3.3.1"
-lazy val circeVersion         = "0.14.2"
+lazy val circeVersion         = "0.14.6"
 lazy val circeLibraryDependencies = Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser"  % circeVersion,
-  "io.circe" %% "circe-yaml"    % circeVersion,
+  "io.circe" %% "circe-yaml"    % "0.15.1",
   "io.circe" %% "circe-optics"  % "0.15.0"
 )
 lazy val sttpLibraryDependencies = Seq(
