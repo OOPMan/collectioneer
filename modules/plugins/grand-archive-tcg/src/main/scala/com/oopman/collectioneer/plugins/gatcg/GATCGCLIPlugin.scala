@@ -9,6 +9,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.optics.JsonPath.*
+import io.circe.parser.*
 import io.circe.syntax.*
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
@@ -82,9 +83,29 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
 
   def importDataset(config: Config) =
-//    val propertiesDAO = new PropertyDAO(config.datasourceUri)
-//    val properties = GATCGProperties.values.toList.map(_.property)
-//    propertiesDAO.createOrUpdateProperties(properties)
+    val pathOption = getSubconfigFromConfig(config).grandArchiveTCGJSON.map(f => os.FilePath(f))
+    val data: Try[Vector[Json]] = pathOption
+      .map {
+        case p: os.Path     => parse(os.read(p))
+        case p: os.RelPath  => parse(os.read(os.pwd / p))
+        case p: os.SubPath  => parse(os.read(os.pwd / p))
+      }
+      .map {
+        case Left(parsingException) =>
+          logger.error("Failed to parse GATCG JSON Dataset", parsingException)
+          Vector()
+        case Right(json) =>
+          json.asArray.getOrElse(Vector())
+      } match {
+      case Some(Vector()) =>
+        val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
+        logger.error(message)
+        Failure(RuntimeException(message))
+      case Some(value) => Success(value)
+      case None => getData()
+    }
+    data.map(jsonVector => logger.info(s"Loaded ${jsonVector.length} items"))
+    // TODO: Process data
     // TODO: Replace with a real response
     "Something".asJson
 
