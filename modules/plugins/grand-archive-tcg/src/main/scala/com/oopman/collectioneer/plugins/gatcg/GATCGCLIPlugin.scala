@@ -84,7 +84,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
 
   def importDataset(config: Config) =
     val pathOption = getSubconfigFromConfig(config).grandArchiveTCGJSON.map(f => os.FilePath(f))
-    val data: Try[Vector[Json]] = pathOption
+    val dataOption: Option[Vector[Json]] = pathOption
       .map {
         case p: os.Path     => parse(os.read(p))
         case p: os.RelPath  => parse(os.read(os.pwd / p))
@@ -97,19 +97,25 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         case Right(json) =>
           json.asArray.getOrElse(Vector())
       }
-      match {
-        case Some(Vector()) =>
-          val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
-          logger.error(message)
-          Failure(RuntimeException(message))
-        case Some(value) =>
-          logger.info(s"Loaded ${value.length} items from GATCG JSON Dataset")
-          Success(value)
-        case None =>
-          logger.warn("No GATCG JSON Dataset passed so data will be retrieved from the GATCG Index API")
-          getData()
-      }
-    // TODO: Process data
+    val dataTry: Try[Json] = dataOption match {
+      case Some(Vector()) =>
+        val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
+        logger.error(message)
+        Failure(RuntimeException(message))
+      case Some(value) =>
+        logger.info(s"Loaded ${value.length} items from GATCG JSON Dataset")
+        Success(value.asJson)
+      case None =>
+        logger.warn("No GATCG JSON Dataset passed so data will be retrieved from the GATCG Index API")
+        getData().map(_.asJson)
+    }
+    val modelsTry = dataTry.flatMap(data => {
+      import Models.*
+      data.as[List[Card]].toTry
+    })
+    // TODO: process coerced data
+//    val result = data.map(data => {
+//    })
     // TODO: Replace with a real response
     "Something".asJson
 
