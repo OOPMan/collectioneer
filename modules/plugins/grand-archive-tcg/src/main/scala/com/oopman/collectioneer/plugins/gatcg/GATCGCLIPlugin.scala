@@ -96,14 +96,15 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           Vector()
         case Right(json) =>
           json.asArray.getOrElse(Vector())
-      } match {
-      case Some(Vector()) =>
-        val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
-        logger.error(message)
-        Failure(RuntimeException(message))
-      case Some(value) => Success(value)
-      case None => getData()
-    }
+      }
+      match {
+        case Some(Vector()) =>
+          val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
+          logger.error(message)
+          Failure(RuntimeException(message))
+        case Some(value) => Success(value)
+        case None => getData()
+      }
     data.map(jsonVector => logger.info(s"Loaded ${jsonVector.length} items"))
     // TODO: Process data
     // TODO: Replace with a real response
