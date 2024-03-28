@@ -5,17 +5,23 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object SetPropertiesUUIDs:
-  val prefix = "c5e5a0c3-6c99-4d82-8c82-9da6c127e4e7"
-  val language = "69d415ec-4862-47ae-81bf-712411459138"
+  val setName = "542a005a-6bfd-4fe6-8d5d-6a29573bfdc4"
+  val setPrefix = "c5e5a0c3-6c99-4d82-8c82-9da6c127e4e7"
+  val setLanguage = "69d415ec-4862-47ae-81bf-712411459138"
 
 enum SetProperties(val property: Property):
-  case prefix extends SetProperties(Property(
-    pk = SetPropertiesUUIDs.prefix,
-    propertyName = "Prefix",
+  case setName extends SetProperties(Property(
+    pk = SetPropertiesUUIDs.setName,
+    propertyName = "Set Name",
     propertyTypes = List(PropertyType.varchar)
-  ))
-  case language extends SetProperties(Property(
-    pk = SetPropertiesUUIDs.language,
-    propertyName = "Language",
+  )) with HasProperty
+  case setPrefix extends SetProperties(Property(
+    pk = SetPropertiesUUIDs.setPrefix,
+    propertyName = "Set Prefix",
     propertyTypes = List(PropertyType.varchar)
-  ))
+  )) with HasProperty
+  case setLanguage extends SetProperties(Property(
+    pk = SetPropertiesUUIDs.setLanguage,
+    propertyName = "Set Language",
+    propertyTypes = List(PropertyType.varchar)
+  )) with HasProperty

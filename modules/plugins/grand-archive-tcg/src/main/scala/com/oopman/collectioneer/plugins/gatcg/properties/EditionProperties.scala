@@ -24,44 +24,44 @@ enum EditionProperties(val property: Property):
     propertyName = "UUID",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case cardId extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.cardId,
     propertyName = "Card UUID",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case collectorNumber extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.collectorNumber,
     propertyName = "Collector Number",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case illustrator extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.illustrator,
     propertyName = "Artist",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case slug extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.slug,
     propertyName = "Slug",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case rarity extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.rarity,
     propertyName = "Rarity",
     propertyTypes = List(PropertyType.tinyint),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case effect extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effect,
     propertyName = "Effect",
     propertyTypes = List(PropertyType.varchar),
-  ))
+  )) with HasProperty
   case flavourText extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.flavourText,
     propertyName = "Flavour text",
     propertyTypes = List(PropertyType.varchar)
-  ))
+  )) with HasProperty

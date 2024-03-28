@@ -15,18 +15,18 @@ enum CirculationProperties(val property: Property):
     propertyName = "Foil",
     propertyTypes = List(PropertyType.boolean),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
   case population extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.population,
     propertyName = "Population",
     propertyTypes = List(PropertyType.int),
     propertyValues = PropertyValues.singleValue,
-  ))
+  )) with HasProperty
   case uuid extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.uuid,
     propertyName = "UUID",
     propertyTypes = List(PropertyType.varchar),
     propertyValues = PropertyValues.singleValue
-  ))
+  )) with HasProperty
 
  
