@@ -2,9 +2,13 @@ package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.h2.H2DatabaseBackend
 import com.oopman.collectioneer.db.traits.DatabaseBackend
+import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.plugins.CLIPlugin
+import com.oopman.collectioneer.plugins.gatcg.given
+import com.oopman.collectioneer.plugins.gatcg.properties.*
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.*
 import io.circe.generic.auto.*
@@ -17,6 +21,7 @@ import sttp.client3.*
 import sttp.client3.circe.*
 
 import java.io.File
+import java.util.UUID
 import scala.language.postfixOps
 import scala.util.*
 
@@ -112,6 +117,56 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val modelsTry = dataTry.flatMap(data => {
       import Models.*
       data.as[List[Card]].toTry
+    })
+    modelsTry.map(cards => {
+      // TODO: Query for existing sets, map set name to UUID of Collection representing that Set
+      val existingSetsMap: Map[(String, String), UUID] = Map()
+      // TODO: Query for existing cards, map card id to UUID of Collection representing that Card
+      val existingCardsMap: Map[String, UUID] = Map()
+      // TODO: Query for existing editions, map edition id to UUID of Collection reprsenting that Edition
+      val existingEditions: Map[String, UUID] = Map()
+      // Generate Sets
+      val sets = cards.flatMap(_.editions.map(_.set)).distinctBy(set => (set.prefix, set.language))
+      val setMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
+        pk = existingSetsMap.getOrElse((set.prefix, set.language), UUID.randomUUID),
+        virtual = true,
+        propertyValues = List(
+          PropertyValue(property = SetProperties.setName, varcharValues = List(set.name)),
+          PropertyValue(property = SetProperties.setPrefix, varcharValues = List(set.prefix)),
+          PropertyValue(property = SetProperties.setLanguage, varcharValues = List(set.language)),
+          PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
+        )
+      ))))
+      // Generate Collections containg CardProperties
+      val cardsMap = Map.from(cards.map( card => (card.uuid, Collection(
+        pk = existingCardsMap.getOrElse(card.uuid, UUID.randomUUID),
+        virtual = true,
+        propertyValues = List(
+          PropertyValue(property = CardProperties.uuid, varcharValues = List(card.uuid)),
+          PropertyValue(property = CardProperties.element, varcharValues = List(card.element)),
+          PropertyValue(property = CardProperties.types, varcharValues = card.types),
+          PropertyValue(property = CardProperties.classes, varcharValues = card.classes),
+          PropertyValue(property = CardProperties.subTypes, varcharValues = card.subtypes),
+          PropertyValue(property = CardProperties.effect, varcharValues = card.effect_raw.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.memoryCost, tinyintValues = card.cost_memory.map(i =>List(i.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.reserveCost, tinyintValues = card.cost_reserve.map(i => List(i.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.level, tinyintValues = card.level.map(i => List(i.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.speed, varcharValues = card.speed.map(b => List(if b then "Fast" else "Slow")).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.legality, jsonValues = card.legality.map(j => List(j.spaces2.getBytes)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.power, tinyintValues = card.power.map(p => List(p.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.life, tinyintValues = card.life.map(l => List(l.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.durability, tinyintValues = card.durability.map(d => List(d.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true))
+        )
+      ))))
+      // TODO: Generate Collections containg EditionProperties
+
+      // TODO: Process each card
+      cards.map(card => {
+        card.editions.map(edition => {
+
+        })
+      })
     })
     // TODO: process coerced data
 //    val result = data.map(data => {
