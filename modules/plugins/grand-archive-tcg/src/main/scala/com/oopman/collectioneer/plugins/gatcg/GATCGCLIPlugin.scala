@@ -3,9 +3,11 @@ package com.oopman.collectioneer.plugins.gatcg
 import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
+import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.h2.H2DatabaseBackend
 import com.oopman.collectioneer.db.traits.DatabaseBackend
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
+import com.oopman.collectioneer.db.{Injection, dao, entity, traits}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.oopman.collectioneer.plugins.gatcg.given
 import com.oopman.collectioneer.plugins.gatcg.properties.*
@@ -137,8 +139,8 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
         )
       ))))
-      // Generate Collections containg CardProperties
-      val cardsMap = Map.from(cards.map( card => (card.uuid, Collection(
+      // Generate Collections containing CardProperties
+      val cardsMap = Map.from(cards.map(card => (card.uuid, Collection(
         pk = existingCardsMap.getOrElse(card.uuid, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
@@ -159,14 +161,55 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true))
         )
       ))))
-      // TODO: Generate Collections containg EditionProperties
+      // Generate Collections containing EditionProperties
+      val editions = cards.flatMap(_.editions)
+      val editionsMap = Map.from(editions.map(edition => (edition.uuid, Collection(
+        pk = existingEditions.getOrElse(edition.uuid, UUID.randomUUID),
+        virtual = true,
+        propertyValues = List(
+          PropertyValue(property = EditionProperties.uuid, varcharValues = List(edition.uuid)),
+          PropertyValue(property = EditionProperties.cardId, varcharValues = List(edition.card_id)),
+          PropertyValue(property = EditionProperties.collectorNumber, varcharValues = List(edition.collector_number)),
+          PropertyValue(property = EditionProperties.illustrator, varcharValues = List(edition.illustrator)),
+          PropertyValue(property = EditionProperties.slug, varcharValues = List(edition.slug)),
+          PropertyValue(property = EditionProperties.rarity, tinyintValues = List(edition.rarity.toByte)),
+          PropertyValue(property = EditionProperties.effect, varcharValues = edition.effect.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = EditionProperties.flavourText, varcharValues = edition.flavor.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = CommonProperties.isGATCGEdition, booleanValues = List(true))
+        )
+      ))))
+      // Generate Card Collections that will be configured as children of Set Collections and source their Properties and PropertyValues from CardProperties and EditionProperties collections
+      val compositeCardsMap = Map.from(
+        editions.map(edition => (
+          (setMap.get((edition.set.prefix, edition.set.language)), editionsMap.get(edition.uuid), cardsMap.get(edition.card_id)),
+          Collection(
+            // TODO: We need to find a way to link existing PKs for these
+            virtual = true
+            // TODO: We need to set PropertyValues on these
+          )
+        )
+      ))
+      // Generate Relationships
+      val relationships = compositeCardsMap.flatMap {
+        case ((Some(set), Some(edition), Some(card)), compositeCard) => List(
+          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = set.pk, relationshipType = ParentCollection),
+          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = edition.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
+          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = card.pk, relationshipType = SourceOfPropertiesAndPropertyValues)
+        )
+        case _ =>
+          logger.warn("This should never happen")
+          Nil
+      }
+      val distinctRelationships = relationships.toList.distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
+      // Write data
+      Injection.produceRun(config.datasourceUri) {
+        (collectionDAO: dao.projected.CollectionDAO, relationshipDAO: dao.raw.RelationshipDAO) =>
+          collectionDAO.createOrUpdateCollections(
+            setMap.values.toList ++ editionsMap.values.toList ++ cardsMap.values.toList ++ compositeCardsMap.values.toList
+          )
+          relationshipDAO.createOrUpdateRelationships(distinctRelationships)
+      }
 
-      // TODO: Process each card
-      cards.map(card => {
-        card.editions.map(edition => {
-
-        })
-      })
     })
     // TODO: process coerced data
 //    val result = data.map(data => {
