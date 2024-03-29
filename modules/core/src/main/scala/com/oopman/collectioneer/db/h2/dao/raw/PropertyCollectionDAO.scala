@@ -11,13 +11,13 @@ object PropertyCollectionDAO extends PropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int] =
     h2.queries.raw.PropertyCollectionQueries
       .insert
-      .batch(h2.entity.raw.PropertyCollection.propertyCollectionListToBatchUpsertSeqList(propertyCollections): _*)
+      .batch(h2.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections): _*)
       .apply()
 
   def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int] =
     h2.queries.raw.PropertyCollectionQueries
       .upsert
-      .batch(h2.entity.raw.PropertyCollection.propertyCollectionListToBatchUpsertSeqList(propertyCollections): _*)
+      .batch(h2.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections): _*)
       .apply()
 
   def deletePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int] = ???

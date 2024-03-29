@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.traits.queries.raw
 
-import scalikejdbc._
+import scalikejdbc.*
 
 trait PropertyQueries:
   def insert: SQL[Nothing, NoExtractor]
