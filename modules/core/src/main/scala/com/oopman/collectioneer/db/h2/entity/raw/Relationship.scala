@@ -8,5 +8,6 @@ object Relationship:
       relationship.pk.toString,
       relationship.collectionPK.toString,
       relationship.relatedCollectionPK.toString,
-      relationship.relationshipType.toString
+      relationship.relationshipType.toString,
+      relationship.index
     ))
