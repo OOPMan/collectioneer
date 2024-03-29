@@ -19,7 +19,18 @@ object CollectionDAO extends traits.dao.projected.CollectionDAO:
     // TODO: Return a more useful result?
     Array.empty
 
-  def createOrUpdateCollections(collections: Seq[traits.entity.projected.Collection])(implicit session: DBSession = AutoSession): Array[Int] = ???
+  def createOrUpdateCollections(collections: Seq[traits.entity.projected.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+    // TODO: De-duplicate wotj above function
+    val properties =
+      collections.flatMap(_.properties) ++
+        collections.flatMap(_.propertyValues.map(_.property))
+    val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
+      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
+    })
+    h2.dao.raw.CollectionDAO.createOrUpdateCollections(collections.distinctBy(_.pk))
+    h2.dao.raw.PropertyDAO.createOrUpdateProperties(properties.distinctBy(_.pk))
+    h2.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
+    Array.empty
 
   def getAll(implicit session: DBSession = AutoSession): List[traits.entity.projected.Collection] = ???
 

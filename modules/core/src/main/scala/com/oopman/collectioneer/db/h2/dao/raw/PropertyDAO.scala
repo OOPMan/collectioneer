@@ -13,13 +13,13 @@ object PropertyDAO extends traits.dao.raw.PropertyDAO:
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     PropertyQueries
       .insert
-      .batch(traits.entity.raw.Property.propertiesSeqToBatchInsertSeqSeq(properties): _*)
+      .batch(traits.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties): _*)
       .apply()
 
   def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     raw.PropertyQueries
       .upsert
-      .batch(traits.entity.raw.Property.propertiesSeqToBatchUpsertSeqSeq(properties): _*)
+      .batch(traits.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties): _*)
       .apply()
 
   def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Property] =

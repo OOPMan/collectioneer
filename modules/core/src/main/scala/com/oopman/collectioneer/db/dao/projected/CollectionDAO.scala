@@ -8,4 +8,5 @@ class CollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBacken
   def createCollections(collections: Seq[Collection]) =
     dbProvider() localTx { implicit session => db.dao.projected.CollectionDAO.createCollections(collections) }
 
-  def createOrUpdateCollections(collections: Seq[Collection]) = ???
+  def createOrUpdateCollections(collections: Seq[Collection]) =
+    dbProvider() localTx { implicit session => db.dao.projected.CollectionDAO.createOrUpdateCollections(collections) }
