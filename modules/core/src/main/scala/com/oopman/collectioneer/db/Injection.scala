@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.db
 
+import com.oopman.collectioneer.Config
 import distage.*
 import distage.plugins.PluginConfig
 import izumi.distage.plugins.load.PluginLoader
@@ -12,36 +13,28 @@ import javax.sql.DataSource
 type DBConnectionProvider = () => DBConnection
 
 object Injection:
-  def getInjectorAndModule[F[_A], A](dbProvider: DBConnectionProvider): (Injector[Identity], ModuleDef) =
+  def getInjectorAndModule[F[_], A](config: Config): (Injector[Identity], ModuleDef) =
     val injector = Injector()
     val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
     val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
-    val module = new ModuleDef:
-      include(dao.DAOModule)
+    val baseModule = new ModuleDef:
       include(pluginModules)
-      // TODO: Database backend should be selected based on the actual database connection type
-      include(h2.H2DatabaseBackendModule)
-      make[DBConnectionProvider].from(dbProvider)
-    (injector, module)
+      make[Config].from(config)
+    val databaseBackendPlugin: DatabaseBackendPlugin = injector.produceRun(baseModule) {
+      (databaseBackendPlugins: Set[DatabaseBackendPlugin]) => databaseBackendPlugins.filter(_.compatibleWithDatasourceUri).head
+    }
+    val finalModule = new ModuleDef:
+      include(baseModule)
+      include(dao.DAOModule)
+      include(databaseBackendPlugin.getDatabaseBackendModule)
+      make[DataSource].from(databaseBackendPlugin.getDatasource)
+      make[Connection].from(databaseBackendPlugin.getConnection)
+      make[DBConnectionProvider].from(() => {
+        if !ConnectionPool.isInitialized(config.datasourceUri) then ConnectionPool.add(config.datasourceUri, DataSourceConnectionPool(databaseBackendPlugin.getDatasource))
+        NamedDB(config.datasourceUri)
+      })
+    (injector, finalModule)
 
-  def getInjectorAndModule[F[_], A](datasourceUri: String): (Injector[Identity], ModuleDef) =
-    getInjectorAndModule(() => NamedDB(datasourceUri))
-
-  def getInjectorAndModule[F[_], A](connection: Connection, autoclose: Boolean): (Injector[Identity], ModuleDef) =
-    getInjectorAndModule(() => DB(connection).autoClose(autoclose))
-
-  def getInjectorAndModule[F[_], A](dataSource: DataSource, autoclose: Boolean): (Injector[Identity], ModuleDef) =
-    getInjectorAndModule(() => DB(dataSource.getConnection).autoClose(autoclose))
-
-  def produceRun[F[_], A](dbProvider: DBConnectionProvider): Functoid[Identity[A]] => Identity[A] =
-    val (injector, module) = getInjectorAndModule(dbProvider)
+  def produceRun[F[_], A](config: Config): Functoid[Identity[A]] => Identity[A] =
+    val (injector, module) = getInjectorAndModule(config)
     injector.produceRun(module)
-
-  def produceRun[F[_], A](datasourceUri: String): Functoid[Identity[A]] => Identity[A] =
-    produceRun(() => NamedDB(datasourceUri))
-
-  def produceRun[F[_], A](connection: Connection, autoclose: Boolean): Functoid[Identity[A]] => Identity[A] =
-    produceRun(() => DB(connection).autoClose(autoclose))
-
-  def produceRun[F[_], A](dataSource: DataSource, autoclose: Boolean): Functoid[Identity[A]] => Identity[A] =
-    produceRun(() => DB(dataSource.getConnection).autoClose(autoclose))
