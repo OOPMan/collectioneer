@@ -1,15 +1,13 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
-import java.sql.{Blob, Clob}
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
 
 trait PropertyValue:
   val property: Property
   val collection: Collection
-  val varcharValues: List[String]
-  val varbinaryValues: List[Array[Byte]]
-  val tinyintValues: List[Byte]
+  val textValues: List[String]
+  val byteValues: List[Array[Byte]]
   val smallintValues: List[Short]
   val intValues: List[Int]
   val bigintValues: List[BigInt]
@@ -20,7 +18,5 @@ trait PropertyValue:
   val dateValues: List[LocalDate]
   val timeValues: List[OffsetTime]
   val timestampValues: List[ZonedDateTime]
-  val clobValues: List[Clob]
-  val blobValues: List[Blob]
   val uuidValues: List[UUID]
-  val jsonValues: List[Array[Byte]]
+  val jsonValues: List[io.circe.Json]
