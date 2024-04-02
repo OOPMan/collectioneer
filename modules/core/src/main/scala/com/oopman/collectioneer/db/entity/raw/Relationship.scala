@@ -5,7 +5,6 @@ import com.oopman.collectioneer.db.traits
 import java.time.ZonedDateTime
 import java.util.UUID
 
-
 case class Relationship
 (
   pk: UUID = UUID.randomUUID(),
