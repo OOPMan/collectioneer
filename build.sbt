@@ -31,6 +31,7 @@ lazy val commonSettings = Seq(
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
   ),
+  libraryDependencies ++= circeLibraryDependencies,
 )
 
 lazy val collectioneer = project
@@ -60,7 +61,6 @@ lazy val cliCore = project
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
     ),
-    libraryDependencies ++= circeLibraryDependencies,
     scalacOptions ++= Seq(
       "-Xmax-inlines", "64"
     ),
@@ -111,11 +111,26 @@ lazy val plugins = project
   .in(file("modules/plugins"))
   .settings(commonSettings)
   .aggregate(
+    postgresDatabaseBackend,
     grandArchiveTCG,
   )
   .dependsOn(
+    postgresDatabaseBackend,
     grandArchiveTCG
   )
+
+lazy val postgresDatabaseBackend = project
+  .in(file("modules/plugins/postgres-database-backend"))
+  .settings(commonSettings)
+  .settings(
+    name := "PostgreSQL Database Backend",
+    exportJars := true,
+    libraryDependencies ++= Seq(
+      "de.softwareforge.testing"        % "pg-embedded"                 % "5.1.0",
+      "org.postgresql"                  % "postgresql"                  % "42.7.3"
+    )
+  )
+  .dependsOn(core)
 
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))
@@ -127,6 +142,5 @@ lazy val grandArchiveTCG = project
       "com.lihaoyi" %% "os-lib" % "0.9.3"
     ),
     libraryDependencies ++= sttpLibraryDependencies,
-    libraryDependencies ++= circeLibraryDependencies,
   )
   .dependsOn(core, cliCore)
