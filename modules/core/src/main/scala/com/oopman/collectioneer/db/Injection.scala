@@ -5,34 +5,24 @@ import distage.*
 import distage.plugins.PluginConfig
 import izumi.distage.plugins.load.PluginLoader
 import izumi.fundamentals.platform.functional.Identity
-import scalikejdbc.*
 
-import java.sql.Connection
-import javax.sql.DataSource
-
-type DBConnectionProvider = () => DBConnection
 
 object Injection:
+  protected val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
+  protected val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
+  protected val injector: Injector[Identity] = Injector()
+
   def getInjectorAndModule[F[_], A](config: Config): (Injector[Identity], ModuleDef) =
-    val injector = Injector()
-    val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
-    val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
     val baseModule = new ModuleDef:
-      include(pluginModules)
       make[Config].from(config)
+      include(pluginModules)
     val databaseBackendPlugin: DatabaseBackendPlugin = injector.produceRun(baseModule) {
       (databaseBackendPlugins: Set[DatabaseBackendPlugin]) => databaseBackendPlugins.filter(_.compatibleWithDatasourceUri).head
     }
     val finalModule = new ModuleDef:
+      make[DatabaseBackendPlugin].from(databaseBackendPlugin)
       include(baseModule)
-      include(dao.DAOModule)
       include(databaseBackendPlugin.getDatabaseBackendModule)
-      make[DataSource].from(databaseBackendPlugin.getDatasource)
-      make[Connection].from(databaseBackendPlugin.getConnection)
-      make[DBConnectionProvider].from(() => {
-        if !ConnectionPool.isInitialized(config.datasourceUri) then ConnectionPool.add(config.datasourceUri, DataSourceConnectionPool(databaseBackendPlugin.getDatasource))
-        NamedDB(config.datasourceUri)
-      })
     (injector, finalModule)
 
   def produceRun[F[_], A](config: Config): Functoid[Identity[A]] => Identity[A] =
