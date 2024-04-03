@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.db.scalikejdbc
 
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
+import izumi.distage.model.definition.ModuleDef
 import scalikejdbc.*
 
 import java.sql.Connection
@@ -17,3 +18,6 @@ trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
   def getConnection: Connection
   def getMigrationLocations: Seq[String]
 
+  override def getDatabaseBackendModule: ModuleDef =
+    new ModuleDef:
+      make[DBConnectionProvider].from(() => NamedDB(config.datasourceUri))
