@@ -1,8 +1,10 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
+import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.entity.projected.Collection
+import com.oopman.collectioneer.db.scalikejdbc.traits
 import com.oopman.collectioneer.db.traits.entity.projected.Property
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationshipType
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
 
@@ -22,7 +24,7 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
    * @param session
    * @return
    */
-  def createOrUpdateProperties(properties: Seq[traits.entity.projected.Property])(implicit session: DBSession = AutoSession) =
+  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession) =
     val distinctProperties = Property.collectProperties(properties)
     val propertyValues = properties.flatMap(property => property.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = property.pk))
@@ -34,7 +36,7 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
         propertyPK = propertyValue.property.pk,
         collectionPK = propertyValue.collection.pk,
         index = index,
-        propertyCollectionRelationshipType = traits.entity.raw.PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
+        propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
       )))
       .toSeq
     postgresbackend.dao.raw.PropertyDAO.createOrUpdateProperties(distinctProperties)
@@ -42,4 +44,4 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
     postgresbackend.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
     postgresbackend.dao.raw.PropertyCollectionDAO.createOrUpdatePropertyCollections(propertyCollections)
 
-  def getAll()(implicit session: DBSession = AutoSession): List[traits.entity.projected.Property] = ???
+  def getAll(implicit session: DBSession = AutoSession): List[Property] = ???

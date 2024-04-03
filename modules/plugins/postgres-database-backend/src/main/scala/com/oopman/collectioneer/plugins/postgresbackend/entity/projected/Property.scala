@@ -1,10 +1,9 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 
-import com.oopman.collectioneer.db.entity.Utils.resultSetArrayToPropertyTypeList
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import scalikejdbc.*
 
-import java.time.ZonedDateTime
 import java.util.UUID
 
 object Property extends SQLSyntaxSupport[entity.projected.Property]:
@@ -14,7 +13,7 @@ object Property extends SQLSyntaxSupport[entity.projected.Property]:
   val p2 = Property.syntax("p2")
 
   def apply(p: ResultName[entity.projected.Property], propertyValues: List[entity.projected.PropertyValue], collections: List[entity.projected.Collection])(rs: WrappedResultSet) =
-    val propertyType = resultSetArrayToPropertyTypeList(rs, p.propertyTypes)
+    val propertyType = Utils.resultSetArrayToPropertyTypeList(rs, p.propertyTypes)
     entity.projected.Property(
       pk = UUID.fromString(rs.string(p.pk)),
       propertyName = rs.string(p.propertyName),

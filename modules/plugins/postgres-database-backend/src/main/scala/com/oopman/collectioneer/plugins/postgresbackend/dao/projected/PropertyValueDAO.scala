@@ -1,20 +1,21 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
-import com.oopman.collectioneer.db.{entity, traits}
+import scalikejdbc.{AutoSession, DBSession}
+import com.oopman.collectioneer.db.{scalikejdbc, traits}
+import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 import com.oopman.collectioneer.plugins.postgresbackend
-import scalikejdbc.*
 
 import java.util.UUID
 
-object PropertyValueDAO extends traits.dao.projected.PropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[traits.entity.projected.PropertyValue] =
+object PropertyValueDAO extends scalikejdbc.traits.dao.projected.PropertyValueDAO:
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyValue] =
     postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByCollectionPKs(collectionUUIDs)
       .map(postgresbackend.entity.projected.PropertyValue.generatePropertyValuesFromWrappedResultSet)
       .list
       .apply()
 
-  def updatePropertyValues(propertyValues: Seq[traits.entity.projected.PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
+  def updatePropertyValues(propertyValues: Seq[PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
     val propertyPKs = propertyValues.map(_.property.pk).distinct
     val collectionPKs = propertyValues.map(_.collection.pk).distinct
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet

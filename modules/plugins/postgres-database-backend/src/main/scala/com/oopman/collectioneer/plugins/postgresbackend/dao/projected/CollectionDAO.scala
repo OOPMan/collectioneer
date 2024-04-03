@@ -1,13 +1,15 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.scalikejdbc.traits
+import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
 
 import java.util.UUID
 
 object CollectionDAO extends traits.dao.projected.CollectionDAO:
-  def createCollections(collections: Seq[traits.entity.projected.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
     })
@@ -24,7 +26,7 @@ object CollectionDAO extends traits.dao.projected.CollectionDAO:
     // TODO: Return a more useful result?
     Array.empty
 
-  def createOrUpdateCollections(collections: Seq[traits.entity.projected.Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     // TODO: De-duplicate wotj above function
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
@@ -42,7 +44,7 @@ object CollectionDAO extends traits.dao.projected.CollectionDAO:
     // TODO: Return a more useful result?
     Array.empty
 
-  def getAll(implicit session: DBSession = AutoSession): List[traits.entity.projected.Collection] = ???
+  def getAll(implicit session: DBSession = AutoSession): List[Collection] = ???
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[traits.entity.projected.Collection] = ???
+  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[Collection] = ???
 

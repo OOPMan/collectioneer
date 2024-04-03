@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
-import com.oopman.collectioneer.db.traits.dao.raw.RelationshipCollectionDAO
+import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.RelationshipCollectionDAO
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipCollection
 import scalikejdbc.DBSession
 

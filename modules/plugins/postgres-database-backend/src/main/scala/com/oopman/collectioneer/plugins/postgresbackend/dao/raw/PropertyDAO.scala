@@ -1,13 +1,11 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
+import scalikejdbc.{AutoSession, DBSession}
 import com.oopman.collectioneer.db.traits.entity.raw.Property
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.{entity, scalikejdbc, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
-import scalikejdbc.*
 
-import java.util.UUID
-
-object PropertyDAO extends traits.dao.raw.PropertyDAO:
+object PropertyDAO extends scalikejdbc.traits.dao.raw.PropertyDAO:
 
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyQueries
@@ -28,4 +26,4 @@ object PropertyDAO extends traits.dao.raw.PropertyDAO:
       .list
       .apply()
 
-  def getAllMatchingPKs(uuids: Seq[UUID])(session: DBSession): List[Property] = ???
+//  def getAllMatchingPKs(uuids: Seq[UUID])(session: DBSession = AutoSession): List[entity.raw.Property] = ???

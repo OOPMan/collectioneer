@@ -1,11 +1,10 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.projected
 
-import com.oopman.collectioneer.db.traits.queries.projected.PropertyValueQueries
 import scalikejdbc.*
 
 import java.util.UUID
 
-object PropertyValueQueries extends PropertyValueQueries:
+object PropertyValueQueries:
 
   def propertyValuesByCollectionPKs(collectionPKs: Seq[UUID], deleted: Seq[Boolean] = List(false)): SQL[Nothing, NoExtractor] =
     sql"""

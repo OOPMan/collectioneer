@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 
-import com.oopman.collectioneer.db.entity.Utils
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property}
+import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.WrappedResultSet
 

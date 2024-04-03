@@ -1,14 +1,14 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
+import scalikejdbc.{AutoSession, DBSession}
 import com.oopman.collectioneer.db.traits.entity.raw.Collection
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.{entity, scalikejdbc, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
-import scalikejdbc.*
 
 import java.util.UUID
 
 
-object CollectionDAO extends traits.dao.raw.CollectionDAO:
+object CollectionDAO extends scalikejdbc.traits.dao.raw.CollectionDAO:
   def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .insert

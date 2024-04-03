@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 
 import com.oopman.collectioneer.db.entity.raw
-import com.oopman.collectioneer.db.entity.raw.PropertyValueSQLSyntaxSupport
+import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
 import scalikejdbc.*
 
 import java.time.{LocalDate, ZonedDateTime}

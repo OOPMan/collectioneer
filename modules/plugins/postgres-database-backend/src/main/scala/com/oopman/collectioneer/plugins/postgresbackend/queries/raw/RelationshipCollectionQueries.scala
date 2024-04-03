@@ -1,9 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
-import com.oopman.collectioneer.db.traits.queries.raw.RelationshipCollectionQueries
 import scalikejdbc.*
 
-object RelationshipCollectionQueries extends RelationshipCollectionQueries:
+object RelationshipCollectionQueries:
   def insert =
     sql"""
           INSERT INTO relationship__collection(relationship_pk, collection_pk, index)

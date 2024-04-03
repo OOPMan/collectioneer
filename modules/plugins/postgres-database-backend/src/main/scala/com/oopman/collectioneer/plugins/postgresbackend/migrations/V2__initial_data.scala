@@ -1,17 +1,14 @@
 package com.oopman.collectioneer.plugins.postgresbackend.migrations
 
-import com.oopman.collectioneer.db.{Injection, dao, entity, traits}
-import com.oopman.collectioneer.{CoreCollections, CoreProperties}
-import distage.*
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 
 /**
  *
  */
 class V2__initial_data extends BaseJavaMigration:
-  def executeMigration(DAOs: dao.DAOs): Unit =
-    val collectionDAO = DAOs.projected.collectionDAO
-    collectionDAO.createCollections(CoreCollections.values.map(_.collection))
+//  def executeMigration(DAOs: dao.DAOs): Unit =
+//    val collectionDAO = DAOs.projected.collectionDAO
+//    collectionDAO.createCollections(CoreCollections.values.map(_.collection))
 //    val propertyDAO = DAOs.raw.propertyDAO
 //    val propertyValueSetDAO = DAOs.raw.propertyValueSetDAO
 //    val propertyPropertyValueSetDAO = DAOs.raw.propertyPropertyValueSetDAO

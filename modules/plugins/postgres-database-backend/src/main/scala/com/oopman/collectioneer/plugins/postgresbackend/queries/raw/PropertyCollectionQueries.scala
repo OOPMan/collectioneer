@@ -1,9 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
-import com.oopman.collectioneer.db.traits.queries.raw.PropertyCollectionQueries
 import scalikejdbc.*
 
-object PropertyCollectionQueries extends PropertyCollectionQueries:
+object PropertyCollectionQueries:
   def insert =
     sql"""
           INSERT INTO property__collection(property_pk, collection_pk, index, property_collection_relationship_type)

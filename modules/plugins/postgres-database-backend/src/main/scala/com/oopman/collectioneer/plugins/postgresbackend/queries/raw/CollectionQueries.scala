@@ -1,12 +1,11 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
-import com.oopman.collectioneer.db.traits.queries.raw.CollectionQueries
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw.Collection
 import scalikejdbc.*
 
 import java.util.UUID
 
-object CollectionQueries extends CollectionQueries:
+object CollectionQueries:
   def insert =
     sql"""
           INSERT INTO collection(pk, virtual, deleted)

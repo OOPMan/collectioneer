@@ -1,13 +1,12 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
-import com.oopman.collectioneer.db.entity.raw.PropertyValueSQLSyntaxSupport
+import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
+import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
-import com.oopman.collectioneer.db.traits.queries.raw.PropertyValueQueries
-import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 import scalikejdbc.*
 
-class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntaxSupport[T]) extends traits.queries.raw.PropertyValueQueries:
+class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntaxSupport[T]):
   def insert =
     sql"""
           INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)

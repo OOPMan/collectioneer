@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbacken
 
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
+import com.oopman.collectioneer.db.scalikejdbc.ScalikeJDBCDatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.postgresbackend.PostgresDatabaseBackendModule
 import com.oopman.collectioneer.{Config, Plugin}
 import com.typesafe.scalalogging.LazyLogging
@@ -12,7 +13,7 @@ import java.sql.Connection
 import javax.sql.DataSource
 
 
-class PostgresDatabaseBackendPlugin(val config: Config) extends DatabaseBackendPlugin with LazyLogging:
+class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatabaseBackendPlugin with LazyLogging:
   def getName = "PostgreSQL Database Backend"
 
   def getShortName = "postgresbackend"
@@ -32,6 +33,10 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends DatabaseBackendP
   )
 
   def getDatabaseBackendModule: ModuleDef = PostgresDatabaseBackendModule
+
+  def startUp: Boolean = ???
+
+  def shutDown: Boolean = ???
 
 
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends PostgresDatabaseBackendPlugin(config):
@@ -53,9 +58,20 @@ class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends
     // TODO: Support connectiuon with custom username/password
     getDatasource.getConnection
 
+  override def startUp: Boolean = super.startUp
 
-object PostgresDatabaseBackendPlugin extends PluginDef:
+  override def shutDown: Boolean = super.shutDown
+
+
+object EmbeddedPostgresDatabaseBackendPlugin:
+  protected val configEmbeddedPostgresMap: collection.mutable.Map[String, EmbeddedPostgres] = collection.mutable.Map()
+
+
+object PostgresDatabaseBackendPluginDef extends PluginDef:
   many[DatabaseBackendPlugin]
+    .add[PostgresDatabaseBackendPlugin]
+    .add[EmbeddedPostgresDatabaseBackendPlugin]
+  many[ScalikeJDBCDatabaseBackendPlugin]
     .add[PostgresDatabaseBackendPlugin]
     .add[EmbeddedPostgresDatabaseBackendPlugin]
   many[Plugin]
