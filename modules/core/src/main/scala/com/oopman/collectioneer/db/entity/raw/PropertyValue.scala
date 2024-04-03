@@ -1,17 +1,9 @@
 package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.traits.entity.raw
-import scalikejdbc.*
 
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
-
-abstract class PropertyValueSQLSyntaxSupport[T <: raw.PropertyValue[?]]
-(override val tableName: String, override val schemaName: Option[String] = Some("public")) extends SQLSyntaxSupport[T]:
-
-  def apply(pv: ResultName[T])(rs: WrappedResultSet): T
-
-  val syntax1: QuerySQLSyntaxProvider[SQLSyntaxSupport[T], T] = this.syntax(f"${tableName}_1")
 
 case class PropertyValueBigDecimal
 (
