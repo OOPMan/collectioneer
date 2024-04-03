@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.db.scalikejdbc.dao.projected
 
 import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
+import com.oopman.collectioneer.db.scalikejdbc.traits.dao.DatabaseBackend
 import com.oopman.collectioneer.db.traits
-import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 
 import java.util.UUID
