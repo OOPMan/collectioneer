@@ -15,9 +15,11 @@ class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntax
 
   def upsert =
     sql"""
-          MERGE INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index, modified)
-          KEY (pk)
-          VALUES (?, ?, ?, ?, ?, now())
+          INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)
+          VALUES (?, ?, ?, ?, ?)
+          ON CONFLICT(pk) DO UPDATE
+          SET collection_pk = excluded.collection_pk, property_pk = excluded.property_pk, property_value =
+          excluded.property_value, index = excluded.index, modified = now()
        """
 
   def deleteByPK =

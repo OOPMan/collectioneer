@@ -14,9 +14,10 @@ object CollectionQueries:
 
   def upsert =
     sql"""
-          MERGE INTO COLLECTION(pk, virtual, deleted, modified)
-          KEY (pk)
-          VALUES (?, ?, ?, now());
+          INSERT INTO collection(pk, virtual, deleted)
+          VALUES (?, ?, ?)
+          ON CONFLICT(pk) DO UPDATE
+          set virtual = excluded.virtual, deleted = excluded.deleted, modified = now()
        """
 
   def all =

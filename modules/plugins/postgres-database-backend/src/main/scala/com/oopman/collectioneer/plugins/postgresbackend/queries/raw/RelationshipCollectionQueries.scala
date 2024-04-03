@@ -11,7 +11,8 @@ object RelationshipCollectionQueries:
 
   def upsert =
     sql"""
-          MERGE INTO relationship__collection(relationship_pk, collection_pk, index, modified)
-          KEY (relationship_pk, collection_pk)
-          VALUES (?, ?, ?, now())
+          INSERT INTO relationship__collection(relationship_pk, collection_pk, index)
+          VALUES (?, ?, ?)
+          ON CONFLICT(relationship_pk, collection_pk) DO UPDATE
+          SET index = excluded.index, modified = now()
        """

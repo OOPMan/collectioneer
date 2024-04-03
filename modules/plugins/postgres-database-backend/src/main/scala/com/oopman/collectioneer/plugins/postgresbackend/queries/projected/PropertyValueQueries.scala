@@ -21,9 +21,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY_AGG(property_value) AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              array_agg(property_value) AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -34,11 +33,9 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
-            FROM property_value_varchar
+            FROM property_value_text
             WHERE collection_pk IN (${collectionPKs})
             GROUP BY collection_pk, property_pk
           /* Varbinary Property Values */
@@ -46,9 +43,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY_AGG(property_value) AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              array_agg(property_value) AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -59,36 +55,9 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
-            FROM property_value_varbinary
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Tinyint Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY_AGG(property_value) AS tinyint_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_tinyint
+            FROM property_value_bytes
             WHERE collection_pk IN (${collectionPKs})
             GROUP BY collection_pk, property_pk
           /* Smallint Property Values */
@@ -96,10 +65,9 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
-              ARRAY_AGG(property_value) AS smallint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
+              array_agg(property_value) AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
               ARRAY[] AS numeric_values,
@@ -109,8 +77,6 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
           FROM property_value_smallint
@@ -121,11 +87,10 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
-              ARRAY_AGG(property_value) AS int_values,
+              array_agg(property_value) AS int_values,
               ARRAY[] AS bigint_values,
               ARRAY[] AS numeric_values,
               ARRAY[] AS float_values,
@@ -134,8 +99,6 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_int
@@ -146,12 +109,11 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
-              ARRAY_AGG(property_value) AS bigint_values,
+              array_agg(property_value) AS bigint_values,
               ARRAY[] AS numeric_values,
               ARRAY[] AS float_values,
               ARRAY[] AS double_values,
@@ -159,8 +121,6 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_bigint
@@ -171,21 +131,18 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
-              ARRAY_AGG(property_value) AS numeric_values,
+              array_agg(property_value) AS numeric_values,
               ARRAY[] AS float_values,
               ARRAY[] AS double_values,
               ARRAY[] AS boolean_values,
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_numeric
@@ -196,21 +153,18 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
               ARRAY[] AS numeric_values,
-              ARRAY_AGG(property_value) AS float_values,
+              array_agg(property_value) AS float_values,
               ARRAY[] AS double_values,
               ARRAY[] AS boolean_values,
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_float
@@ -221,21 +175,18 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
               ARRAY[] AS numeric_values,
               ARRAY[] AS float_values,
-              ARRAY_AGG(property_value) AS double_values,
+              array_agg(property_value) AS double_values,
               ARRAY[] AS boolean_values,
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_double
@@ -246,21 +197,18 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
               ARRAY[] AS numeric_values,
               ARRAY[] AS float_values,
               ARRAY[] AS double_values,
-              ARRAY_AGG(property_value) AS boolean_values,
+              array_agg(property_value) AS boolean_values,
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_boolean
@@ -271,9 +219,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -281,11 +228,9 @@ object PropertyValueQueries:
               ARRAY[] AS float_values,
               ARRAY[] AS double_values,
               ARRAY[] AS boolean_values,
-              ARRAY_AGG(property_value) AS date_values,
+              array_agg(property_value) AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_date
@@ -296,9 +241,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -307,10 +251,8 @@ object PropertyValueQueries:
               ARRAY[] AS double_values,
               ARRAY[] AS boolean_values,
               ARRAY[] AS date_values,
-              ARRAY_AGG(property_value) AS time_values,
+              array_agg(property_value) AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_time
@@ -321,9 +263,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -333,62 +274,10 @@ object PropertyValueQueries:
               ARRAY[] AS boolean_values,
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
-              ARRAY_AGG(property_value) AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
+              array_agg(property_value) AS timestamp_values,
               ARRAY[] AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_timestamp
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* CLOB Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY_AGG(property_value) AS clob_values,
-              ARRAY[] AS blob_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_clob
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* BLOB Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY_AGG(property_value) AS blob_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_blob
             WHERE collection_pk IN (${collectionPKs})
             GROUP BY collection_pk, property_pk
           /* UUID Property Values */
@@ -396,9 +285,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -409,9 +297,7 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
-              ARRAY_AGG(property_value) AS uuid_values,
+              array_agg(property_value) AS uuid_values,
               ARRAY[] AS json_values
             FROM property_value_uuid
             WHERE collection_pk IN (${collectionPKs})
@@ -421,9 +307,8 @@ object PropertyValueQueries:
             SELECT
               collection_pk,
               property_pk,
-              ARRAY[] AS varchar_values,
-              ARRAY[] AS varbinary_values,
-              ARRAY[] AS tinyint_values,
+              ARRAY[] AS text_values,
+              ARRAY[] AS bytes_values,
               ARRAY[] AS smallint_values,
               ARRAY[] AS int_values,
               ARRAY[] AS bigint_values,
@@ -434,10 +319,8 @@ object PropertyValueQueries:
               ARRAY[] AS date_values,
               ARRAY[] AS time_values,
               ARRAY[] AS timestamp_values,
-              ARRAY[] AS clob_values,
-              ARRAY[] AS blob_values,
               ARRAY[] AS uuid_values,
-              ARRAY_AGG(property_value) AS json_values
+              array_agg(property_value) AS json_values
             FROM property_value_json
             WHERE collection_pk IN (${collectionPKs})
             GROUP BY collection_pk, property_pk

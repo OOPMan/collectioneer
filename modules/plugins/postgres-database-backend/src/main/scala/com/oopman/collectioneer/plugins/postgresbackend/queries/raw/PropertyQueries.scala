@@ -13,9 +13,11 @@ object PropertyQueries:
 
   def upsert =
     sql"""
-          MERGE INTO property(pk, property_name, property_types, deleted, modified)
-          KEY (pk)
-          VALUES (?, ?, ?, ?, now());
+          INSERT INTO property(pk, property_name, property_types, deleted)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(pk) DO UPDATE
+          SET property_name = excluded.property_name, property_types = excluded.property_types,
+          deleted = excluded.deleted, modified = now()
     """
 
   def all =
