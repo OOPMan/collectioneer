@@ -14,6 +14,10 @@ lazy val sttpLibraryDependencies = Seq(
   "com.softwaremill.sttp.client3"   %% "core"  % "3.9.4",
   "com.softwaremill.sttp.client3"   %% "circe" % "3.9.4"
 )
+lazy val scalikeJDBCDependencies = Seq(
+  "org.flywaydb"                    % "flyway-core"                 % "10.6.0",
+  "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
+)
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
@@ -24,9 +28,6 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
     "ch.qos.logback"                  % "logback-classic"             % "1.2.3",
-    "org.flywaydb"                    % "flyway-core"                 % "10.6.0",
-    "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
-    "com.h2database"                  % "h2"                          % "2.2.224",
     "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
@@ -106,6 +107,16 @@ lazy val gui = project
   )
   .dependsOn(core)
 
+lazy val scalikeJDBCDatabaseBackendCommon = project
+  .in(file("modules/scalikejdbc-database-backend-common"))
+  .settings(commonSettings)
+  .settings(
+    name := "ScalikeJDBC Database Backend Common",
+    exportJars := true,
+    libraryDependencies ++= scalikeJDBCDependencies
+  )
+  .dependsOn(core)
+
 // Plugin projects
 lazy val plugins = project
   .in(file("modules/plugins"))
@@ -125,12 +136,13 @@ lazy val postgresDatabaseBackend = project
   .settings(
     name := "PostgreSQL Database Backend",
     exportJars := true,
+    libraryDependencies ++= scalikeJDBCDependencies,
     libraryDependencies ++= Seq(
       "de.softwareforge.testing"        % "pg-embedded"                 % "5.1.0",
       "org.postgresql"                  % "postgresql"                  % "42.7.3"
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, scalikeJDBCDatabaseBackendCommon)
 
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))
