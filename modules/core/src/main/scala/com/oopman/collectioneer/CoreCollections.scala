@@ -22,11 +22,11 @@ enum CoreCollections(val collection: Collection):
     propertyValues = List(
       PropertyValue(
         property = CoreProperties.name.property,
-        varcharValues = List("Common Properties")
+        textValues = List("Common Properties")
       ),
       PropertyValue(
         property = CoreProperties.description.property,
-        varcharValues = List("A Collection of Properties automatically available to all other Collections")
+        textValues = List("A Collection of Properties automatically available to all other Collections")
       )
     )
   ))
