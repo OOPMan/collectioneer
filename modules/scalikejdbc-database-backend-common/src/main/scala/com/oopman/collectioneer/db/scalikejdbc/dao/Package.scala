@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.dao
+package com.oopman.collectioneer.db.scalikejdbc.dao
 
 import distage.*
 

@@ -1,11 +1,13 @@
-package com.oopman.collectioneer.db.dao.raw
-import com.oopman.collectioneer.db.DBConnectionProvider
+package com.oopman.collectioneer.db.scalikejdbc.dao.raw
+
+import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
+import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollection
 
 import java.util.UUID
 
-class PropertyCollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend):
+class PropertyCollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.PropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.PropertyCollectionDAO.createPropertyCollections(propertyCollections) }
   def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int] =

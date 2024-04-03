@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.entity
+package com.oopman.collectioneer.db.scalikejdbc.entity
 
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*

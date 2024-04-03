@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.db.migrations
+package com.oopman.collectioneer.db.scalikejdbc.migrations
 
 import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.db.{Injection, traits}
@@ -9,7 +9,7 @@ import org.flywaydb.core.api.output.MigrateResult
 
 import javax.sql.DataSource
 
-
+/* TODO: Uncomment when ready
 def executeMigrations(dataSource: DataSource): Set[MigrateResult] =
   def executeMigrations(db: traits.DatabaseBackend, plugins: Set[Plugin]) =
     val migrationResult = Flyway
@@ -37,3 +37,4 @@ def executeMigrations(dataSource: DataSource): Set[MigrateResult] =
     pluginMigrationResults + migrationResult
   Injection.produceRun(dataSource, false)(executeMigrations)
 
+*/
