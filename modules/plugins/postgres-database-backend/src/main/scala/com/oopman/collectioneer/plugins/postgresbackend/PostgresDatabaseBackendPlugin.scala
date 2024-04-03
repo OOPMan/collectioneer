@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.postgresbacken
 
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.db.scalikejdbc.ScalikeJDBCDatabaseBackendPlugin
+import com.oopman.collectioneer.plugins.postgresbacken.EmbeddedPostgresDatabaseBackendPlugin.configEmbeddedPostgresMap
 import com.oopman.collectioneer.plugins.postgresbackend.PostgresDatabaseBackendModule
 import com.oopman.collectioneer.{Config, Plugin}
 import com.typesafe.scalalogging.LazyLogging
@@ -32,35 +33,36 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
     "classpath:com/oopman/collectioneer/plugins/postgresbackend/migrations"
   )
 
-  def getDatabaseBackendModule: ModuleDef = PostgresDatabaseBackendModule
-
-  def startUp(): Boolean = ???
-
-  def shutDown(): Boolean = ???
+  override def getDatabaseBackendModule: ModuleDef =
+    val scalikeJDBCDatabaseBackendModule = super.getDatabaseBackendModule
+    new ModuleDef:
+      include(scalikeJDBCDatabaseBackendModule)
+      include(PostgresDatabaseBackendModule)
 
 
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends PostgresDatabaseBackendPlugin(config):
-
-  // TODO: Move this to a mutable map of config.datasourceUri -> EmbeddedPostgres to avoid it getting removed by the Injector
-  private lazy val embeddedPostgres = EmbeddedPostgres
-    .builderWithDefaults()
-    // TODO: Customize based on constructor parameter
-    .build()
 
   override def compatibleWithDatasourceUri: Boolean =
     org.postgresql.Driver().acceptsURL(config.datasourceUri.replace("jdbc:embeddedpostgresql:", "jdbc:postgresql:"))
 
   override def getDatasource: DataSource =
     // TODO: Support non-default datasource
-    embeddedPostgres.createDefaultDataSource()
+    configEmbeddedPostgresMap.getOrElseUpdate(
+      config.datasourceUri,
+      EmbeddedPostgres
+        .builderWithDefaults()
+        .setRemoveDataOnShutdown(false)
+        // TODO: Customize based on URI
+        .build()
+    ).createDefaultDataSource()
 
   override def getConnection: Connection =
     // TODO: Support connectiuon with custom username/password
     getDatasource.getConnection
 
-  override def startUp(): Boolean = super.startUp()
-
-  override def shutDown(): Boolean = super.shutDown()
+  override def shutDown(): Unit =
+    super.shutDown()
+    configEmbeddedPostgresMap.get(config.datasourceUri).foreach(_.close())
 
 
 object EmbeddedPostgresDatabaseBackendPlugin:
