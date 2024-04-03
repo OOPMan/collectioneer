@@ -34,9 +34,9 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
 
   def getDatabaseBackendModule: ModuleDef = PostgresDatabaseBackendModule
 
-  def startUp: Boolean = ???
+  def startUp(): Boolean = ???
 
-  def shutDown: Boolean = ???
+  def shutDown(): Boolean = ???
 
 
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends PostgresDatabaseBackendPlugin(config):
@@ -58,9 +58,9 @@ class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends
     // TODO: Support connectiuon with custom username/password
     getDatasource.getConnection
 
-  override def startUp: Boolean = super.startUp
+  override def startUp(): Boolean = super.startUp()
 
-  override def shutDown: Boolean = super.shutDown
+  override def shutDown(): Boolean = super.shutDown()
 
 
 object EmbeddedPostgresDatabaseBackendPlugin:
