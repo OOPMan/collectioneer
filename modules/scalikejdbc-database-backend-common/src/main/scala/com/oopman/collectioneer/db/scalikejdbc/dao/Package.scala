@@ -1,30 +1,31 @@
 package com.oopman.collectioneer.db.scalikejdbc.dao
 
+import com.oopman.collectioneer.db.traits.dao
 import distage.*
 
 case class ProjectedDAOs
 (
-  collectionDAO: projected.CollectionDAO,
-  propertyDAO: projected.PropertyDAO,
-  propertyValueDAO: projected.PropertyValueDAO
-)
+  CollectionDAO: projected.CollectionDAO,
+  PropertyDAO: projected.PropertyDAO,
+  PropertyValueDAO: projected.PropertyValueDAO
+) extends dao.ProjectedDAOs
 
 case class RawDAOs
 (
-  collectionDAO: raw.CollectionDAO,
-  propertyCollectionDAO: raw.PropertyCollectionDAO,
-  propertyDAO: raw.PropertyDAO,
-  relationshipCollectionDAO: raw.RelationshipCollectionDAO,
-  relationshipDAO: raw.RelationshipDAO
-)
+  CollectionDAO: raw.CollectionDAO,
+  PropertyCollectionDAO: raw.PropertyCollectionDAO,
+  PropertyDAO: raw.PropertyDAO,
+  RelationshipCollectionDAO: raw.RelationshipCollectionDAO,
+  RelationshipDAO: raw.RelationshipDAO
+) extends dao.RawDAOs
 
 case class DAOs
 (
   projected: ProjectedDAOs,
   raw: RawDAOs 
-)
+) extends dao.DAOs
 
-val DAOModule = new ModuleDef:
+object DAOModule extends ModuleDef:
   make[projected.CollectionDAO]
   make[projected.PropertyDAO]
   make[projected.PropertyValueDAO]
