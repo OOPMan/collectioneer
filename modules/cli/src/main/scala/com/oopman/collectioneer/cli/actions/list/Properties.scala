@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.{Injection, dao, traits}
+import com.oopman.collectioneer.db.{Injection, traits}
 import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
@@ -33,7 +33,7 @@ case class ListPropertiesVerboseResult
 )
 
 def listProperties(config: Config) =
-  def listProperties(propertyDAO: dao.raw.PropertyDAO) =
+  def listProperties(propertyDAO: traits.dao.raw.PropertyDAO) =
     val properties = propertyDAO.getAll
     if config.verbose then
       ListPropertiesVerboseResult(
@@ -47,4 +47,4 @@ def listProperties(config: Config) =
         count = properties.size,
         propertyNamesAndUUIDs = properties.map(property => s"${property.propertyName} (${property.pk})")
       ).asJson
-  Injection.produceRun(config.datasourceUri)(listProperties)
+  Injection.produceRun(config)(listProperties)

@@ -1,21 +1,18 @@
 package com.oopman.collectioneer.cli
 
-import cats.syntax.either.*
 import com.oopman.collectioneer.cli.actions.imprt.importDatabase
 import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
-import com.oopman.collectioneer.db.migrations.executeMigrations
+import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.plugins.PluginConfig
 import distage.{Injector, ModuleBase}
 import io.circe.Json
-import io.circe.generic.auto.*
 import io.circe.syntax.*
 import io.circe.yaml.*
 import io.circe.yaml.syntax.*
-import izumi.distage.model.exceptions.runtime.ProvisioningException
 import izumi.distage.plugins.load.PluginLoader
-import org.h2.jdbcx.JdbcDataSource
-import scalikejdbc.*
+import izumi.fundamentals.platform.functional.Identity
+import scalikejdbc.{GlobalSettings, LoggingSQLAndTimeSettings}
 import scopt.{OParser, OParserBuilder}
 
 import java.util.UUID
@@ -72,12 +69,14 @@ object CLI:
   val builder: OParserBuilder[Config] = OParser.builder[Config]
   val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
   val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
-  val plugins: List[CLIPlugin] =
-    try Injector()
-      .produceGet[Set[CLIPlugin]](pluginModules)
-      .unsafeGet()
-      .toList
-    catch case e: ProvisioningException => Nil
+  val plugins: List[CLIPlugin] = Injector[Identity]()
+    .produceRun(pluginModules)((cliPlugins: Set[CLIPlugin]) => cliPlugins).toList
+//  val plugins: List[CLIPlugin] =
+//    try Injector()
+//      .produceGet[Set[CLIPlugin]](pluginModules)
+//      .unsafeGet()
+//      .toList
+//    catch case e: ProvisioningException => Nil
   val pluginActions: List[ActionListItem] = plugins
     .flatMap(plugin => plugin
       .getActions(builder)
@@ -157,32 +156,24 @@ object CLI:
   def main(args: Array[String]): Unit =
     OParser.parse(parser, args, Config(subconfigs = pluginSubconfigs)) match
       case Some(config) =>
-        // Setup DataSoure
-        val dataSource = new JdbcDataSource();
-        dataSource.setURL(config.datasourceUri)
-        dataSource.setUser(config.datasourceUsername)
-        dataSource.setPassword(config.datasourcePassword)
         // Configure ScalikeJDBC
         GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
           enabled = config.debug,
           singleLineMode = !config.verbose
         )
-        ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))
-        ConnectionPool.add(config.datasourceUri, new DataSourceConnectionPool(dataSource))
-        // Execute Flyway Migrations
-        executeMigrations(dataSource)
-        // Process CLI arguments
-        val action = for {
-          verb <- config.verb
-          subject <- config.subject
-        } yield actionsMap(verb)(subject)(config.usePlugin)._4
-        val result = action.map(_(config)).getOrElse(Map[String, String]().asJson)
-        val resultString = config.outputFormat match
+        try {
+          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp() }
+          // Process CLI arguments
+          val action = for {
+            verb <- config.verb
+            subject <- config.subject
+          } yield actionsMap(verb)(subject)(config.usePlugin)._4
+          val result = action.map(_(config)).getOrElse(Map[String, String]().asJson)
+          val resultString = config.outputFormat match
             case OutputFormat.json => result.spaces2SortKeys
             case OutputFormat.yaml => result.asYaml.spaces2
-        println(resultString)
+          println(resultString)
+        } finally {
+          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.shutDown() }
+        }
       case _ =>
-
-
-
-

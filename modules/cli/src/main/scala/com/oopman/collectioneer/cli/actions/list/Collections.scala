@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.{Injection, dao, traits}
+import com.oopman.collectioneer.db.{Injection, traits}
 import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
@@ -35,7 +35,7 @@ case class ListCollectionsVerboseResult
 )
 
 def listCollections(config: Config) =
-  def listCollections(collectionDAO: dao.raw.CollectionDAO) =
+  def listCollections(collectionDAO: traits.dao.raw.CollectionDAO) =
     val collections = collectionDAO.getAll
     if config.verbose then
       ListCollectionsVerboseResult(
@@ -49,7 +49,7 @@ def listCollections(config: Config) =
         count = collections.size,
         uuids = collections.map(_.pk)
       ).asJson
-  Injection.produceRun(config.datasourceUri)(listCollections)
+  Injection.produceRun(config)(listCollections)
 
 case class CollectionWithPropertyValues
 (
@@ -71,9 +71,8 @@ case class GetCollectionsResult
 def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValue): (String, List[String]) =
   val hexFormat = HexFormat.of()
   propertyValue.property.propertyName -> (
-    propertyValue.varcharValues ++
-    propertyValue.varbinaryValues.map(hexFormat.formatHex) ++
-    propertyValue.tinyintValues.map(_.toString) ++
+    propertyValue.textValues ++
+    propertyValue.byteValues.map(hexFormat.formatHex) ++
     propertyValue.smallintValues.map(_.toString) ++
     propertyValue.intValues.map(_.toString) ++
     propertyValue.bigintValues.map(_.toString()) ++
@@ -84,15 +83,13 @@ def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValu
     propertyValue.dateValues.map(_.toString) ++
     propertyValue.timeValues.map(_.toString) ++
     propertyValue.timestampValues.map(_.toString) ++
-    propertyValue.clobValues.map(s => s.getSubString(0, s.length().toInt)) ++
-    propertyValue.blobValues.map(b => hexFormat.formatHex(b.getBinaryStream.readAllBytes())) ++
     propertyValue.uuidValues.map(_.toString) ++
-    propertyValue.jsonValues.map(hexFormat.formatHex)
+    propertyValue.jsonValues.map(_.spaces2)
   )
 
 
 def getCollections(config: Config): Json =
-  def getCollections(collectionDAO: dao.raw.CollectionDAO, propertyValueDAO: dao.projected.PropertyValueDAO) =
+  def getCollections(collectionDAO: traits.dao.raw.CollectionDAO, propertyValueDAO: traits.dao.projected.PropertyValueDAO) =
     val collections = collectionDAO.getAllMatchingPKs(config.uuids)
     // TODO: Retrieve PropertyValueSets associated with Collection
     val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(config.uuids)
@@ -111,4 +108,4 @@ def getCollections(config: Config): Json =
             .getOrElse(collection.pk, Nil)
             .map(propertyValuesToMapTuple))
         ))).asJson
-  Injection.produceRun(config.datasourceUri)(getCollections)
+  Injection.produceRun(config)(getCollections)
