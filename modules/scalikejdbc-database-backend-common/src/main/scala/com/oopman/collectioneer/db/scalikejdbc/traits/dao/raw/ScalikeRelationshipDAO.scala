@@ -5,7 +5,7 @@ import scalikejdbc.DBSession
 
 import java.util.UUID
 
-trait RelationshipDAO:
+trait ScalikeRelationshipDAO:
   def createRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int]
   def createOrUpdateRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int]
   def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int]

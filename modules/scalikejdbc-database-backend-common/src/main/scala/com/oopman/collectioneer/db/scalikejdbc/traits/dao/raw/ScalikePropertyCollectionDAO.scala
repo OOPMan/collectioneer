@@ -5,7 +5,7 @@ import scalikejdbc.DBSession
 
 import java.util.UUID
 
-trait PropertyCollectionDAO:
+trait ScalikePropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int]
   def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int]
   def deletePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession): Array[Int]

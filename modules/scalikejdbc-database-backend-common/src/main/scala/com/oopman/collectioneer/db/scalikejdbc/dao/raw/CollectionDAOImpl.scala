@@ -7,7 +7,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.Collection
 
 import java.util.UUID
 
-class CollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.CollectionDAO:
+class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.CollectionDAO:
 
   def createCollections(collections: Seq[Collection]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.CollectionDAO.createCollections(collections) }

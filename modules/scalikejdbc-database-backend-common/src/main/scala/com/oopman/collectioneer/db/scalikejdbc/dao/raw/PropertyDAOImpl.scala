@@ -7,7 +7,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.Property
 
 import java.util.UUID
 
-class PropertyDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.PropertyDAO:
+class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.PropertyDAO:
 
   def createProperties(properties: Seq[Property]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.PropertyDAO.createProperties(properties) }

@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw
 import com.oopman.collectioneer.db.traits.entity.raw.Property
 import scalikejdbc.DBSession
 
-trait PropertyDAO:
+trait ScalikePropertyDAO:
   def createProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
   def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession): Array[Int]
   def getAll(implicit session: DBSession): List[Property]

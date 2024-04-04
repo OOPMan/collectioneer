@@ -7,7 +7,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollection
 
 import java.util.UUID
 
-class PropertyCollectionDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.PropertyCollectionDAO:
+class PropertyCollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.PropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.PropertyCollectionDAO.createPropertyCollections(propertyCollections) }
   def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int] =

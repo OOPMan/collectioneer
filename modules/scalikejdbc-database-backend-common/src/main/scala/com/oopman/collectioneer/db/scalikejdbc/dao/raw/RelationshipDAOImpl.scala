@@ -8,7 +8,7 @@ import scalikejdbc.DBSession
 
 import java.util.UUID
 
-class RelationshipDAO(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.RelationshipDAO:
+class RelationshipDAOImpl(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.raw.RelationshipDAO:
   def createRelationships(relationships: Seq[Relationship]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.RelationshipDAO.createRelationships(relationships) }
   def createOrUpdateRelationships(relationships: Seq[Relationship]): Array[Int] =

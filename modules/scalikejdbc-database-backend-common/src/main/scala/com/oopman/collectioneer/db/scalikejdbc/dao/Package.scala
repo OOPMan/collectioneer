@@ -1,39 +1,39 @@
 package com.oopman.collectioneer.db.scalikejdbc.dao
 
-import com.oopman.collectioneer.db.traits.dao
+import com.oopman.collectioneer.db.traits.dao.{DAOs, ProjectedDAOs, RawDAOs}
 import distage.*
 
-case class ProjectedDAOs
+case class ScalikeProjectedDAOImpls
 (
-  CollectionDAO: projected.CollectionDAO,
-  PropertyDAO: projected.PropertyDAO,
-  PropertyValueDAO: projected.PropertyValueDAO
-) extends dao.ProjectedDAOs
+  CollectionDAO: projected.CollectionDAOImpl,
+  PropertyDAO: projected.PropertyDAOImpl,
+  PropertyValueDAO: projected.PropertyValueDAOImpl
+) extends ProjectedDAOs
 
-case class RawDAOs
+case class ScalikedRawDAOImpls
 (
-  CollectionDAO: raw.CollectionDAO,
-  PropertyCollectionDAO: raw.PropertyCollectionDAO,
-  PropertyDAO: raw.PropertyDAO,
-  RelationshipCollectionDAO: raw.RelationshipCollectionDAO,
-  RelationshipDAO: raw.RelationshipDAO
-) extends dao.RawDAOs
+  CollectionDAO: raw.CollectionDAOImpl,
+  PropertyCollectionDAO: raw.PropertyCollectionDAOImpl,
+  PropertyDAO: raw.PropertyDAOImpl,
+  RelationshipCollectionDAO: raw.RelationshipCollectionDAOImpl,
+  RelationshipDAO: raw.RelationshipDAOImpl
+) extends RawDAOs
 
-case class DAOs
+case class ScalikeDAOImpls
 (
-  projected: ProjectedDAOs,
-  raw: RawDAOs 
-) extends dao.DAOs
+  projected: ScalikeProjectedDAOImpls,
+  raw: ScalikedRawDAOImpls
+) extends DAOs
 
-object DAOModule extends ModuleDef:
-  make[projected.CollectionDAO]
-  make[projected.PropertyDAO]
-  make[projected.PropertyValueDAO]
-  make[raw.CollectionDAO]
-  make[raw.PropertyCollectionDAO]
-  make[raw.PropertyDAO]
-  make[raw.RelationshipCollectionDAO]
-  make[raw.RelationshipDAO]
-  make[ProjectedDAOs]
-  make[RawDAOs]
-  make[DAOs]
+object DAOImplModule extends ModuleDef:
+  make[projected.CollectionDAOImpl]
+  make[projected.PropertyDAOImpl]
+  make[projected.PropertyValueDAOImpl]
+  make[raw.CollectionDAOImpl]
+  make[raw.PropertyCollectionDAOImpl]
+  make[raw.PropertyDAOImpl]
+  make[raw.RelationshipCollectionDAOImpl]
+  make[raw.RelationshipDAOImpl]
+  make[ScalikeProjectedDAOImpls]
+  make[ScalikedRawDAOImpls]
+  make[ScalikeDAOImpls]
