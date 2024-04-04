@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.scalikejdbc
 
-import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
+import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import izumi.distage.model.definition.ModuleDef
 import org.flywaydb.core.Flyway
 import scalikejdbc.*
@@ -13,13 +13,12 @@ trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
     val dataSource = getDatasource
     if !ConnectionPool.isInitialized(config.datasourceUri)
     then ConnectionPool.add(config.datasourceUri, DataSourceConnectionPool(dataSource))
-    Injection.produceRun(config) { () => Flyway
+    Flyway
       .configure()
       .dataSource(dataSource)
       .locations(getMigrationLocations: _*)
       .load()
       .migrate()
-    }
   override def shutDown(): Unit =
     ConnectionPool.close(config.datasourceUri)
   def getDatasource: DataSource

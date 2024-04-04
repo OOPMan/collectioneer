@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
+import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 import scalikejdbc.{AutoSession, DBSession}
 import com.oopman.collectioneer.db.{scalikejdbc, traits}
-import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 import com.oopman.collectioneer.plugins.postgresbackend
 
 import java.util.UUID
@@ -21,8 +21,8 @@ object PropertyValueDAO extends scalikejdbc.traits.dao.projected.PropertyValueDA
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     postgresbackend.queries.raw.PropertyValueQueries.propertyValueQueryObjects
       .map(_.deleteByCollectionPksAndPropertyPKs.bind(
-        session.connection.createArrayOf("UUID", collectionPKs.toArray),
-        session.connection.createArrayOf("UUID", propertyPKs.toArray)
+        session.connection.createArrayOf("VARCHAR", collectionPKs.toArray),
+        session.connection.createArrayOf("VARCHAR", propertyPKs.toArray)
       ).update.apply())
     // Insert new PropertyValues into relevant property value tables by property and properyValueSet
     propertyValues

@@ -5,9 +5,9 @@ import com.oopman.collectioneer.db.traits.entity.raw.Relationship
 object Relationship:
   def relationshipSeqToBatchUpsertSeq(relationships: Seq[Relationship]): Seq[Seq[Any]] =
     relationships.map(relationship => Seq(
-      relationship.pk.toString,
-      relationship.collectionPK.toString,
-      relationship.relatedCollectionPK.toString,
+      relationship.pk,
+      relationship.collectionPK,
+      relationship.relatedCollectionPK,
       relationship.relationshipType.toString,
       relationship.index
     ))

@@ -31,8 +31,8 @@ class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntax
   def deleteByCollectionPksAndPropertyPKs =
     sql"""
           DELETE FROM ${pv.table}
-          WHERE collection_pk IN (?)
-          AND property_pk IN (?)
+          WHERE collection_pk = ANY (cast(? AS uuid[]))
+          AND property_pk = ANY (cast(? AS uuid[]))
        """
 
 object PropertyValueVarcharQueries extends PropertyValueQueries(raw.PropertyValueText)

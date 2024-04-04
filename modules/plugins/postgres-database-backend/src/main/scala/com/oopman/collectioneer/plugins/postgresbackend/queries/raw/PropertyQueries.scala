@@ -8,13 +8,13 @@ object PropertyQueries:
   def insert =
     sql"""
           INSERT INTO property(pk, property_name, property_types, deleted)
-          VALUES ( ?, ?, ?, ? );
+          VALUES (?, ?, cast(? AS property_type[]), ? );
     """
 
   def upsert =
     sql"""
           INSERT INTO property(pk, property_name, property_types, deleted)
-          VALUES (?, ?, ?, ?)
+          VALUES (?, ?, cast(? AS property_type[]), ?)
           ON CONFLICT(pk) DO UPDATE
           SET property_name = excluded.property_name, property_types = excluded.property_types,
           deleted = excluded.deleted, modified = now()

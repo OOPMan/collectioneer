@@ -108,8 +108,8 @@ create table relationship__collection
   denote whether it has been marked as Deleted.
  */
 create type property_type as enum(
-    'varchar', 'varbinary', 'tinyint', 'smallint', 'int', 'bigint', 'numeric', 'float', 'double', 'boolean',
-    'date', 'time', 'timestamp', 'clob', 'blob', 'uuid', 'json'
+    'text', 'bytes', 'smallint', 'int', 'bigint', 'numeric', 'float', 'double', 'boolean', 'date', 'time', 'timestamp',
+    'uuid', 'json'
 );
 create table property
 (
@@ -169,7 +169,7 @@ create table property_value_text
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_bytea
+create table property_value_bytes
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,

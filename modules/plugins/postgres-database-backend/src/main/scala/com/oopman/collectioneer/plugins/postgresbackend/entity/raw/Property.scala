@@ -1,10 +1,10 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 
 import com.oopman.collectioneer.db.entity.raw
+import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*
 
-import java.time.ZonedDateTime
 import java.util.UUID
 
 object Property extends SQLSyntaxSupport[raw.Property]:
@@ -28,3 +28,11 @@ object Property extends SQLSyntaxSupport[raw.Property]:
       created = rs.zonedDateTime(p.created),
       modified = rs.zonedDateTime(p.modified)
     )
+
+  def propertiesSeqToBatchInsertSeq(properties: Seq[traits.entity.raw.Property]): Seq[Seq[Any]] =
+    properties.map(p => Seq(
+      p.pk,
+      p.propertyName,
+      p.propertyTypes.map(_.toString).toArray,
+      p.deleted
+    ))

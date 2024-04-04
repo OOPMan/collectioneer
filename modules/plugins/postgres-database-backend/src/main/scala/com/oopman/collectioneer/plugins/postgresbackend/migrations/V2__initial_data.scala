@@ -1,6 +1,9 @@
 package com.oopman.collectioneer.plugins.postgresbackend.migrations
 
+import com.oopman.collectioneer.CoreCollections
+import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.CollectionDAO
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
+import scalikejdbc.DB
 
 /**
  *
@@ -37,9 +40,5 @@ class V2__initial_data extends BaseJavaMigration:
 //    propertyValueDAO.updatePropertyValues(propertyValues)
 
   override def canExecuteInTransaction: Boolean = false
-  override def migrate(context: Context): Unit = ???
-    /*
-    val connection = context.getConnection
-    Injection.produceRun(connection, false)(executeMigration)
-
-     */
+  override def migrate(context: Context): Unit =
+    DB(context.getConnection).localTx { implicit session => CollectionDAO.createCollections(CoreCollections.values.map(_.collection)) }

@@ -16,4 +16,4 @@ extends PropertyValueSQLSyntaxSupport[raw.PropertyValueText](tableName):
       propertyPK = UUID.randomUUID(),
     )
 
-object PropertyValueText extends PropertyValueVarcharSQLSyntaxSupport("PROPERTY_VALUE_VARCHAR")
+object PropertyValueText extends PropertyValueVarcharSQLSyntaxSupport("property_value_text")

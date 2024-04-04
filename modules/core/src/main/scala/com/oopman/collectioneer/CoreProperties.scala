@@ -20,12 +20,12 @@ enum CoreProperties(val property: Property):
   case name extends CoreProperties(Property(
     pk = CorePropertyUUIDs.name,
     propertyName = "Name",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
   ))
   case description extends CoreProperties(Property(
     pk = CorePropertyUUIDs.description,
     propertyName = "Description",
-    propertyTypes = List(PropertyType.varchar, PropertyType.clob),
+    propertyTypes = List(PropertyType.text),
   ))
   case defaultValue extends CoreProperties(Property(
     pk = CorePropertyUUIDs.defaultValue,

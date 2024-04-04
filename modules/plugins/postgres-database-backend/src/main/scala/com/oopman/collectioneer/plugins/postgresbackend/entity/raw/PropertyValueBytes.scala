@@ -16,4 +16,4 @@ extends PropertyValueSQLSyntaxSupport[raw.PropertyValueBytes](tableName):
       propertyPK = UUID.randomUUID(),
     )
 
-object PropertyValueBytes extends PropertyValueVarbinarySQLSyntaxSupport("PROPERTY_VALUE_VARBINARY")
+object PropertyValueBytes extends PropertyValueVarbinarySQLSyntaxSupport("property_value_bytes")

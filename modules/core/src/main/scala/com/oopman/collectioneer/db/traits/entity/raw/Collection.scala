@@ -9,11 +9,4 @@ trait Collection:
   val deleted: Boolean
   val created: ZonedDateTime
   val modified: ZonedDateTime
-  
-object Collection:
-  def collectionsSeqToBatchInsertSeq(collections: Seq[Collection]): Seq[Seq[Any]] =
-    collections.map(c => Seq(
-      c.pk.toString,
-      c.virtual,
-      c.deleted
-    ))
+
