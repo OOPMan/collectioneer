@@ -1,53 +1,48 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.db.scalikejdbc.traits
+import com.oopman.collectioneer.db.scalikejdbc
 import com.oopman.collectioneer.plugins.postgresbackend
 import distage.*
 
 case class PostgresProjectedDAOs
 (
-  CollectionDAO: traits.dao.projected.CollectionDAO,
-  PropertyDAO: traits.dao.projected.PropertyDAO,
-  PropertyValueDAO: traits.dao.projected.PropertyValueDAO
-) extends traits.dao.ProjectedDAOs
+  CollectionDAO: scalikejdbc.traits.dao.projected.ScalikeCollectionDAO,
+  PropertyDAO: scalikejdbc.traits.dao.projected.ScalikePropertyDAO,
+  PropertyValueDAO: scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO
+) extends scalikejdbc.traits.dao.ScalikeProjectedDAOs
 
 case class PostgresRawDAOs
 (
-  CollectionDAO: traits.dao.raw.CollectionDAO,
-  PropertyCollectionDAO: traits.dao.raw.PropertyCollectionDAO,
-  PropertyDAO: traits.dao.raw.PropertyDAO,
-  RelationshipCollectionDAO: traits.dao.raw.RelationshipCollectionDAO,
-  RelationshipDAO: traits.dao.raw.RelationshipDAO
-) extends traits.dao.RawDAOs
+  CollectionDAO: scalikejdbc.traits.dao.raw.ScalikeCollectionDAO,
+  PropertyCollectionDAO: scalikejdbc.traits.dao.raw.ScalikePropertyCollectionDAO,
+  PropertyDAO: scalikejdbc.traits.dao.raw.ScalikePropertyDAO,
+  RelationshipCollectionDAO: scalikejdbc.traits.dao.raw.ScalikeRelationshipCollectionDAO,
+  RelationshipDAO: scalikejdbc.traits.dao.raw.ScalikeRelationshipDAO
+) extends scalikejdbc.traits.dao.ScalikeRawDAOs
 
 case class PostgresDAOs
 (
-  projected: traits.dao.ProjectedDAOs,
-  raw: traits.dao.RawDAOs
+  projected: scalikejdbc.traits.dao.ScalikeProjectedDAOs,
+  raw: scalikejdbc.traits.dao.ScalikeRawDAOs
 
-) extends traits.dao.DAOs
+) extends scalikejdbc.traits.dao.ScalikeDAOs
 
 case class PostgresDatabaseBackend
 (
-  dao: traits.dao.DAOs
+  dao: scalikejdbc.traits.dao.ScalikeDAOs
 
-) extends traits.dao.DatabaseBackend:
-  val migrationLocations: Seq[String] = Seq(
-    "classpath:migrations/postgres",
-    "classpath:com/oopman/collectioneer/db/postgres/migrations"
-  )
+) extends scalikejdbc.traits.dao.ScalikeDatabaseBackend
 
 val PostgresDatabaseBackendModule = new ModuleDef:
-  make[traits.dao.DatabaseBackend].from[PostgresDatabaseBackend]
-  make[traits.dao.DAOs].from[PostgresDAOs]
-  make[traits.dao.ProjectedDAOs].from[PostgresProjectedDAOs]
-  make[traits.dao.RawDAOs].from[PostgresRawDAOs]
-  make[traits.dao.projected.CollectionDAO].from(postgresbackend.dao.projected.CollectionDAO)
-  make[traits.dao.projected.PropertyDAO].from(postgresbackend.dao.projected.PropertyDAO)
-  make[traits.dao.projected.PropertyValueDAO].from(postgresbackend.dao.projected.PropertyValueDAO)
-  make[traits.dao.raw.CollectionDAO].from(postgresbackend.dao.raw.CollectionDAO)
-  make[traits.dao.raw.PropertyCollectionDAO].from(postgresbackend.dao.raw.PropertyCollectionDAO)
-  make[traits.dao.raw.PropertyDAO].from(postgresbackend.dao.raw.PropertyDAO)
-  make[traits.dao.raw.RelationshipCollectionDAO].from(postgresbackend.dao.raw.RelationshipCollectionDAO)
-  make[traits.dao.raw.RelationshipDAO].from(postgresbackend.dao.raw.RelationshipDAO)
-
+  make[scalikejdbc.traits.dao.projected.ScalikeCollectionDAO].from(postgresbackend.dao.projected.CollectionDAOImpl)
+  make[scalikejdbc.traits.dao.projected.ScalikePropertyDAO].from(postgresbackend.dao.projected.PropertyDAOImpl)
+  make[scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO].from(postgresbackend.dao.projected.PropertyValueDAOImpl)
+  make[scalikejdbc.traits.dao.raw.ScalikeCollectionDAO].from(postgresbackend.dao.raw.CollectionDAOImpl)
+  make[scalikejdbc.traits.dao.raw.ScalikePropertyDAO].from(postgresbackend.dao.raw.PropertyDAOImpl)
+  make[scalikejdbc.traits.dao.raw.ScalikePropertyCollectionDAO].from(postgresbackend.dao.raw.PropertyCollectionDAOImpl)
+  make[scalikejdbc.traits.dao.raw.ScalikeRelationshipDAO].from(postgresbackend.dao.raw.RelationshipDAOImpl)
+  make[scalikejdbc.traits.dao.raw.ScalikeRelationshipCollectionDAO].from(postgresbackend.dao.raw.RelationshipCollectionDAOImpl)
+  make[scalikejdbc.traits.dao.ScalikeProjectedDAOs].from[PostgresProjectedDAOs]
+  make[scalikejdbc.traits.dao.ScalikeRawDAOs].from[PostgresRawDAOs]
+  make[scalikejdbc.traits.dao.ScalikeDAOs].from[PostgresDAOs]
+  make[scalikejdbc.traits.dao.ScalikeDatabaseBackend].from[PostgresDatabaseBackend]

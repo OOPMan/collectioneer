@@ -8,7 +8,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelations
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
 
-object PropertyDAO extends traits.dao.projected.PropertyDAO:
+object PropertyDAOImpl extends traits.dao.projected.ScalikePropertyDAO:
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession) = ???
 
   /**
@@ -39,9 +39,9 @@ object PropertyDAO extends traits.dao.projected.PropertyDAO:
         propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
       )))
       .toSeq
-    postgresbackend.dao.raw.PropertyDAO.createOrUpdateProperties(distinctProperties)
-    postgresbackend.dao.raw.CollectionDAO.createOrUpdateCollections(collections)
-    postgresbackend.dao.projected.PropertyValueDAO.updatePropertyValues(propertyValues)
-    postgresbackend.dao.raw.PropertyCollectionDAO.createOrUpdatePropertyCollections(propertyCollections)
+    postgresbackend.dao.raw.PropertyDAOImpl.createOrUpdateProperties(distinctProperties)
+    postgresbackend.dao.raw.CollectionDAOImpl.createOrUpdateCollections(collections)
+    postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
+    postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections(propertyCollections)
 
   def getAll(implicit session: DBSession = AutoSession): List[Property] = ???

@@ -1,20 +1,20 @@
 package com.oopman.collectioneer.db.scalikejdbc.traits.dao
 
-trait ProjectedDAOs:
+trait ScalikeProjectedDAOs:
   val CollectionDAO: projected.ScalikeCollectionDAO
   val PropertyDAO: projected.ScalikePropertyDAO
   val PropertyValueDAO: projected.ScalikePropertyValueDAO
 
-trait RawDAOs:
+trait ScalikeRawDAOs:
   val CollectionDAO: raw.ScalikeCollectionDAO
   val PropertyCollectionDAO: raw.ScalikePropertyCollectionDAO
   val PropertyDAO: raw.ScalikePropertyDAO
   val RelationshipCollectionDAO: raw.ScalikeRelationshipCollectionDAO
   val RelationshipDAO: raw.ScalikeRelationshipDAO
 
-trait DAOs:
-  val projected: ProjectedDAOs
-  val raw: RawDAOs
+trait ScalikeDAOs:
+  val projected: ScalikeProjectedDAOs
+  val raw: ScalikeRawDAOs
 
-trait DatabaseBackend:
-  val dao: DAOs
+trait ScalikeDatabaseBackend:
+  val dao: ScalikeDAOs

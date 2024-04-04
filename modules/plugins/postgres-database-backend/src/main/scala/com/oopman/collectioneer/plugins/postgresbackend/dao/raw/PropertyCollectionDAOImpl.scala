@@ -1,13 +1,13 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
-import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.PropertyCollectionDAO
+import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.ScalikePropertyCollectionDAO
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollection
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.{AutoSession, DBSession}
 
 import java.util.UUID
 
-object PropertyCollectionDAO extends PropertyCollectionDAO:
+object PropertyCollectionDAOImpl extends ScalikePropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyCollectionQueries
       .insert

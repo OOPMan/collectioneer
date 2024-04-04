@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.db.scalikejdbc
 
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
+import com.oopman.collectioneer.db.scalikejdbc.dao.DAOImplModule
 import izumi.distage.model.definition.ModuleDef
 import org.flywaydb.core.Flyway
 import scalikejdbc.*
@@ -8,11 +9,16 @@ import scalikejdbc.*
 import java.sql.Connection
 import javax.sql.DataSource
 
+type DBConnectionProvider = () => DBConnection
+
 trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
   override def startUp(): Unit =
     val dataSource = getDatasource
     if !ConnectionPool.isInitialized(config.datasourceUri)
-    then ConnectionPool.add(config.datasourceUri, DataSourceConnectionPool(dataSource))
+    then
+      val dataSourceConnectionPool = DataSourceConnectionPool(dataSource)
+      ConnectionPool.add(config.datasourceUri, dataSourceConnectionPool)
+      ConnectionPool.singleton(dataSourceConnectionPool)
     Flyway
       .configure()
       .dataSource(dataSource)
@@ -28,3 +34,4 @@ trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
   override def getDatabaseBackendModule: ModuleDef =
     new ModuleDef:
       make[DBConnectionProvider].from(() => NamedDB(config.datasourceUri))
+      include(DAOImplModule)

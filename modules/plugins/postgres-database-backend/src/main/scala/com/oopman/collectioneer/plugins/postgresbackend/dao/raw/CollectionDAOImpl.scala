@@ -8,7 +8,7 @@ import com.oopman.collectioneer.plugins.postgresbackend
 import java.util.UUID
 
 
-object CollectionDAO extends scalikejdbc.traits.dao.raw.CollectionDAO:
+object CollectionDAOImpl extends scalikejdbc.traits.dao.raw.ScalikeCollectionDAO:
   def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .insert

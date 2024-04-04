@@ -5,7 +5,7 @@ import scalikejdbc.{AutoSession, DBSession}
 import com.oopman.collectioneer.db.{entity, scalikejdbc, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
 
-object PropertyDAO extends scalikejdbc.traits.dao.raw.PropertyDAO:
+object PropertyDAOImpl extends scalikejdbc.traits.dao.raw.ScalikePropertyDAO:
 
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyQueries

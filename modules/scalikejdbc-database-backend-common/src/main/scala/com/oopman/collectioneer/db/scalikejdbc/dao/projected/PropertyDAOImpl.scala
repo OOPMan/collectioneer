@@ -1,11 +1,11 @@
 package com.oopman.collectioneer.db.scalikejdbc.dao.projected
 
 import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
-import com.oopman.collectioneer.db.scalikejdbc.traits.dao.DatabaseBackend
+import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.projected.Property
 
-class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: DatabaseBackend) extends traits.dao.projected.PropertyDAO:
+class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDatabaseBackend) extends traits.dao.projected.PropertyDAO:
   def createProperties(properties: Seq[Property]) =
     dbProvider() localTx { implicit session => db.dao.projected.PropertyDAO.createProperties(properties) }
   

@@ -15,3 +15,6 @@ trait RawDAOs:
 trait DAOs:
   val projected: ProjectedDAOs
   val raw: RawDAOs
+
+trait DatabaseBackend:
+  val dao: DAOs

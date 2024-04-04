@@ -7,7 +7,7 @@ import com.oopman.collectioneer.plugins.postgresbackend
 
 import java.util.UUID
 
-object PropertyValueDAO extends scalikejdbc.traits.dao.projected.PropertyValueDAO:
+object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO:
   def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyValue] =
     postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByCollectionPKs(collectionUUIDs)

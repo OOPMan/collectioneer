@@ -1,13 +1,13 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
-import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.RelationshipDAO
+import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.ScalikeRelationshipDAO
 import com.oopman.collectioneer.db.traits.entity.raw.Relationship
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.DBSession
 
 import java.util.UUID
 
-object RelationshipDAO extends RelationshipDAO:
+object RelationshipDAOImpl extends ScalikeRelationshipDAO:
   def createRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] =
     postgresbackend.queries.raw.RelationshipQueries
       .insert
