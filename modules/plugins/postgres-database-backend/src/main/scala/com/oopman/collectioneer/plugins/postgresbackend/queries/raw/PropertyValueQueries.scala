@@ -48,7 +48,21 @@ object PropertyValueDateQueries extends PropertyValueQueries(raw.PropertyValueDa
 object PropertyValueTimeQueries extends PropertyValueQueries(raw.PropertyValueTime)
 object PropertyValueTimestampQueries extends PropertyValueQueries(raw.PropertyValueTimestamp)
 object PropertyValueUUIDQueries extends PropertyValueQueries(raw.PropertyValueUUID)
-object PropertyValueJSONQueries extends PropertyValueQueries(raw.PropertyValueJSON)
+object PropertyValueJSONQueries extends PropertyValueQueries(raw.PropertyValueJSON):
+  override def insert: SQL[Nothing, NoExtractor] =
+    sql"""
+          INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)
+          VALUES ( ?, ?, ?, cast(? AS jsonb), ? )
+       """
+
+  override def upsert =
+    sql"""
+          INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)
+          VALUES (?, ?, ?, cast(? AS jsonb), ?)
+          ON CONFLICT(pk) DO UPDATE
+          SET collection_pk = excluded.collection_pk, property_pk = excluded.property_pk, property_value =
+          cast(excluded.property_value AS jsonb), index = excluded.index, modified = now()
+       """
 
 object PropertyValueQueries:
   def propertyValueQueryObjects = List(

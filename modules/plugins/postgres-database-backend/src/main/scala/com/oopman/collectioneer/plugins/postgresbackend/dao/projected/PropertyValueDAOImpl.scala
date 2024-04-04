@@ -43,5 +43,10 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
         case pv: traits.entity.raw.PropertyValueUUID => (pv, postgresbackend.queries.raw.PropertyValueUUIDQueries.insert)
         case pv: traits.entity.raw.PropertyValueJSON => (pv, postgresbackend.queries.raw.PropertyValueJSONQueries.insert)
       }
-      .map((pv, query) => query.bind(pv.pk, pv.collectionPK, pv.propertyPK, pv.propertyValue, pv.index).execute.apply())
+      .map {
+        case (pv: traits.entity.raw.PropertyValueJSON, query) => query.bind(
+          pv.pk, pv.collectionPK, pv.propertyPK, pv.propertyValue.spaces2, pv.index
+        ).execute.apply()
+        case (pv, query) => query.bind(pv.pk, pv.collectionPK, pv.propertyPK, pv.propertyValue, pv.index).execute.apply()
+      }
 
