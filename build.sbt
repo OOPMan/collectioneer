@@ -124,10 +124,12 @@ lazy val plugins = project
   .settings(commonSettings)
   .aggregate(
     postgresDatabaseBackend,
+    embeddedPostgresDatabaseBackendCLI,
     grandArchiveTCG,
   )
   .dependsOn(
     postgresDatabaseBackend,
+    embeddedPostgresDatabaseBackendCLI,
     grandArchiveTCG
   )
 
@@ -146,6 +148,16 @@ lazy val postgresDatabaseBackend = project
     )
   )
   .dependsOn(core, scalikeJDBCDatabaseBackendCommon)
+
+lazy val embeddedPostgresDatabaseBackendCLI = project
+  .in(file("modules/plugins/embedded-postgres-database-backend-cli"))
+  .settings(commonSettings)
+  .settings(
+    name := "Embedded PostgreSQL Database Backend CLI",
+    exportJars := true,
+    libraryDependencies ++= circeLibraryDependencies,
+  )
+  .dependsOn(cliCore, postgresDatabaseBackend)
 
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))
