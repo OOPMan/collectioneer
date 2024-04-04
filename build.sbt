@@ -139,7 +139,8 @@ lazy val postgresDatabaseBackend = project
     libraryDependencies ++= scalikeJDBCDependencies,
     libraryDependencies ++= Seq(
       "de.softwareforge.testing"        % "pg-embedded"                 % "5.1.0",
-      "org.postgresql"                  % "postgresql"                  % "42.7.3"
+      "org.postgresql"                  % "postgresql"                  % "42.7.3",
+      "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
     )
   )
   .dependsOn(core, scalikeJDBCDatabaseBackendCommon)
@@ -151,7 +152,7 @@ lazy val grandArchiveTCG = project
     name := "Grand Archive TCG Plugin",
     exportJars := true,
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "os-lib" % "0.9.3"
+      "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
     ),
     libraryDependencies ++= sttpLibraryDependencies,
   )

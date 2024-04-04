@@ -51,8 +51,10 @@ class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends
       config.datasourceUri,
       EmbeddedPostgres
         .builderWithDefaults()
-        .setRemoveDataOnShutdown(false)
         // TODO: Customize based on URI
+        .setDataDirectory((os.pwd / "collection").wrapped)
+        .setRemoveDataOnShutdown(false)
+        .setServerVersion("15")
         .build()
     ).createDefaultDataSource()
 
