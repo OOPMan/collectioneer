@@ -9,8 +9,10 @@ import com.typesafe.scalalogging.LazyLogging
 import de.softwareforge.testing.postgres.embedded.EmbeddedPostgres
 import izumi.distage.model.definition.ModuleDef
 import izumi.distage.plugins.PluginDef
+import org.postgresql.PGProperty
+import org.postgresql.ds.PGSimpleDataSource
 
-import java.sql.Connection
+import java.sql.{Connection, DriverManager}
 import javax.sql.DataSource
 
 
@@ -24,9 +26,18 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
   def compatibleWithDatasourceUri: Boolean =
     org.postgresql.Driver().acceptsURL(config.datasourceUri)
 
-  def getDatasource: DataSource = ???
+  def getDatasource: DataSource =
+    val properties = org.postgresql.Driver.parseURL(config.datasourceUri, java.util.Properties())
+    val dataSource = PGSimpleDataSource()
+    dataSource.setServerNames(Array(PGProperty.PG_HOST.getOrDefault(properties)))
+    dataSource.setPortNumbers(Array(PGProperty.PG_PORT.getOrDefault(properties).toInt))
+    dataSource.setDatabaseName(PGProperty.PG_DBNAME.getOrDefault(properties))
+    dataSource.setUser(PGProperty.USER.getOrDefault(properties))
+    dataSource.setPassword(PGProperty.PASSWORD.getOrDefault(properties))
+    dataSource
 
-  def getConnection: Connection = ???
+  def getConnection: Connection =
+    DriverManager.getConnection(config.datasourceUri)
 
   def getMigrationLocations: Seq[String] = Seq(
     "classpath:migrations/postgres",
@@ -39,11 +50,10 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
       include(scalikeJDBCDatabaseBackendModule)
       include(PostgresDatabaseBackendModule)
 
-
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends PostgresDatabaseBackendPlugin(config):
 
   override def compatibleWithDatasourceUri: Boolean =
-    org.postgresql.Driver().acceptsURL(config.datasourceUri.replace("jdbc:embeddedpostgresql:", "jdbc:postgresql:"))
+    config.datasourceUri.startsWith("jdbc:embeddedpostgresql:")
 
   override def getDatasource: DataSource =
     // TODO: Support non-default datasource
