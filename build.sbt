@@ -14,8 +14,9 @@ lazy val sttpLibraryDependencies = Seq(
   "com.softwaremill.sttp.client3"   %% "core"  % "3.9.4",
   "com.softwaremill.sttp.client3"   %% "circe" % "3.9.4"
 )
+lazy val flywayVersion = "10.6.0"
 lazy val scalikeJDBCDependencies = Seq(
-  "org.flywaydb"                    % "flyway-core"                 % "10.6.0",
+  "org.flywaydb"                    % "flyway-core"                 % flywayVersion,
   "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
 )
 lazy val commonSettings = Seq(
@@ -141,6 +142,7 @@ lazy val postgresDatabaseBackend = project
       "de.softwareforge.testing"        % "pg-embedded"                 % "5.1.0",
       "org.postgresql"                  % "postgresql"                  % "42.7.3",
       "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
+      "org.flywaydb"                    % "flyway-database-postgresql"  % flywayVersion,
     )
   )
   .dependsOn(core, scalikeJDBCDatabaseBackendCommon)
