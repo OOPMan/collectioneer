@@ -56,7 +56,7 @@ case class Config
   action: Config => Json = config => "".asJson,
   verb: Option[Verb] = None,
   subject: Option[Subject] = None,
-  datasourceUri: String = "jdbc:h2:./collection",
+  datasourceUri: String = "jdbc:embeddedpostgresql://./collection",
   datasourceUsername: String = "sa",
   datasourcePassword: String = "",
   verbose: Boolean = false,
@@ -68,4 +68,4 @@ case class Config
   virtual: Option[Boolean] = None,
   usePlugin: Option[String] = None,
   subconfigs: Map[String, Subconfig] = Map(),
-)
+) extends com.oopman.collectioneer.Config
