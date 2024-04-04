@@ -22,46 +22,47 @@ enum EditionProperties(val property: Property):
   case uuid extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.uuid,
     propertyName = "UUID",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
   case cardId extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.cardId,
     propertyName = "Card UUID",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
   case collectorNumber extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.collectorNumber,
     propertyName = "Collector Number",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
   case illustrator extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.illustrator,
     propertyName = "Artist",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
   case slug extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.slug,
     propertyName = "Slug",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
+  // TODO: Add a property for storing downloaded image data?
   case rarity extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.rarity,
     propertyName = "Rarity",
-    propertyTypes = List(PropertyType.tinyint),
+    propertyTypes = List(PropertyType.smallint),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
   case effect extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effect,
     propertyName = "Effect",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
   )) with HasProperty
   case flavourText extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.flavourText,
     propertyName = "Flavour text",
-    propertyTypes = List(PropertyType.varchar)
+    propertyTypes = List(PropertyType.text)
   )) with HasProperty

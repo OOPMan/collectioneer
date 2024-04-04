@@ -7,10 +7,10 @@ object PropertyValues:
   val singleValue = List(
     PropertyValue(
       property = CoreProperties.minValues.property,
-      tinyintValues = List(1)
+      smallintValues = List(1)
     ),
     PropertyValue(
       property = CoreProperties.maxValues.property,
-      tinyintValues = List(1)
+      smallintValues = List(1)
     )
  )

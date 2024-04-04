@@ -25,7 +25,7 @@ enum CirculationProperties(val property: Property):
   case uuid extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.uuid,
     propertyName = "UUID",
-    propertyTypes = List(PropertyType.varchar),
+    propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
 

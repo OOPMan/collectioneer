@@ -1,16 +1,14 @@
 package com.oopman.collectioneer.plugins.gatcg
 
-import com.oopman.collectioneer.Plugin
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
-import com.oopman.collectioneer.db.h2.H2DatabaseBackend
-import com.oopman.collectioneer.db.traits.DatabaseBackend
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
-import com.oopman.collectioneer.db.{Injection, dao, entity, traits}
+import com.oopman.collectioneer.db.{Injection, entity, traits}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.oopman.collectioneer.plugins.gatcg.given
 import com.oopman.collectioneer.plugins.gatcg.properties.*
+import com.oopman.collectioneer.{CoreProperties, Plugin, given}
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.*
 import io.circe.generic.auto.*
@@ -43,9 +41,6 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
   def getShortName: String = "GATCG"
 
   def getVersion: String = "master"
-
-  def getMigrationLocations(databaseBackend: DatabaseBackend): Seq[String] = databaseBackend match
-    case _: H2DatabaseBackend => Seq("classpath:com/oopman/collectioneer/plugins/gatcg/migrations/h2")
 
   def getDefaultSubconfig: GATCGPluginConfig = GATCGPluginConfig()
 
@@ -133,9 +128,9 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         pk = existingSetsMap.getOrElse((set.prefix, set.language), UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = SetProperties.setName, varcharValues = List(set.name)),
-          PropertyValue(property = SetProperties.setPrefix, varcharValues = List(set.prefix)),
-          PropertyValue(property = SetProperties.setLanguage, varcharValues = List(set.language)),
+          PropertyValue(property = SetProperties.setName, textValues = List(set.name)),
+          PropertyValue(property = SetProperties.setPrefix, textValues = List(set.prefix)),
+          PropertyValue(property = SetProperties.setLanguage, textValues = List(set.language)),
           PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
         )
       ))))
@@ -144,20 +139,21 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         pk = existingCardsMap.getOrElse(card.uuid, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = CardProperties.uuid, varcharValues = List(card.uuid)),
-          PropertyValue(property = CardProperties.element, varcharValues = List(card.element)),
-          PropertyValue(property = CardProperties.types, varcharValues = card.types),
-          PropertyValue(property = CardProperties.classes, varcharValues = card.classes),
-          PropertyValue(property = CardProperties.subTypes, varcharValues = card.subtypes),
-          PropertyValue(property = CardProperties.effect, varcharValues = card.effect_raw.map(List(_)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.memoryCost, tinyintValues = card.cost_memory.map(i =>List(i.toByte)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.reserveCost, tinyintValues = card.cost_reserve.map(i => List(i.toByte)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.level, tinyintValues = card.level.map(i => List(i.toByte)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.speed, varcharValues = card.speed.map(b => List(if b then "Fast" else "Slow")).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.legality, jsonValues = card.legality.map(j => List(j.spaces2.getBytes)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.power, tinyintValues = card.power.map(p => List(p.toByte)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.life, tinyintValues = card.life.map(l => List(l.toByte)).getOrElse(Nil)),
-          PropertyValue(property = CardProperties.durability, tinyintValues = card.durability.map(d => List(d.toByte)).getOrElse(Nil)),
+          PropertyValue(property = CoreProperties.name, textValues = List(card.name)),
+          PropertyValue(property = CardProperties.uuid, textValues = List(card.uuid)),
+          PropertyValue(property = CardProperties.element, textValues = List(card.element)),
+          PropertyValue(property = CardProperties.types, textValues = card.types),
+          PropertyValue(property = CardProperties.classes, textValues = card.classes),
+          PropertyValue(property = CardProperties.subTypes, textValues = card.subtypes),
+          PropertyValue(property = CardProperties.effect, textValues = card.effect_raw.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.memoryCost, smallintValues = card.cost_memory.map(i =>List(i.toShort)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.reserveCost, smallintValues = card.cost_reserve.map(i => List(i.toShort)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.level, smallintValues = card.level.map(i => List(i.toShort)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.speed, textValues = card.speed.map(b => List(if b then "Fast" else "Slow")).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.legality, jsonValues = card.legality.map(j => List(j)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.power, smallintValues = card.power.map(p => List(p.toShort)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.life, smallintValues = card.life.map(l => List(l.toShort)).getOrElse(Nil)),
+          PropertyValue(property = CardProperties.durability, smallintValues = card.durability.map(d => List(d.toShort)).getOrElse(Nil)),
           PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true))
         )
       ))))
@@ -167,14 +163,14 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         pk = existingEditions.getOrElse(edition.uuid, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = EditionProperties.uuid, varcharValues = List(edition.uuid)),
-          PropertyValue(property = EditionProperties.cardId, varcharValues = List(edition.card_id)),
-          PropertyValue(property = EditionProperties.collectorNumber, varcharValues = List(edition.collector_number)),
-          PropertyValue(property = EditionProperties.illustrator, varcharValues = List(edition.illustrator)),
-          PropertyValue(property = EditionProperties.slug, varcharValues = List(edition.slug)),
-          PropertyValue(property = EditionProperties.rarity, tinyintValues = List(edition.rarity.toByte)),
-          PropertyValue(property = EditionProperties.effect, varcharValues = edition.effect.map(List(_)).getOrElse(Nil)),
-          PropertyValue(property = EditionProperties.flavourText, varcharValues = edition.flavor.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = EditionProperties.uuid, textValues = List(edition.uuid)),
+          PropertyValue(property = EditionProperties.cardId, textValues = List(edition.card_id)),
+          PropertyValue(property = EditionProperties.collectorNumber, textValues = List(edition.collector_number)),
+          PropertyValue(property = EditionProperties.illustrator, textValues = List(edition.illustrator)),
+          PropertyValue(property = EditionProperties.slug, textValues = List(edition.slug)),
+          PropertyValue(property = EditionProperties.rarity, smallintValues = List(edition.rarity.toShort)),
+          PropertyValue(property = EditionProperties.effect, textValues = edition.effect.map(List(_)).getOrElse(Nil)),
+          PropertyValue(property = EditionProperties.flavourText, textValues = edition.flavor.map(List(_)).getOrElse(Nil)),
           PropertyValue(property = CommonProperties.isGATCGEdition, booleanValues = List(true))
         )
       ))))
@@ -192,6 +188,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       // Generate Relationships
       val relationships = compositeCardsMap.flatMap {
         case ((Some(set), Some(edition), Some(card)), compositeCard) => List(
+          // TODO: We need to find a way to link existing PKs for these
           Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = set.pk, relationshipType = ParentCollection),
           Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = edition.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
           Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = card.pk, relationshipType = SourceOfPropertiesAndPropertyValues)
@@ -202,18 +199,16 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       }
       val distinctRelationships = relationships.toList.distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
       // Write data
-      Injection.produceRun(config.datasourceUri) {
-        (collectionDAO: dao.projected.CollectionDAO, relationshipDAO: dao.raw.RelationshipDAO) =>
+      Injection.produceRun(config) {
+        (collectionDAO: traits.dao.projected.CollectionDAO, relationshipDAO: traits.dao.raw.RelationshipDAO) =>
           collectionDAO.createOrUpdateCollections(
             setMap.values.toList ++ editionsMap.values.toList ++ cardsMap.values.toList ++ compositeCardsMap.values.toList
           )
           relationshipDAO.createOrUpdateRelationships(distinctRelationships)
+          true
       }
 
     })
-    // TODO: process coerced data
-//    val result = data.map(data => {
-//    })
     // TODO: Replace with a real response
     "Something".asJson
 
@@ -232,6 +227,6 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
     result.asJson
 
-object GATCGCLIPlugin extends PluginDef:
-  many[CLIPlugin].add(GATCGCLIPlugin())
-  many[Plugin].add(GATCGCLIPlugin())
+object GATCGCLIPluginDef extends PluginDef:
+  many[CLIPlugin].add[GATCGCLIPlugin]
+  many[Plugin].add[GATCGCLIPlugin]
