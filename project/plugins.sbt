@@ -1,2 +1,2 @@
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xmax-inlines", "128")
+scalacOptions ++= Seq("-unchecked", "-deprecation")
 addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.17")
