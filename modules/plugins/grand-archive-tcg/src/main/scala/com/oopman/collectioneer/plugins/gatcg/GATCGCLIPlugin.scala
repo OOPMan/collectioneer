@@ -216,13 +216,13 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         .toList
         .appendedAll(setMap.map((key, set) => Relationship(collectionPK = set.pk, relatedCollectionPK = GATCGRootCollection.pk, relationshipType = ParentCollection)))
         .distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
-        .filter(relationship => existingRelationships.contains((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)))
+        .filterNot(relationship => existingRelationships.contains((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)))
       // Write data
       Injection.produceRun(config) {
         (collectionDAO: traits.dao.projected.CollectionDAO, relationshipDAO: traits.dao.raw.RelationshipDAO) =>
           collectionDAO.createOrUpdateCollections(
-            setDataMap.values.toList ++ editionDataMap.values.toList ++ cardDataMap.values.toList ++
-            cardsMap.values.toList ++ setMap.values.toList
+            List(GATCGRootCollection) ++ setDataMap.values.toList ++ editionDataMap.values.toList ++
+            cardDataMap.values.toList ++ cardsMap.values.toList ++ setMap.values.toList
           )
           relationshipDAO.createOrUpdateRelationships(distinctRelationships)
           true
