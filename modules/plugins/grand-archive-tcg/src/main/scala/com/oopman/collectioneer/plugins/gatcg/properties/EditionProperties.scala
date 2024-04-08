@@ -9,8 +9,8 @@ import com.oopman.collectioneer.given
  */
 
 private object EditionPropertiesUUIDs:
-  val uuid = "464603e5-e9cd-4508-97cc-cbf36426d366"
-  val cardId = "1012fb83-0920-4e42-9020-bd6c754e6e49"
+  val editionUID = "464603e5-e9cd-4508-97cc-cbf36426d366"
+  val cardUID = "1012fb83-0920-4e42-9020-bd6c754e6e49"
   val collectorNumber = "6628f2a8-0f5c-4177-8db4-70de9a095ecc"
   val illustrator = "7772da6d-c693-4f1f-a074-6c161f5fabb0"
   val slug = "ff777245-92fd-46b0-908f-fe5152dae509"
@@ -19,15 +19,16 @@ private object EditionPropertiesUUIDs:
   val flavourText = "49aa3c45-2a44-4e52-9e9b-b4ef7513498f"
 
 enum EditionProperties(val property: Property):
-  case uuid extends EditionProperties(Property(
-    pk = EditionPropertiesUUIDs.uuid,
-    propertyName = "UUID",
+  case editionUID extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.editionUID,
+    propertyName = "Edition UID",
     propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
-  case cardId extends EditionProperties(Property(
-    pk = EditionPropertiesUUIDs.cardId,
-    propertyName = "Card UUID",
+  // TODO: We can probably remove this or mark it has hidden
+  case cardUID extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.cardUID,
+    propertyName = "Card UID",
     propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty

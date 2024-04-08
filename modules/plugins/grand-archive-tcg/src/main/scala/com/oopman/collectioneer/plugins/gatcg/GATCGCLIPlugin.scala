@@ -3,6 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.{Injection, entity, traits}
 import com.oopman.collectioneer.plugins.CLIPlugin
@@ -115,32 +116,41 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       import Models.*
       data.as[List[Card]].toTry
     })
-    modelsTry.map(cards => {
-      // TODO: Query for existing sets, map set name to UUID of Collection representing that Set
+    val result = modelsTry.map(cards => {
+      // TODO: Query for existing data to allow Update to succeed
       val existingSetsMap: Map[(String, String), UUID] = Map()
-      // TODO: Query for existing cards, map card id to UUID of Collection representing that Card
-      val existingCardsMap: Map[String, UUID] = Map()
-      // TODO: Query for existing editions, map edition id to UUID of Collection reprsenting that Edition
-      val existingEditions: Map[String, UUID] = Map()
+      val existingSetDataMap: Map[(String, String), UUID] = Map()
+      val existingCardsMap: Map[(String, String), UUID] = Map()
+      val existingCardDataMap: Map[String, UUID] = Map()
+      val existingEditionDataMap: Map[String, UUID] = Map()
+      val existingRelationships: Map[(UUID, UUID, RelationshipType), UUID] = Map()
       // Generate Sets
       val sets = cards.flatMap(_.editions.map(_.set)).distinctBy(set => (set.prefix, set.language))
       val setMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
         pk = existingSetsMap.getOrElse((set.prefix, set.language), UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = SetProperties.setName, textValues = List(set.name)),
-          PropertyValue(property = SetProperties.setPrefix, textValues = List(set.prefix)),
-          PropertyValue(property = SetProperties.setLanguage, textValues = List(set.language)),
+          PropertyValue(property = CoreProperties.name, textValues = List(set.name)),
           PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
         )
       ))))
+      val setDataMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
+        pk = existingSetDataMap.getOrElse((set.prefix, set.language), UUID.randomUUID),
+        virtual = true,
+        propertyValues = List(
+          PropertyValue(property = SetProperties.setName, textValues = List(set.name)),
+          PropertyValue(property = SetProperties.setPrefix, textValues = List(set.prefix)),
+          PropertyValue(property = SetProperties.setLanguage, textValues = List(set.language)),
+          PropertyValue(property = CommonProperties.isGATCGSetData, booleanValues = List(true))
+        )
+      ))))
       // Generate Collections containing CardProperties
-      val cardsMap = Map.from(cards.map(card => (card.uuid, Collection(
-        pk = existingCardsMap.getOrElse(card.uuid, UUID.randomUUID),
+      val cardDataMap = Map.from(cards.map(card => (card.cardUID, Collection(
+        pk = existingCardDataMap.getOrElse(card.cardUID, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
           PropertyValue(property = CoreProperties.name, textValues = List(card.name)),
-          PropertyValue(property = CardProperties.uuid, textValues = List(card.uuid)),
+          PropertyValue(property = CardProperties.cardUID, textValues = List(card.cardUID)),
           PropertyValue(property = CardProperties.element, textValues = List(card.element)),
           PropertyValue(property = CardProperties.types, textValues = card.types),
           PropertyValue(property = CardProperties.classes, textValues = card.classes),
@@ -154,55 +164,65 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           PropertyValue(property = CardProperties.power, smallintValues = card.power.map(p => List(p.toShort)).getOrElse(Nil)),
           PropertyValue(property = CardProperties.life, smallintValues = card.life.map(l => List(l.toShort)).getOrElse(Nil)),
           PropertyValue(property = CardProperties.durability, smallintValues = card.durability.map(d => List(d.toShort)).getOrElse(Nil)),
-          PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true))
+          PropertyValue(property = CommonProperties.isGATCGCardData, booleanValues = List(true))
         )
       ))))
       // Generate Collections containing EditionProperties
       val editions = cards.flatMap(_.editions)
-      val editionsMap = Map.from(editions.map(edition => (edition.uuid, Collection(
-        pk = existingEditions.getOrElse(edition.uuid, UUID.randomUUID),
+      val editionDataMap = Map.from(editions.map(edition => (edition.editionUID, Collection(
+        pk = existingEditionDataMap.getOrElse(edition.editionUID, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = EditionProperties.uuid, textValues = List(edition.uuid)),
-          PropertyValue(property = EditionProperties.cardId, textValues = List(edition.card_id)),
+          PropertyValue(property = EditionProperties.editionUID, textValues = List(edition.editionUID)),
+          PropertyValue(property = EditionProperties.cardUID, textValues = List(edition.cardUID)),
           PropertyValue(property = EditionProperties.collectorNumber, textValues = List(edition.collector_number)),
           PropertyValue(property = EditionProperties.illustrator, textValues = List(edition.illustrator)),
           PropertyValue(property = EditionProperties.slug, textValues = List(edition.slug)),
-          PropertyValue(property = EditionProperties.rarity, smallintValues = List(edition.rarity.toShort)),
+          PropertyValue(property = EditionProperties.rarity, smallintValues = List(edition.rarity.toShort)), // TODO: Covert to String
           PropertyValue(property = EditionProperties.effect, textValues = edition.effect.map(List(_)).getOrElse(Nil)),
           PropertyValue(property = EditionProperties.flavourText, textValues = edition.flavor.map(List(_)).getOrElse(Nil)),
-          PropertyValue(property = CommonProperties.isGATCGEdition, booleanValues = List(true))
+          PropertyValue(property = CommonProperties.isGATCGEditionData, booleanValues = List(true))
         )
       ))))
       // Generate Card Collections that will be configured as children of Set Collections and source their Properties and PropertyValues from CardProperties and EditionProperties collections
-      val compositeCardsMap = Map.from(
+      val cardsMap = Map.from(
         editions.map(edition => (
-          (setMap.get((edition.set.prefix, edition.set.language)), editionsMap.get(edition.uuid), cardsMap.get(edition.card_id)),
+          (
+            setMap.get((edition.set.prefix, edition.set.language)),
+            setDataMap.get((edition.set.prefix, edition.set.language)),
+            editionDataMap.get(edition.editionUID),
+            cardDataMap.get(edition.cardUID)
+          ),
           Collection(
-            // TODO: We need to find a way to link existing PKs for these
-            virtual = true
-            // TODO: We need to set PropertyValues on these
+            pk = existingCardsMap.getOrElse((edition.cardUID, edition.editionUID), UUID.randomUUID),
+            virtual = true,
+            propertyValues = List(PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true)))
           )
         )
       ))
       // Generate Relationships
-      val relationships = compositeCardsMap.flatMap {
-        case ((Some(set), Some(edition), Some(card)), compositeCard) => List(
-          // TODO: We need to find a way to link existing PKs for these
-          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = set.pk, relationshipType = ParentCollection),
-          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = edition.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
-          Relationship(collectionPK = compositeCard.pk, relatedCollectionPK = card.pk, relationshipType = SourceOfPropertiesAndPropertyValues)
+      val relationships = cardsMap.flatMap {
+        case ((Some(set), Some(setData), Some(editionData), Some(cardData)), card) => List(
+          Relationship(collectionPK = card.pk, relatedCollectionPK = set.pk, relationshipType = ParentCollection),
+          Relationship(collectionPK = card.pk, relatedCollectionPK = setData.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
+          Relationship(collectionPK = card.pk, relatedCollectionPK = editionData.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
+          Relationship(collectionPK = card.pk, relatedCollectionPK = cardData.pk, relationshipType = SourceOfPropertiesAndPropertyValues)
         )
         case _ =>
           logger.warn("This should never happen")
           Nil
       }
-      val distinctRelationships = relationships.toList.distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
+      val distinctRelationships = relationships
+        .toList
+        .appendedAll(setMap.map((key, set) => Relationship(collectionPK = set.pk, relatedCollectionPK = GATCGRootCollection.pk, relationshipType = ParentCollection)))
+        .distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
+        .filter(relationship => existingRelationships.contains((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)))
       // Write data
       Injection.produceRun(config) {
         (collectionDAO: traits.dao.projected.CollectionDAO, relationshipDAO: traits.dao.raw.RelationshipDAO) =>
           collectionDAO.createOrUpdateCollections(
-            setMap.values.toList ++ editionsMap.values.toList ++ cardsMap.values.toList ++ compositeCardsMap.values.toList
+            setDataMap.values.toList ++ editionDataMap.values.toList ++ cardDataMap.values.toList ++
+            cardsMap.values.toList ++ setMap.values.toList
           )
           relationshipDAO.createOrUpdateRelationships(distinctRelationships)
           true

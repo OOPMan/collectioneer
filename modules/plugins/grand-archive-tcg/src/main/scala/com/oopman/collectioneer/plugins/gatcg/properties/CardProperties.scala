@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object CardPropertiesUUIDs:
-  val uuid = "616c7919-9128-4095-94f0-a46248e071e8"
+  val cardUID = "616c7919-9128-4095-94f0-a46248e071e8"
   val element = "da10c638-7e3c-4084-b745-10370fe02c1f"
   val types = "b942d73d-ff47-4a08-9315-53e6d88dbc0b"
   val classes = "6e27e02d-09a2-4db9-9b9e-13e349fa86d5"
@@ -22,9 +22,9 @@ private object CardPropertiesUUIDs:
   val flavourText = "6edcb854-eab6-4f38-9544-a31ba6e5c448"
 
 enum CardProperties(val property: Property):
-  case uuid extends CardProperties(Property(
-    pk = CardPropertiesUUIDs.uuid,
-    propertyName = "UUID",
+  case cardUID extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.cardUID,
+    propertyName = "Card UID",
     propertyTypes = List(PropertyType.text),
     propertyValues = PropertyValues.singleValue
   )) with HasProperty
@@ -36,7 +36,7 @@ enum CardProperties(val property: Property):
   )) with HasProperty
   case types extends CardProperties(Property(
     pk = CardPropertiesUUIDs.types,
-    propertyName = "Card Typeline",
+    propertyName = "Types",
     propertyTypes = List(PropertyType.text),
   )) with HasProperty
   case classes extends CardProperties(Property(

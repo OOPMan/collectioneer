@@ -5,7 +5,7 @@ sealed trait GATCG
 
 case class Card
 (
-  uuid: String,
+  cardUID: String,
   types: List[String],
   classes: List[String],
   subtypes: List[String],
@@ -27,8 +27,8 @@ case class Card
 
 case class Edition
 (
-  uuid: String,
-  card_id: String,
+  editionUID: String,
+  cardUID: String,
   collector_number: String,
   slug: String,
   illustrator: String,
