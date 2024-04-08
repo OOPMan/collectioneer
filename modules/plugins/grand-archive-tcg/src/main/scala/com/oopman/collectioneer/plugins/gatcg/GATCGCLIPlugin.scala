@@ -145,12 +145,12 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         )
       ))))
       // Generate Collections containing CardProperties
-      val cardDataMap = Map.from(cards.map(card => (card.cardUID, Collection(
-        pk = existingCardDataMap.getOrElse(card.cardUID, UUID.randomUUID),
+      val cardDataMap = Map.from(cards.map(card => (card.uuid, Collection(
+        pk = existingCardDataMap.getOrElse(card.uuid, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
           PropertyValue(property = CoreProperties.name, textValues = List(card.name)),
-          PropertyValue(property = CardProperties.cardUID, textValues = List(card.cardUID)),
+          PropertyValue(property = CardProperties.cardUID, textValues = List(card.uuid)),
           PropertyValue(property = CardProperties.element, textValues = List(card.element)),
           PropertyValue(property = CardProperties.types, textValues = card.types),
           PropertyValue(property = CardProperties.classes, textValues = card.classes),
@@ -169,12 +169,12 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       ))))
       // Generate Collections containing EditionProperties
       val editions = cards.flatMap(_.editions)
-      val editionDataMap = Map.from(editions.map(edition => (edition.editionUID, Collection(
-        pk = existingEditionDataMap.getOrElse(edition.editionUID, UUID.randomUUID),
+      val editionDataMap = Map.from(editions.map(edition => (edition.uuid, Collection(
+        pk = existingEditionDataMap.getOrElse(edition.uuid, UUID.randomUUID),
         virtual = true,
         propertyValues = List(
-          PropertyValue(property = EditionProperties.editionUID, textValues = List(edition.editionUID)),
-          PropertyValue(property = EditionProperties.cardUID, textValues = List(edition.cardUID)),
+          PropertyValue(property = EditionProperties.editionUID, textValues = List(edition.uuid)),
+          PropertyValue(property = EditionProperties.cardUID, textValues = List(edition.card_id)),
           PropertyValue(property = EditionProperties.collectorNumber, textValues = List(edition.collector_number)),
           PropertyValue(property = EditionProperties.illustrator, textValues = List(edition.illustrator)),
           PropertyValue(property = EditionProperties.slug, textValues = List(edition.slug)),
@@ -190,11 +190,11 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           (
             setMap.get((edition.set.prefix, edition.set.language)),
             setDataMap.get((edition.set.prefix, edition.set.language)),
-            editionDataMap.get(edition.editionUID),
-            cardDataMap.get(edition.cardUID)
+            editionDataMap.get(edition.uuid),
+            cardDataMap.get(edition.card_id)
           ),
           Collection(
-            pk = existingCardsMap.getOrElse((edition.cardUID, edition.editionUID), UUID.randomUUID),
+            pk = existingCardsMap.getOrElse((edition.card_id, edition.uuid), UUID.randomUUID),
             virtual = true,
             propertyValues = List(PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true)))
           )
