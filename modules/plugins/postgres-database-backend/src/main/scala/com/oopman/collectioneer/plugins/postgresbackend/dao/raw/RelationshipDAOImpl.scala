@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.ScalikeRelationshipDAO
-import com.oopman.collectioneer.db.traits.entity.raw.Relationship
+import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, RelationshipType}
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.DBSession
 
@@ -22,7 +22,27 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
 
   def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] = ???
 
-  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): List[Relationship] = ???
+  def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+    postgresbackend.queries.raw.RelationshipQueries
+      .selectByCollectionPKsAndRelationshipTypes
+      .bind(
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
+      )
+      .map(postgresbackend.entity.raw.Relationship.apply)
+      .list
+      .apply()
 
-  def getAllMatchingRelatedCollectionPKs(relatedCollectionPKs: Seq[UUID])(implicit session: DBSession): List[Relationship] = ???
+  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+    postgresbackend.queries.raw.RelationshipQueries
+      .selectByRelatedCollectionPKsAndRelationshipTypes
+      .bind(
+        session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
+      )
+      .map(postgresbackend.entity.raw.Relationship.apply)
+      .list
+      .apply()
+
+  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID])(implicit session: DBSession): List[Relationship] = ???
   
