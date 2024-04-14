@@ -3,6 +3,8 @@ package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw.Property
 import scalikejdbc.*
 
+import java.util.UUID
+
 object PropertyQueries:
 
   def insert =
@@ -25,3 +27,10 @@ object PropertyQueries:
           SELECT ${Property.p1.result.*}
           FROM ${Property.as(Property.p1)}
      """
+
+  def allMatchingPKs(propertyPKs: Seq[UUID]) =
+    sql"""
+          SELECT ${Property.p1.result.*}
+          FROM ${Property.as(Property.p1)}
+          WHERE ${Property.p1.pk} IN (${propertyPKs})
+       """

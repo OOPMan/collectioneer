@@ -5,6 +5,8 @@ import scalikejdbc.{AutoSession, DBSession}
 import com.oopman.collectioneer.db.{entity, scalikejdbc, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
 
+import java.util.UUID
+
 object PropertyDAOImpl extends scalikejdbc.traits.dao.raw.ScalikePropertyDAO:
 
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
@@ -26,4 +28,9 @@ object PropertyDAOImpl extends scalikejdbc.traits.dao.raw.ScalikePropertyDAO:
       .list
       .apply()
 
-//  def getAllMatchingPKs(uuids: Seq[UUID])(session: DBSession = AutoSession): List[entity.raw.Property] = ???
+  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession): List[Property] =
+    postgresbackend.queries.raw.PropertyQueries
+      .allMatchingPKs(propertyPKs)
+      .map(postgresbackend.entity.raw.Property(postgresbackend.entity.raw.Property.p1.resultName))
+      .list
+      .apply()

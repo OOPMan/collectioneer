@@ -8,8 +8,8 @@ import java.util.UUID
 case class Property
 (
   pk: UUID = UUID.randomUUID(),
-  propertyName: String,
-  propertyTypes: List[traits.entity.raw.PropertyType],
+  propertyName: String = "",
+  propertyTypes: List[traits.entity.raw.PropertyType] = Nil,
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),

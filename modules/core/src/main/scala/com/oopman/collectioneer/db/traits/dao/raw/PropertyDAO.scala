@@ -8,4 +8,4 @@ trait PropertyDAO:
   def createProperties(properties: Seq[Property]): Array[Int]
   def createOrUpdateProperties(properties: Seq[Property]): Array[Int]
   def getAll: List[Property]
-  def getAllMatchingPKs(uuids: Seq[UUID]): List[Property]
+  def getAllMatchingPKs(propertyPKs: Seq[UUID]): List[Property]
