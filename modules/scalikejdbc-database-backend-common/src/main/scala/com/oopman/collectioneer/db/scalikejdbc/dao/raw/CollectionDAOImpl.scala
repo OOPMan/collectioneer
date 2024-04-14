@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.db.scalikejdbc.dao.raw
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.traits
@@ -21,3 +22,5 @@ class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDat
   def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection] =
     dbProvider() readOnly { implicit session => db.dao.raw.CollectionDAO.getAllMatchingPKs(collectionPKs) }
 
+  def getAllMatchingPropertyValues(comparisons: Comparison*): List[Collection] =
+    dbProvider() readOnly { implicit session => db.dao.raw.CollectionDAO.getAllMatchingPropertyValues(comparisons: _*) }

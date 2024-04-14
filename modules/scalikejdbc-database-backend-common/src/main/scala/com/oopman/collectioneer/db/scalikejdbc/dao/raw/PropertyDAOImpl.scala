@@ -18,5 +18,6 @@ class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDatab
   def getAll: List[Property] =
     dbProvider() readOnly { implicit session => db.dao.raw.PropertyDAO.getAll }
 
-  def getAllMatchingPKs(uuids: Seq[UUID]): List[Property] = ???
+  def getAllMatchingPKs(propertyPKs: Seq[UUID]): List[Property] =
+    dbProvider() readOnly { implicit session => db.dao.raw.PropertyDAO.getAllMatchingPKs(propertyPKs) }
 
