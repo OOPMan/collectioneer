@@ -25,14 +25,14 @@ class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntax
   def deleteByPK =
     sql"""
           DELETE FROM ${pv.table}
-          WHERE pk IN (?)
+          WHERE pk = ANY (?::uuid[])
        """
 
   def deleteByCollectionPksAndPropertyPKs =
     sql"""
           DELETE FROM ${pv.table}
-          WHERE collection_pk = ANY (cast(? AS uuid[]))
-          AND property_pk = ANY (cast(? AS uuid[]))
+          WHERE collection_pk = ANY (?::uuid[])
+          AND property_pk = ANY (?::uuid[])
        """
 
 object PropertyValueVarcharQueries extends PropertyValueQueries(raw.PropertyValueText)
@@ -58,10 +58,10 @@ object PropertyValueJSONQueries extends PropertyValueQueries(raw.PropertyValueJS
   override def upsert =
     sql"""
           INSERT INTO ${pv.table} (pk, collection_pk, property_pk, property_value, index)
-          VALUES (?, ?, ?, cast(? AS jsonb), ?)
+          VALUES (?, ?, ?, ?::jsonb, ?)
           ON CONFLICT(pk) DO UPDATE
-          SET collection_pk = excluded.collection_pk, property_pk = excluded.property_pk, property_value =
-          cast(excluded.property_value AS jsonb), index = excluded.index, modified = now()
+          SET collection_pk = excluded.collection_pk, property_pk = excluded.property_pk,
+          property_value = excluded.property_value::jsonb, index = excluded.index, modified = now()
        """
 
 object PropertyValueQueries:
