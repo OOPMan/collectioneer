@@ -21,8 +21,8 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
     postgresbackend.queries.raw.PropertyValueQueries.propertyValueQueryObjects
       .map(_.deleteByCollectionPksAndPropertyPKs.bind(
-        session.connection.createArrayOf("VARCHAR", collectionPKs.toArray),
-        session.connection.createArrayOf("VARCHAR", propertyPKs.toArray)
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", propertyPKs.toArray)
       ).update.apply())
     // Insert new PropertyValues into relevant property value tables by property and properyValueSet
     propertyValues

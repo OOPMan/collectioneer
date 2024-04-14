@@ -1,11 +1,11 @@
 package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer.cli.actions.imprt.importDatabase
-import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollections, listProperties}
+import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollectionsAction, listProperties}
 import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.plugins.PluginConfig
-import distage.{Injector, ModuleBase}
+import distage.{Injector, ModuleBase, ModuleDef}
 import io.circe.Json
 import io.circe.syntax.*
 import io.circe.yaml.*
@@ -50,7 +50,7 @@ def generateSubjectCmds
     .validate(pluginName =>
       if pluginNames.contains(pluginName) then builder.success
       else builder.failure("Invalid plugin name. Valid options: " + pluginNamesString))
-  val oParserItems = pluginNameOpt :: actionListItems.flatMap(_._5)
+  val oParserItems = if pluginNames.nonEmpty then pluginNameOpt :: actionListItems.flatMap(_._5) else actionListItems.flatMap(_._5)
   builder.cmd(subject.name)
     .text(subject.help.getOrElse(verb, ""))
     .action((_, config) => config.copy(subject = Some(subject)))
@@ -69,8 +69,11 @@ object CLI:
   val builder: OParserBuilder[Config] = OParser.builder[Config]
   val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
   val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
+  private object fakeModule extends ModuleDef:
+    include(pluginModules)
+    make[com.oopman.collectioneer.Config].from(Config())
   val plugins: List[CLIPlugin] = Injector[Identity]()
-    .produceRun(pluginModules)((cliPlugins: Set[CLIPlugin]) => cliPlugins).toList
+    .produceRun(fakeModule)((cliPlugins: Set[CLIPlugin]) => cliPlugins).toList
 //  val plugins: List[CLIPlugin] =
 //    try Injector()
 //      .produceGet[Set[CLIPlugin]](pluginModules)
@@ -101,8 +104,13 @@ object CLI:
     .optional()
     .action((virtual, config) => config.copy(virtual = Some(virtual)))
     .text("Filter by virtual field value")
+  val propertyValueQueryArgs: OParser[String, Config] = builder.arg[String]("<PropertyValueQueries>...")
+    .unbounded()
+    .optional()
+    .action((propertyValueQuery, config) => config.copy(propertyValueQueries = config.propertyValueQueries.map(propertyValueQuery :: _).orElse(Some(propertyValueQuery :: Nil))))
+    .text("Add PropertyValue filters. Filter format is <UUID4><Operator><Value> (e.g. a82f8e14-0f5b-467f-a85d-0810537a41c5>=10). Multiple filters are ANDed together")
   val baseActions: List[ActionListItem] = List(
-    (Verb.list, Subject.collections, None, listCollections, List(deletedOpt, virtualOp)),
+    (Verb.list, Subject.collections, None, listCollectionsAction, List(deletedOpt, virtualOp, propertyValueQueryArgs)),
     (Verb.list, Subject.properties, None, listProperties, List(deletedOpt)),
     (Verb.list, Subject.plugins, None, _ => plugins.map(plugin => s"${plugin.getName} (${plugin.getVersion})").asJson, List()),
     (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
@@ -161,7 +169,7 @@ object CLI:
           enabled = config.debug,
           singleLineMode = !config.verbose
         )
-        try {
+//        try {
           Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp() }
           // Process CLI arguments
           val action = for {
@@ -173,7 +181,7 @@ object CLI:
             case OutputFormat.json => result.spaces2SortKeys
             case OutputFormat.yaml => result.asYaml.spaces2
           println(resultString)
-        } finally {
-          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.shutDown() }
-        }
+//        } finally {
+//          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.shutDown() }
+//        }
       case _ =>

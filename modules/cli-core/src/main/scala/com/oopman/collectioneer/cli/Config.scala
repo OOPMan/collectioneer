@@ -66,6 +66,7 @@ case class Config
   importDatasourceUris: List[String] = Nil,
   deleted: Option[Boolean] = None,
   virtual: Option[Boolean] = None,
+  propertyValueQueries: Option[List[String]] = None,
   usePlugin: Option[String] = None,
   subconfigs: Map[String, Subconfig] = Map(),
 ) extends com.oopman.collectioneer.Config
