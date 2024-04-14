@@ -21,6 +21,15 @@ object Collection extends SQLSyntaxSupport[raw.Collection]:
       modified = rs.zonedDateTime(c.modified)
     )
 
+  def apply(rs: WrappedResultSet) =
+    raw.Collection(
+      pk = UUID.fromString(rs.string("pk")),
+      virtual = rs.boolean("virtual"),
+      deleted = rs.boolean("deleted"),
+      created = rs.zonedDateTime("created"),
+      modified = rs.zonedDateTime("modified")
+    )
+
   def collectionsSeqToBatchInsertSeq(collections: Seq[Collection]): Seq[Seq[Any]] =
     collections.map(c => Seq(
       c.pk,
