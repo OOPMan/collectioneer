@@ -32,6 +32,9 @@ lazy val commonSettings = Seq(
     "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
+    "org.scalactic"                   %% "scalactic"                  % "3.2.18",
+    "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
+    "org.scalatest"                   %% "scalatest-funsuite"         % "3.2.18"            % "test"
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
