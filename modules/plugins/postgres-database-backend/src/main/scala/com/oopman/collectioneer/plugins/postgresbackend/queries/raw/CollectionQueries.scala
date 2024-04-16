@@ -32,3 +32,10 @@ object CollectionQueries:
          FROM ${Collection.as(Collection.c1)}
          WHERE ${Collection.c1.pk} IN (${collectionPKs})
        """
+
+  def allInnerJoining(fromSQL: String, fromColumn: String) =
+    SQL(s"""
+          SELECT c1.*
+          FROM $fromSQL AS f1
+          INNER JOIN collection AS c1 ON c1.pk = f1.$fromColumn
+        """)
