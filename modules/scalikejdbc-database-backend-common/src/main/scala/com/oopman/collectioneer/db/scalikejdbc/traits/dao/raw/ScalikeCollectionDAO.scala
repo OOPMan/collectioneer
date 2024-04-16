@@ -11,4 +11,4 @@ trait ScalikeCollectionDAO:
   def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession): Array[Int]
   def getAll(implicit session: DBSession): List[Collection]
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): List[Collection]
-  def getAllMatchingPropertyValues(comparisons: Comparison*)(implicit session: DBSession): List[Collection]
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): List[Collection]

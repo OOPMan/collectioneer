@@ -37,7 +37,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .list
       .apply()
 
-  def getAllMatchingPropertyValues(comparisons: Comparison*)(implicit session: DBSession = AutoSession): List[Collection] =
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] =
     val comparison = comparisons.reduce((c1, c2) => c1 and c2)
     val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
     postgresbackend.queries.raw.CollectionQueries

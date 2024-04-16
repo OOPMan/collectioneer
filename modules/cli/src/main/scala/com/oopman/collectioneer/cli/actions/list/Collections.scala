@@ -74,10 +74,10 @@ def listCollectionsByPropertyValueQueries(config: Config)(propertyDAO: PropertyD
   val properties = propertyDAO.getAllMatchingPKs(propertyPKs)
   val propertyValueComparisons = for {
     property <- properties
-    propertyType <- property.propertyTypes
+    propertyType <- property.propertyTypes // TODO: This will cause issues if there is more than one PropertyType
     (operator, value) <- propertyValueQueryStringComponents.get(property.pk)
   } yield PropertyValueComparison(property, operator, stringToValue(value, propertyType))
-  collectionDAO.getAllMatchingPropertyValues(propertyValueComparisons: _*)
+  collectionDAO.getAllMatchingPropertyValues(propertyValueComparisons)
 
 
 def listCollectionsAction(config: Config) =
