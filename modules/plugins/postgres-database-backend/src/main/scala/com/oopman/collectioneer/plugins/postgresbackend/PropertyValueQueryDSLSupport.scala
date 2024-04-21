@@ -58,7 +58,7 @@ object PropertyValueQueryDSLSupport:
             WHERE pv.property_pk = ?::uuid
             AND pv.property_value ${operatorSymbol}${operatorSuffix} (?::${cast}${castSuffix})
            """,
-          Seq(lhs.pk, value) // TODO: We should probably convert the type of the value here
+          Seq(lhs.pk, value)
         )
       )
       sqlAndParameters.reduce {
