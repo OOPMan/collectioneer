@@ -11,3 +11,4 @@ trait CollectionDAO:
   def getAll: List[Collection]
   def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection]
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection]
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection]
