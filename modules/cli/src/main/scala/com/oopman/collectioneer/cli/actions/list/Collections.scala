@@ -1,17 +1,15 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.PropertyValueQueryDSL.{Operator, PropertyValueComparison, Value}
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.{Operator, PropertyValueComparison}
 import com.oopman.collectioneer.db.traits.dao.raw.{CollectionDAO, PropertyDAO}
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.{Injection, traits}
 import distage.*
 import io.circe.*
 import io.circe.generic.auto.*
-import io.circe.parser.*
 import io.circe.syntax.*
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.ZonedDateTime
 import java.util.{HexFormat, UUID}
 
 implicit val encodeCollection: Encoder[traits.entity.raw.Collection] = (c: traits.entity.raw.Collection) =>
@@ -49,22 +47,6 @@ def operatorToOperator(operator: String): Operator = operator match
   case "<"  => Operator.lessThan
   case "~=" => Operator.like
 
-def stringToValue(value: String, propertyType: PropertyType): Value = propertyType match
-  case PropertyType.text => value
-  case PropertyType.bytes => value
-  case PropertyType.smallint => value.toInt
-  case PropertyType.int => value.toInt
-  case PropertyType.bigint => BigInt(value)
-  case PropertyType.numeric => BigDecimal(value)
-  case PropertyType.float => value.toFloat
-  case PropertyType.double => value.toDouble
-  case PropertyType.boolean => value.toBoolean
-  case PropertyType.date => LocalDate.parse(value)
-  case PropertyType.time => OffsetTime.parse(value)
-  case PropertyType.timestamp => ZonedDateTime.parse(value)
-  case PropertyType.uuid => UUID.fromString(value)
-  case PropertyType.json => decode[io.circe.Json](value).getOrElse(io.circe.Json.fromString("{}"))
-
 def listCollectionsByPropertyValueQueries(config: Config)(propertyDAO: PropertyDAO, collectionDAO: CollectionDAO) =
   val propertyValueQueryPattern = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(>|>=|==|!=|<|<=|~=)(\\S+)$".r
   val propertyValueQueriesStrings = config.propertyValueQueries.getOrElse(Nil)
@@ -76,8 +58,8 @@ def listCollectionsByPropertyValueQueries(config: Config)(propertyDAO: PropertyD
     property <- properties
     propertyType <- property.propertyTypes // TODO: This will cause issues if there is more than one PropertyType
     (operator, value) <- propertyValueQueryStringComponents.get(property.pk)
-  } yield PropertyValueComparison(property, operator, stringToValue(value, propertyType))
-  collectionDAO.getAllMatchingPropertyValues(propertyValueComparisons)
+  } yield PropertyValueComparison(property, operator, value)
+  collectionDAO.getAllRelatedMatchingPropertyValues(propertyValueComparisons)
 
 
 def listCollectionsAction(config: Config) =
