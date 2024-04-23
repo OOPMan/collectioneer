@@ -38,11 +38,20 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .apply()
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] =
-    val comparison = comparisons.reduce((c1, c2) => c1 and c2)
-    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
     postgresbackend.queries.raw.CollectionQueries
       .allInnerJoining(s"($comparisonSQL)", "collection_pk")
       .bind(parameters: _*)
       .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
       .list
       .apply()
+
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] =
+    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
+    postgresbackend.queries.raw.CollectionQueries
+      .allRelatedMatchingPropertyValues(comparisonSQL)
+      .bind(parameters: _*)
+      .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
+      .list
+      .apply()
+
