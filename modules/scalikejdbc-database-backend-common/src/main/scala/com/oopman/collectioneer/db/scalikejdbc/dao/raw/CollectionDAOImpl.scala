@@ -24,3 +24,6 @@ class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDat
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection] =
     dbProvider() readOnly { implicit session => db.dao.raw.CollectionDAO.getAllMatchingPropertyValues(comparisons) }
+
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection] =
+    dbProvider() readOnly { implicit session => db.dao.raw.CollectionDAO.getAllRelatedMatchingPropertyValues(comparisons) }
