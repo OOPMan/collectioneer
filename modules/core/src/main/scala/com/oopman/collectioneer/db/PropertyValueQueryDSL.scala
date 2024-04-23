@@ -21,26 +21,27 @@ object PropertyValueQueryDSL:
     case and extends LogicalOperator
     case or extends LogicalOperator
 
-  type Value = BigInt | Boolean | Byte | LocalDate | Double | Float | Int | io.circe.Json | BigDecimal | String | OffsetTime | ZonedDateTime | UUID
-  type Operand = Property | Value | Seq[Value] | Comparison
+  type Value = BigInt | Boolean | Byte | LocalDate | Double | Float | Short | Int | io.circe.Json | BigDecimal | String | OffsetTime | ZonedDateTime | UUID
+  type Values = Value | Seq[Value] | Array[Value]
+  type Operand = Property | Values | Comparison
 
   sealed trait Comparison:
     val lhs: Operand
     val operator: Operator | LogicalOperator
     val rhs: Operand
 
-  case class PropertyValueComparison(lhs: Property, operator: Operator, rhs: Value | Seq[Value]) extends Comparison
+  case class PropertyValueComparison(lhs: Property, operator: Operator, rhs: Values) extends Comparison
   case class PropertyPropertyComparison(lhs: Property, operator: Operator, rhs: Property) extends Comparison
   case class NestedComparison(lhs: Comparison, operator: LogicalOperator, rhs: Comparison) extends Comparison
 
   extension (lhs: Property)
-    def gt(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.greaterThan, rhs)
-    def gte(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.greaterThanOrEqualTo, rhs)
-    def eq(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.equalTo, rhs)
-    def notEq(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.notEqualTo, rhs)
-    def lte(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.lessThanOrEualTo, rhs)
-    def lt(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.lessThan, rhs)
-    def like(rhs: Value | Seq[Value]) = PropertyValueComparison(lhs, Operator.like, rhs)
+    def gt(rhs: Values) = PropertyValueComparison(lhs, Operator.greaterThan, rhs)
+    def gte(rhs: Values) = PropertyValueComparison(lhs, Operator.greaterThanOrEqualTo, rhs)
+    def eq(rhs: Values) = PropertyValueComparison(lhs, Operator.equalTo, rhs)
+    def notEq(rhs: Values) = PropertyValueComparison(lhs, Operator.notEqualTo, rhs)
+    def lte(rhs: Values) = PropertyValueComparison(lhs, Operator.lessThanOrEualTo, rhs)
+    def lt(rhs: Values) = PropertyValueComparison(lhs, Operator.lessThan, rhs)
+    def like(rhs: Values) = PropertyValueComparison(lhs, Operator.like, rhs)
 
   extension (lhs: Property)
       def gt(rhs: Property) = PropertyPropertyComparison(lhs, Operator.greaterThan, rhs)
