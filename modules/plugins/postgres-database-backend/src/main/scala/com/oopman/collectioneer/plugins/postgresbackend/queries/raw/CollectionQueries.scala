@@ -33,9 +33,29 @@ object CollectionQueries:
          WHERE ${Collection.c1.pk} IN (${collectionPKs})
        """
 
-  def allInnerJoining(fromSQL: String, fromColumn: String) =
+  def allInnerJoining(fromSQL: String, fromColumn: String, prefixSQL: String = "", suffixSQL: String = "") =
     SQL(s"""
+          $prefixSQL
           SELECT c1.*
           FROM $fromSQL AS f1
           INNER JOIN collection AS c1 ON c1.pk = f1.$fromColumn
+          $suffixSQL
         """)
+
+  def allRelatedMatchingPropertyValues(propertyValuesFromSQL: String) =
+    val prefixSQL =
+      s"""
+        WITH RECURSIVE cte1(root_collection_pk, collection_pk, level) AS (
+            SELECT pv.collection_pk AS root_collection_pk, pv.collection_pk, 0 AS level
+            FROM ($propertyValuesFromSQL) AS pv
+            UNION
+            SELECT
+                cte1.root_collection_pk,
+                r.collection_pk,
+                cte1.level + 1 as level
+            FROM cte1
+            LEFT JOIN relationship AS r ON r.related_collection_pk = cte1.collection_pk
+            WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
+        )
+      """
+    allInnerJoining("cte1", "collection_pk", prefixSQL)
