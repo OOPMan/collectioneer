@@ -8,9 +8,9 @@ import com.oopman.collectioneer.plugins.postgresbackend
 import java.util.UUID
 
 object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyValue] =
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil, deleted: Seq[Boolean] = Seq(false))(implicit session: DBSession = AutoSession): List[PropertyValue] =
     postgresbackend.queries.projected.PropertyValueQueries
-      .propertyValuesByCollectionPKs(collectionUUIDs)
+      .propertyValuesByCollectionPKs(collectionUUIDs, propertyUUIDs, deleted)
       .map(postgresbackend.entity.projected.PropertyValue.generatePropertyValuesFromWrappedResultSet)
       .list
       .apply()

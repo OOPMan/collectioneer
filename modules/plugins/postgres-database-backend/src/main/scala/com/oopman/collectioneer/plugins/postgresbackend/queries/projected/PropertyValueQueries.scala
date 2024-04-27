@@ -1,331 +1,126 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.projected
 
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast
 import scalikejdbc.*
 
 import java.util.UUID
 
 object PropertyValueQueries:
 
-  def propertyValuesByCollectionPKs(collectionPKs: Seq[UUID], deleted: Seq[Boolean] = List(false)): SQL[Nothing, NoExtractor] =
-    sql"""
-      SELECT
-        p.property_name,
-        p.property_types,
-        p.deleted,
-        p.created,
-        p.modified,
-        pv.*
-      FROM property AS p
-      INNER JOIN (
-          /* Varchar Property Values */
-            SELECT
-              collection_pk,
-              property_pk,
-              array_agg(property_value) AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_text
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Varbinary Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              array_agg(property_value) AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_bytes
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Smallint Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              array_agg(property_value) AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-          FROM property_value_smallint
-          WHERE collection_pk IN (${collectionPKs})
-          GROUP BY collection_pk, property_pk
-          /* Int Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              array_agg(property_value) AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_int
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Bigint Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              array_agg(property_value) AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_bigint
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Numeric Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              array_agg(property_value) AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_numeric
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Float Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              array_agg(property_value) AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_float
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Double Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              array_agg(property_value) AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_double
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Boolean Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              array_agg(property_value) AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_boolean
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Date Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              array_agg(property_value) AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_date
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Time Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              array_agg(property_value) AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_time
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* Timestamp Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              array_agg(property_value) AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_timestamp
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* UUID Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              array_agg(property_value) AS uuid_values,
-              ARRAY[] AS json_values
-            FROM property_value_uuid
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-          /* JSON Property Values */
-          UNION
-            SELECT
-              collection_pk,
-              property_pk,
-              ARRAY[] AS text_values,
-              ARRAY[] AS bytes_values,
-              ARRAY[] AS smallint_values,
-              ARRAY[] AS int_values,
-              ARRAY[] AS bigint_values,
-              ARRAY[] AS numeric_values,
-              ARRAY[] AS float_values,
-              ARRAY[] AS double_values,
-              ARRAY[] AS boolean_values,
-              ARRAY[] AS date_values,
-              ARRAY[] AS time_values,
-              ARRAY[] AS timestamp_values,
-              ARRAY[] AS uuid_values,
-              array_agg(property_value) AS json_values
-            FROM property_value_json
-            WHERE collection_pk IN (${collectionPKs})
-            GROUP BY collection_pk, property_pk
-      ) AS pv ON pv.property_pk = p.PK
-      WHERE p.deleted IN (${deleted})
-      ORDER BY pv.collection_pk, pv.property_pk
-       """
+  // TODO: Use more limited list of PropertyTypes?
+  def generateCTE7SelectComponent(inputPropertyType: PropertyType): String =
+    val selectElements = PropertyType.values.map(propertyType =>
+      if (inputPropertyType == propertyType)
+      then s"pvt.property_value::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
+      else s"NULL::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
+    ).mkString(", ")
+    s"""SELECT pvt.pk, pvt.collection_pk, pvt.property_pk, $selectElements
+          FROM property_value_$inputPropertyType AS pvt
+          INNER JOIN cte3 ON pvt.collection_pk = ANY (cte3.distinct_collection_pks)
+          INNER JOIN cte5 ON pvt.property_pk = ANY (cte5.distinct_property_pks)"""
 
+  def generateCTE7QueryComponent() =
+
+    val innerSQL = PropertyType.values.map(generateCTE7SelectComponent).mkString(" UNION ALL ")
+    val columnItems = PropertyType.values.map(propertyType => s"property_value_$propertyType").mkString(", ")
+    (
+      SQLSyntax.createUnsafely(s"pk, collection_pk, property_pk, $columnItems"),
+      SQLSyntax.createUnsafely(innerSQL)
+    )
+
+  def propertyValuesByCollectionPKs(collectionPKs: Seq[UUID], propertyPKs: Seq[UUID] = Nil, deleted: Seq[Boolean] = Seq(false)) =
+    val propertyPKsConditionSQLSyntax = propertyPKs.length match
+      case 0 => SQLSyntax.empty
+      case _ => sqls"AND p.pk IN ($propertyPKs)"
+    val (cte7ColumnsSQLSyntax, cte7InnerSQLSyntax) = generateCTE7QueryComponent()
+    sql"""WITH RECURSIVE cte1(top_level_collection_pk, collection_pk, related_collection_pk, index) AS (
+              SELECT c.pk AS top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
+              FROM collection AS c
+              LEFT JOIN relationship AS r ON r.collection_pk = c.PK
+              WHERE
+                c.pk IN ($collectionPKs)
+                AND (r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL)
+              UNION
+              SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
+              FROM cte1 LEFT JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
+              WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL
+          ),
+          cte2(distinct_collection_pk) AS (
+              SELECT DISTINCT ON (distinct_collection_pk) coalesce(cte1.related_collection_pk, cte1.top_level_collection_pk) AS distinct_collection_pk
+              FROM cte1
+          ),
+          cte3(distinct_collection_pks) AS (
+              SELECT array_agg(cte2.distinct_collection_pk) AS distiction_collection_pks
+              FROM cte2
+          ),
+          cte4(distinct_property_pk) AS (
+              SELECT distinct on (pc.property_pk) pc.property_pk
+              FROM property__collection AS pc
+              INNER JOIN cte2 ON cte2.distinct_collection_pk = pc.collection_pk
+          ),
+          cte5(distinct_property_pks) AS (
+            SELECT array_agg(cte4.distinct_property_pk) AS distinct_property_pks
+            FROM cte4
+          ),
+          cte6(top_level_collection_pk, related_collection_pk, property_pk) AS (
+            SELECT top_level_collection_pk,
+                   related_collection_pk,
+                   property_pk
+            FROM cte1
+            LEFT JOIN property__collection AS pc ON (cte1.top_level_collection_pk = pc.collection_pk OR pc.collection_pk = cte1.related_collection_pk)
+            WHERE pc.property_pk IS NOT NULL
+            GROUP BY top_level_collection_pk, related_collection_pk, property_pk
+          ),
+          cte7($cte7ColumnsSQLSyntax) AS ($cte7InnerSQLSyntax),
+          cte8(top_level_collection_pk, related_collection_pk, property_pk, property_value_bigint, property_value_boolean, property_value_bytes, property_value_date,
+               property_value_double, property_value_float, property_value_int, property_value_json, property_value_numeric,
+               property_value_smallint, property_value_text, property_value_time, property_value_timestamp, property_value_uuid
+              ) AS (
+              SELECT
+                  cte6.top_level_collection_pk,
+                  cte6.related_collection_pk,
+                  cte6.property_pk,
+                  array_remove(array_agg(cte7.property_value_bigint), NULL) AS property_value_bigint,
+                  array_remove(array_agg(cte7.property_value_boolean), NULL) AS property_value_boolean,
+                  array_remove(array_agg(cte7.property_value_bytes), NULL) AS property_value_bytes,
+                  array_remove(array_agg(cte7.property_value_date), NULL) AS property_value_date,
+                  array_remove(array_agg(cte7.property_value_double), NULL) AS property_value_double,
+                  array_remove(array_agg(cte7.property_value_float), NULL) AS property_value_float,
+                  array_remove(array_agg(cte7.property_value_int), NULL) AS property_value_int,
+                  array_remove(array_agg(cte7.property_value_json), NULL) AS property_value_json,
+                  array_remove(array_agg(cte7.property_value_numeric), NULL) AS property_value_numeric,
+                  array_remove(array_agg(cte7.property_value_smallint), NULL) AS property_value_smallint,
+                  array_remove(array_agg(cte7.property_value_text), NULL) AS property_value_text,
+                  array_remove(array_agg(cte7.property_value_time), NULL) AS property_value_time,
+                  array_remove(array_agg(cte7.property_value_timestamp), NULL) AS property_value_timestamp,
+                  array_remove(array_agg(cte7.property_value_uuid), NULL) AS property_value_uuid
+              FROM cte6
+              LEFT JOIN cte7 ON (
+                  cte6.property_pk = cte7.property_pk AND
+                  ((cte6.top_level_collection_pk = cte7.collection_pk AND cte6.related_collection_pk IS NULL) OR cte6.related_collection_pk = cte7.collection_pk))
+              GROUP BY cte6.top_level_collection_pk, cte6.related_collection_pk, cte6.property_pk
+          )
+          SELECT
+              p.*,
+              cte8.property_value_bigint,
+              cte8.property_value_boolean,
+              cte8.property_value_bytes,
+              cte8.property_value_date,
+              cte8.property_value_double,
+              cte8.property_value_float,
+              cte8.property_value_int,
+              cte8.property_value_json,
+              cte8.property_value_numeric,
+              cte8.property_value_smallint,
+              cte8.property_value_text,
+              cte8.property_value_time,
+              cte8.property_value_timestamp,
+              cte8.property_value_uuid,
+              cte8.top_level_collection_pk,
+              cte8.related_collection_pk,
+              cte8.property_pk
+          FROM cte8
+          INNER JOIN property AS p ON cte8.property_pk = p.pk
+          WHERE p.deleted IN ($deleted) $propertyPKsConditionSQLSyntax
+        """

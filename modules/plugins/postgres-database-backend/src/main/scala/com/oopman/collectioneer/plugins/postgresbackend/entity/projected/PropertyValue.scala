@@ -3,6 +3,8 @@ package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property}
 import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.{entity, traits}
+import io.circe.*
+import io.circe.parser.*
 import scalikejdbc.WrappedResultSet
 
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
@@ -10,31 +12,31 @@ import java.util.UUID
 
 object PropertyValue:
   def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
-    val propertyTypes = Utils.resultSetArrayToPropertyTypeList(rs, "PROPERTY_TYPES")
-    val textValues = Utils.resultSetArrayToListOf[String](rs, "VARCHAR_VALUES")
-    val byteValues = Utils.resultSetArrayToListOf[Array[Byte]](rs, "VARBINARY_VALUES")
-    val smallintValues = Utils.resultSetArrayToListOf[Short](rs, "SMALLINT_VALUES")
-    val intValues = Utils.resultSetArrayToListOf[Int](rs, "INT_VALUES")
-    val bigintValues = Utils.resultSetArrayToListOf[BigInt](rs, "BIGINT_VALUES")
-    val numericValues = Utils.resultSetArrayToListOf[BigDecimal](rs, "NUMERIC_VALUES")
-    val floatValues = Utils.resultSetArrayToListOf[Float](rs, "FLOAT_VALUES")
-    val doubleValues = Utils.resultSetArrayToListOf[Double](rs, "DOUBLE_VALUES")
-    val booleanValues = Utils.resultSetArrayToListOf[Boolean](rs, "BOOLEAN_VALUES")
-    val dateValues = Utils.resultSetArrayToListOf[LocalDate](rs, "DATE_VALUES")
-    val timeValues = Utils.resultSetArrayToListOf[OffsetTime](rs, "TIME_VALUES")
-    val timestampValues = Utils.resultSetArrayToListOf[ZonedDateTime](rs, "TIMESTAMP_VALUES")
-    val uuidValues = Utils.resultSetArrayToListOf[UUID](rs, "UUID_VALUES")
-    val jsonValues = Utils.resultSetArrayToListOf[Array[Byte]](rs, "JSON_VALUES") // TODO: Fix to decode JSON
+    val propertyTypes = Utils.resultSetArrayToPropertyTypeList(rs, "property_types")
+    val textValues = Utils.resultSetArrayToListOf[String](rs, "property_value_text")
+    val byteValues = Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes")
+    val smallintValues = Utils.resultSetArrayToListOf[Short](rs, "property_value_smallint")
+    val intValues = Utils.resultSetArrayToListOf[Int](rs, "property_value_int")
+    val bigintValues = Utils.resultSetArrayToListOf[BigInt](rs, "property_value_bigint")
+    val numericValues = Utils.resultSetArrayToListOf[BigDecimal](rs, "property_value_numeric")
+    val floatValues = Utils.resultSetArrayToListOf[Float](rs, "property_value_float")
+    val doubleValues = Utils.resultSetArrayToListOf[Double](rs, "property_value_double")
+    val booleanValues = Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean")
+    val dateValues = Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date")
+    val timeValues = Utils.resultSetArrayToListOf[OffsetTime](rs, "property_value_time")
+    val timestampValues = Utils.resultSetArrayToListOf[ZonedDateTime](rs, "property_value_timestamp")
+    val uuidValues = Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid")
+    val jsonValues = Utils.resultSetArrayToListOf[String](rs, "property_value_json") // TODO: Fix to decode JSON
     entity.projected.PropertyValue(
         property = entity.projected.Property(
-          pk = UUID.fromString(rs.string("PROPERTY_PK")),
-          propertyName = rs.string("PROPERTY_NAME"),
+          pk = UUID.fromString(rs.string("property_pk")),
+          propertyName = rs.string("property_name"),
           propertyTypes = propertyTypes,
-          deleted = rs.boolean("DELETED"),
-          created = rs.zonedDateTime("CREATED"),
-          modified = rs.zonedDateTime("MODIFIED"),
+          deleted = rs.boolean("deleted"),
+          created = rs.zonedDateTime("created"),
+          modified = rs.zonedDateTime("modified"),
         ),
-        collection = entity.projected.Collection(pk = UUID.fromString(rs.string("COLLECTION_PK"))),
+        collection = entity.projected.Collection(pk = UUID.fromString(rs.string("top_level_collection_pk"))),
         textValues = textValues,
         byteValues = byteValues,
         smallintValues = smallintValues,
@@ -48,7 +50,7 @@ object PropertyValue:
         timeValues = timeValues,
         timestampValues = timestampValues,
         uuidValues = uuidValues,
-        jsonValues = Nil // TODO: Fix to decode JSON
+        jsonValues = jsonValues.map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
       )
 
   // TODO: Move this?
