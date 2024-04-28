@@ -12,20 +12,20 @@ object PropertyValueQueries:
   def generateCTE7SelectComponent(inputPropertyType: PropertyType): String =
     val selectElements = PropertyType.values.map(propertyType =>
       if (inputPropertyType == propertyType)
-      then s"pvt.property_value::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
+      then s"pv.property_value::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
       else s"NULL::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
     ).mkString(", ")
-    s"""SELECT pvt.pk, pvt.collection_pk, pvt.property_pk, $selectElements
-          FROM property_value_$inputPropertyType AS pvt
-          INNER JOIN cte3 ON pvt.collection_pk = ANY (cte3.distinct_collection_pks)
-          INNER JOIN cte5 ON pvt.property_pk = ANY (cte5.distinct_property_pks)"""
+    s"""SELECT pv.pk, pv.collection_pk, pv.property_pk, pv.index, $selectElements
+          FROM property_value_$inputPropertyType AS pv
+          INNER JOIN cte3 ON pv.collection_pk = ANY (cte3.distinct_collection_pks)
+          INNER JOIN cte5 ON pv.property_pk = ANY (cte5.distinct_property_pks)"""
 
   def generateCTE7QueryComponent() =
 
     val innerSQL = PropertyType.values.map(generateCTE7SelectComponent).mkString(" UNION ALL ")
     val columnItems = PropertyType.values.map(propertyType => s"property_value_$propertyType").mkString(", ")
     (
-      SQLSyntax.createUnsafely(s"pk, collection_pk, property_pk, $columnItems"),
+      SQLSyntax.createUnsafely(s"pk, collection_pk, property_pk, index, $columnItems"),
       SQLSyntax.createUnsafely(innerSQL)
     )
 
@@ -81,20 +81,20 @@ object PropertyValueQueries:
                   cte6.top_level_collection_pk,
                   cte6.related_collection_pk,
                   cte6.property_pk,
-                  array_remove(array_agg(cte7.property_value_bigint), NULL) AS property_value_bigint,
-                  array_remove(array_agg(cte7.property_value_boolean), NULL) AS property_value_boolean,
-                  array_remove(array_agg(cte7.property_value_bytes), NULL) AS property_value_bytes,
-                  array_remove(array_agg(cte7.property_value_date), NULL) AS property_value_date,
-                  array_remove(array_agg(cte7.property_value_double), NULL) AS property_value_double,
-                  array_remove(array_agg(cte7.property_value_float), NULL) AS property_value_float,
-                  array_remove(array_agg(cte7.property_value_int), NULL) AS property_value_int,
-                  array_remove(array_agg(cte7.property_value_json), NULL) AS property_value_json,
-                  array_remove(array_agg(cte7.property_value_numeric), NULL) AS property_value_numeric,
-                  array_remove(array_agg(cte7.property_value_smallint), NULL) AS property_value_smallint,
-                  array_remove(array_agg(cte7.property_value_text), NULL) AS property_value_text,
-                  array_remove(array_agg(cte7.property_value_time), NULL) AS property_value_time,
-                  array_remove(array_agg(cte7.property_value_timestamp), NULL) AS property_value_timestamp,
-                  array_remove(array_agg(cte7.property_value_uuid), NULL) AS property_value_uuid
+                  array_remove(array_agg(cte7.property_value_bigint ORDER BY cte7.index), NULL) AS property_value_bigint,
+                  array_remove(array_agg(cte7.property_value_boolean ORDER BY cte7.index), NULL) AS property_value_boolean,
+                  array_remove(array_agg(cte7.property_value_bytes ORDER BY cte7.index), NULL) AS property_value_bytes,
+                  array_remove(array_agg(cte7.property_value_date ORDER BY cte7.index), NULL) AS property_value_date,
+                  array_remove(array_agg(cte7.property_value_double ORDER BY cte7.index), NULL) AS property_value_double,
+                  array_remove(array_agg(cte7.property_value_float ORDER BY cte7.index), NULL) AS property_value_float,
+                  array_remove(array_agg(cte7.property_value_int ORDER BY cte7.index), NULL) AS property_value_int,
+                  array_remove(array_agg(cte7.property_value_json ORDER BY cte7.index), NULL) AS property_value_json,
+                  array_remove(array_agg(cte7.property_value_numeric ORDER BY cte7.index), NULL) AS property_value_numeric,
+                  array_remove(array_agg(cte7.property_value_smallint ORDER BY cte7.index), NULL) AS property_value_smallint,
+                  array_remove(array_agg(cte7.property_value_text ORDER BY cte7.index), NULL) AS property_value_text,
+                  array_remove(array_agg(cte7.property_value_time ORDER BY cte7.index), NULL) AS property_value_time,
+                  array_remove(array_agg(cte7.property_value_timestamp ORDER BY cte7.index), NULL) AS property_value_timestamp,
+                  array_remove(array_agg(cte7.property_value_uuid ORDER BY cte7.index), NULL) AS property_value_uuid
               FROM cte6
               LEFT JOIN cte7 ON (
                   cte6.property_pk = cte7.property_pk AND
