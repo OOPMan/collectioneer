@@ -24,25 +24,22 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
 
   def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
-      .selectByCollectionPKsAndRelationshipTypes
-      .bind(
-        session.connection.createArrayOf("varchar", collectionPKs.toArray),
-        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
-      )
+      .selectByCollectionPKsAndRelationshipTypes(collectionPKs, relationshipTypes)
       .map(postgresbackend.entity.raw.Relationship.apply)
       .list
       .apply()
 
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
-      .selectByRelatedCollectionPKsAndRelationshipTypes
-      .bind(
-        session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
-        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
-      )
+      .selectByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs, relationshipTypes)
       .map(postgresbackend.entity.raw.Relationship.apply)
       .list
       .apply()
 
-  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID])(implicit session: DBSession): List[Relationship] = ???
-  
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+    postgresbackend.queries.raw.RelationshipQueries
+      .selectByPKsAndRelationshipTypes(collectionPKs, relatedCollectionPKs, relationshipTypes)
+      .map(postgresbackend.entity.raw.Relationship.apply)
+      .list
+      .apply()
+

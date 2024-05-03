@@ -19,3 +19,5 @@ class RelationshipDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeD
     dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs, relationshipTypes) }
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship] =
     dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs, relationshipTypes) }
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship] =
+    dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipsByPKsAndRelationshipTypes(collectionPKs, relatedCollectionPKs, relationshipTypes) }

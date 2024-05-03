@@ -11,4 +11,5 @@ trait ScalikeRelationshipDAO:
   def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int]
   def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship]
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship]
-  
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship]
+

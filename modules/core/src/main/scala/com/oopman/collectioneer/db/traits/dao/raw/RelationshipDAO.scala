@@ -10,4 +10,5 @@ trait RelationshipDAO:
   def deleteRelationships(relationships: Seq[Relationship]): Array[Int]
   def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
 

@@ -1,6 +1,9 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
 import scalikejdbc.*
+
+import java.util.UUID
 
 object RelationshipQueries:
   def insert =
@@ -18,24 +21,29 @@ object RelationshipQueries:
           relationship_type = excluded.relationship_type::relationship_type, index = excluded.index, modified = now()
        """
 
-  /**
-   * JDBC Parameter notes
-   * 1. Array of UUIDs
-   * 2. Array of RelationshipTypes
-   * @return
-   */
-  def selectByRelatedCollectionPKsAndRelationshipTypes =
+  def collectionPKIn(collectionPKs: Seq[UUID]) =
+    sqls"collection_pk IN ($collectionPKs)"
+
+  def relatedCollectionPKIn(relatedCollectionPKs: Seq[UUID]) =
+    sqls"related_collection_pk IN ($relatedCollectionPKs)"
+
+  def relationshipTypeIn(relationshipTypes: Seq[RelationshipType]) =
+    sqls"relationship_type IN ($relationshipTypes)"
+    
+  def selectBySQLSyntax(sqlSyntaxSeq: SQLSyntax*) =
+    val whereClauses = sqlSyntaxSeq.reduce((lhs, rhs) => lhs.and(rhs))
     sql"""
           SELECT *
           FROM relationship
-          WHERE related_collection_pk = ANY (?::uuid[])
-          AND relationship_type = ANY (?::relationship_type[])
+          WHERE $whereClauses
        """
 
-  def selectByCollectionPKsAndRelationshipTypes =
-    sql"""
-          SELECT *
-          FROM relationship
-          WHERE collection_pk = ANY (?::uuid[])
-          AND relationship_type = ANY (?::relationship_type[])
-       """
+  def selectByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]) =
+    selectBySQLSyntax(relatedCollectionPKIn(relatedCollectionPKs), relationshipTypeIn(relationshipTypes))
+
+  def selectByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]) =
+    selectBySQLSyntax(collectionPKIn(collectionPKs), relationshipTypeIn(relationshipTypes))
+    
+  def selectByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]) =
+    selectBySQLSyntax(collectionPKIn(collectionPKs), relatedCollectionPKIn(relatedCollectionPKs), relationshipTypeIn(relationshipTypes))
+
