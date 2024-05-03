@@ -26,6 +26,24 @@ def getExistingMapByProperties(rawCollectionDAO: traits.dao.raw.CollectionDAO,
   } yield (key, pk)
   Map.from(setsMapIterable)
 
+def getExistingRelationships(relationshipDAO: traits.dao.raw.RelationshipDAO,
+                             existingCardPKs: Seq[UUID],
+                             existingSetPKs: Seq[UUID],
+                             existingSetDataPKs: Seq[UUID],
+                             existingEditionDataPKs: Seq[UUID],
+                             existingCardDataPKs: Seq[UUID]): Map[(UUID, UUID, RelationshipType), UUID] =
+  val cardSetRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
+    existingCardPKs, existingSetPKs, Seq(RelationshipType.ParentCollection)
+  )
+  val cardDataRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
+    existingCardPKs, existingSetDataPKs ++ existingEditionDataPKs ++ existingCardDataPKs, Seq(RelationshipType.SourceOfPropertiesAndPropertyValues)
+  )
+  Map.from(
+    for { relationship <- cardSetRelationships ++ cardDataRelationships }
+    yield ((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType), relationship.pk)
+  )
+
+
 def importDataset(cards: List[Card],
                   collectionDAO: traits.dao.projected.CollectionDAO,
                   rawCollectionDAO: traits.dao.raw.CollectionDAO,
@@ -47,8 +65,14 @@ def importDataset(cards: List[Card],
     val existingEditionDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
       CommonProperties.isGATCGEditionData eq true, Seq(EditionProperties.editionUID)
     )
-    // TODO: Query for existing data to allow Update to succeed
-    val existingRelationships: Map[(UUID, UUID, RelationshipType), UUID] = Map()
+    val existingRelationships: Map[(UUID, UUID, RelationshipType), UUID] = getExistingRelationships(
+      relationshipDAO,
+      existingCardsMap.values.toSeq,
+      existingSetsMap.values.toSeq,
+      existingSetDataMap.values.toSeq,
+      existingEditionDataMap.values.toSeq,
+      existingCardDataMap.values.toSeq
+    )
     // Generate Sets
     val sets = cards.flatMap(_.editions.map(_.set)).distinctBy(set => (set.prefix, set.language))
     val setMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
