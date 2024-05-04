@@ -4,8 +4,6 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast
 import scalikejdbc.*
 
-import java.util.UUID
-
 object PropertyValueQueries:
 
   // TODO: Use more limited list of PropertyTypes?
@@ -29,17 +27,16 @@ object PropertyValueQueries:
       SQLSyntax.createUnsafely(innerSQL)
     )
 
-  def propertyValuesByCollectionPKs(collectionPKs: Seq[UUID], propertyPKs: Seq[UUID] = Nil, deleted: Seq[Boolean] = Seq(false)) =
-    val propertyPKsConditionSQLSyntax = propertyPKs.length match
-      case 0 => SQLSyntax.empty
-      case _ => sqls"AND p.pk IN ($propertyPKs)"
+  def propertyValuesByCollectionPKs(includePropertiesFilter: Boolean = false) =
+    val whereClauses = if includePropertiesFilter then sqls"WHERE p.pk = ANY (?::uuid[])" else SQLSyntax.empty
     val (cte7ColumnsSQLSyntax, cte7InnerSQLSyntax) = generateCTE7QueryComponent()
+    // TODO: Include complete details on top-level collection
     sql"""WITH RECURSIVE cte1(top_level_collection_pk, collection_pk, related_collection_pk, index) AS (
               SELECT c.pk AS top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
               FROM collection AS c
               LEFT JOIN relationship AS r ON r.collection_pk = c.PK
               WHERE
-                c.pk IN ($collectionPKs)
+                c.pk = ANY (?::uuid[])
                 AND (r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL)
               UNION
               SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
@@ -122,5 +119,5 @@ object PropertyValueQueries:
               cte8.property_pk
           FROM cte8
           INNER JOIN property AS p ON cte8.property_pk = p.pk
-          WHERE p.deleted IN ($deleted) $propertyPKsConditionSQLSyntax
+          $whereClauses
         """

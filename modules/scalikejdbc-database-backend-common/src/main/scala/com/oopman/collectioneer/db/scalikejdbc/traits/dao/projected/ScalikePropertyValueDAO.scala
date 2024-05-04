@@ -6,5 +6,5 @@ import scalikejdbc.DBSession
 import java.util.UUID
 
 trait ScalikePropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil, deleted: Seq[Boolean] = Seq(false))(implicit session: DBSession): List[PropertyValue]
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession): List[PropertyValue]
   def updatePropertyValues(propertyValues: Seq[PropertyValue])(implicit session: DBSession): Seq[Boolean]
