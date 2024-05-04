@@ -24,21 +24,34 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
 
   def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
-      .selectByCollectionPKsAndRelationshipTypes(collectionPKs, relationshipTypes)
+      .selectByCollectionPKsAndRelationshipTypes
+      .bind(
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
+      )
       .map(postgresbackend.entity.raw.Relationship.apply)
       .list
       .apply()
 
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
-      .selectByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs, relationshipTypes)
+      .selectByRelatedCollectionPKsAndRelationshipTypes
+      .bind(
+        session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
+      )
       .map(postgresbackend.entity.raw.Relationship.apply)
       .list
       .apply()
 
   def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
-      .selectByPKsAndRelationshipTypes(collectionPKs, relatedCollectionPKs, relationshipTypes)
+      .selectByPKsAndRelationshipTypes
+      .bind(
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
+        session.connection.createArrayOf("varchar", relationshipTypes.toArray)
+      )
       .map(postgresbackend.entity.raw.Relationship.apply)
       .list
       .apply()
