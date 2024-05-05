@@ -16,8 +16,8 @@ def getExistingMapByProperties(rawCollectionDAO: traits.dao.raw.CollectionDAO,
                                propertyValueDAO: traits.dao.projected.PropertyValueDAO,
                                comparison: Comparison,
                                properties: Seq[Property]): Map[Seq[String], UUID] =
-  val setCollections = rawCollectionDAO.getAllMatchingPropertyValues(Seq(comparison))
-  val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(setCollections.map(_.pk), properties.map(_.pk))
+  val collections = rawCollectionDAO.getAllMatchingPropertyValues(Seq(comparison))
+  val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(collections.map(_.pk), properties.map(_.pk))
   val propertyValuesByCollectionPK = propertyValues.groupBy(_.collection.pk)
   val propertyValuesByPropertyPKByCollectionPK = propertyValuesByCollectionPK.map((pk, propertyValues) => (pk, propertyValues.groupBy(_.property.pk)))
   val setsMapIterable = for {
@@ -80,6 +80,8 @@ def importDataset(cards: List[Card],
       virtual = true,
       propertyValues = List(
         PropertyValue(property = CoreProperties.name, textValues = List(set.name)),
+        PropertyValue(property = SetProperties.setPrefix, textValues = List(set.prefix)),
+        PropertyValue(property = SetProperties.setLanguage, textValues = List(set.language)),
         PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
       )
     ))))
