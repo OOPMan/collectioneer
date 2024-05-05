@@ -9,12 +9,12 @@ import java.util.UUID
 
 object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO:
   def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): List[PropertyValue] =
+    val bindings =
+      Seq(session.connection.createArrayOf("varchar", collectionUUIDs.toArray)) ++
+        (if propertyUUIDs.nonEmpty then Seq(session.connection.createArrayOf("varchar", propertyUUIDs.toArray)) else Nil)
     postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByCollectionPKs(propertyUUIDs.nonEmpty)
-      .bind(
-        session.connection.createArrayOf("varchar", collectionUUIDs.toArray),
-        session.connection.createArrayOf("varchar", propertyUUIDs.toArray)
-      )
+      .bind(bindings: _*)
       .map(postgresbackend.entity.projected.PropertyValue.generatePropertyValuesFromWrappedResultSet)
       .list
       .apply()
