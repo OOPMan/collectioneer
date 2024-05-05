@@ -31,17 +31,15 @@ object PropertyValueQueries:
     val whereClauses = if includePropertiesFilter then sqls"WHERE p.pk = ANY (?::uuid[])" else SQLSyntax.empty
     val (cte7ColumnsSQLSyntax, cte7InnerSQLSyntax) = generateCTE7QueryComponent()
     // TODO: Include complete details on top-level collection
-    sql"""WITH RECURSIVE cte1(top_level_collection_pk, collection_pk, related_collection_pk, index) AS (
-              SELECT c.pk AS top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
+    sql"""WITH RECURSIVE cte1(top_level_collection_pk, collection_pk, related_collection_pk, index, level) AS (
+              SELECT c.pk AS top_level_collection_pk, c.pk as collection_pk, c.pk AS related_collection_pk, 0 as index, 0 as level
               FROM collection AS c
-              LEFT JOIN relationship AS r ON r.collection_pk = c.PK
-              WHERE
-                c.pk = ANY (?::uuid[])
-                AND (r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL)
+              WHERE c.pk = ANY (?::uuid[])
               UNION
-              SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
-              FROM cte1 LEFT JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
-              WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL
+              SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index, cte1.level + 1
+              FROM cte1
+              INNER JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
+              WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
           ),
           cte2(distinct_collection_pk) AS (
               SELECT DISTINCT ON (distinct_collection_pk) coalesce(cte1.related_collection_pk, cte1.top_level_collection_pk) AS distinct_collection_pk
