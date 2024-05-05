@@ -60,12 +60,12 @@ object PropertyValueQueries:
           ),
           cte6(top_level_collection_pk, related_collection_pk, property_pk) AS (
             SELECT top_level_collection_pk,
-                   related_collection_pk,
+                   array_remove(array_agg(related_collection_pk), NULL) as related_collection_pk,
                    property_pk
             FROM cte1
             LEFT JOIN property__collection AS pc ON (cte1.top_level_collection_pk = pc.collection_pk OR pc.collection_pk = cte1.related_collection_pk)
             WHERE pc.property_pk IS NOT NULL
-            GROUP BY top_level_collection_pk, related_collection_pk, property_pk
+            GROUP BY top_level_collection_pk, property_pk
           ),
           cte7($cte7ColumnsSQLSyntax) AS ($cte7InnerSQLSyntax),
           cte8(top_level_collection_pk, related_collection_pk, property_pk, property_value_bigint, property_value_boolean, property_value_bytes, property_value_date,
@@ -93,7 +93,7 @@ object PropertyValueQueries:
               FROM cte6
               LEFT JOIN cte7 ON (
                   cte6.property_pk = cte7.property_pk AND
-                  ((cte6.top_level_collection_pk = cte7.collection_pk AND cte6.related_collection_pk IS NULL) OR cte6.related_collection_pk = cte7.collection_pk))
+                  ((cte6.top_level_collection_pk = cte7.collection_pk AND cte6.related_collection_pk = '{}') OR cte7.collection_pk = ANY (cte6.related_collection_pk)))
               GROUP BY cte6.top_level_collection_pk, cte6.related_collection_pk, cte6.property_pk
           )
           SELECT
