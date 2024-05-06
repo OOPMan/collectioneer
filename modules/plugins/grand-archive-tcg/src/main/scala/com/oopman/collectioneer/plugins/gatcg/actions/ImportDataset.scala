@@ -32,6 +32,9 @@ def getExistingRelationships(relationshipDAO: traits.dao.raw.RelationshipDAO,
                              existingSetDataPKs: Seq[UUID],
                              existingEditionDataPKs: Seq[UUID],
                              existingCardDataPKs: Seq[UUID]): Map[(UUID, UUID, RelationshipType), UUID] =
+  val gaTCGRootCollectionSetRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
+    existingSetPKs, Seq(GATCGRootCollection.pk), Seq(ParentCollection)
+  )
   val cardSetRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
     existingCardPKs, existingSetPKs, Seq(RelationshipType.ParentCollection)
   )
@@ -39,7 +42,7 @@ def getExistingRelationships(relationshipDAO: traits.dao.raw.RelationshipDAO,
     existingCardPKs, existingSetDataPKs ++ existingEditionDataPKs ++ existingCardDataPKs, Seq(RelationshipType.SourceOfPropertiesAndPropertyValues)
   )
   Map.from(
-    for { relationship <- cardSetRelationships ++ cardDataRelationships }
+    for { relationship <- gaTCGRootCollectionSetRelationships ++ cardSetRelationships ++ cardDataRelationships }
     yield ((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType), relationship.pk)
   )
 
@@ -154,10 +157,22 @@ def importDataset(cards: List[Card],
     // Generate Relationships
     val relationships = cardsMap.flatMap {
       case ((Some(set), Some(setData), Some(editionData), Some(cardData)), card) => List(
-        Relationship(collectionPK = card.pk, relatedCollectionPK = set.pk, relationshipType = ParentCollection),
-        Relationship(collectionPK = card.pk, relatedCollectionPK = setData.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
-        Relationship(collectionPK = card.pk, relatedCollectionPK = editionData.pk, relationshipType = SourceOfPropertiesAndPropertyValues),
-        Relationship(collectionPK = card.pk, relatedCollectionPK = cardData.pk, relationshipType = SourceOfPropertiesAndPropertyValues)
+        Relationship(
+          collectionPK = card.pk,
+          relatedCollectionPK = set.pk,
+          relationshipType = ParentCollection),
+        Relationship(
+          collectionPK = card.pk,
+          relatedCollectionPK = setData.pk,
+          relationshipType = SourceOfPropertiesAndPropertyValues),
+        Relationship(
+          collectionPK = card.pk,
+          relatedCollectionPK = editionData.pk,
+          relationshipType = SourceOfPropertiesAndPropertyValues),
+        Relationship(
+          collectionPK = card.pk,
+          relatedCollectionPK = cardData.pk,
+          relationshipType = SourceOfPropertiesAndPropertyValues)
       )
       case _ =>
         // logger.warn("This should never happen")
