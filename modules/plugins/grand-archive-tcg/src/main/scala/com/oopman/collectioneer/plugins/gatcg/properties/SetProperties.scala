@@ -13,15 +13,18 @@ enum SetProperties(val property: Property):
   case setName extends SetProperties(Property(
     pk = SetPropertiesUUIDs.setName,
     propertyName = "Set Name",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case setPrefix extends SetProperties(Property(
     pk = SetPropertiesUUIDs.setPrefix,
     propertyName = "Set Prefix",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case setLanguage extends SetProperties(Property(
     pk = SetPropertiesUUIDs.setLanguage,
     propertyName = "Set Language",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty

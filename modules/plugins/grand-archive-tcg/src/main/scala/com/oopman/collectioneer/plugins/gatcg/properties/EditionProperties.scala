@@ -23,47 +23,49 @@ enum EditionProperties(val property: Property):
     pk = EditionPropertiesUUIDs.editionUID,
     propertyName = "Edition UID",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   // TODO: We can probably remove this or mark it has hidden
   case cardUID extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.cardUID,
     propertyName = "Card UID",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case collectorNumber extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.collectorNumber,
     propertyName = "Collector Number",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case illustrator extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.illustrator,
     propertyName = "Artist",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case slug extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.slug,
     propertyName = "Slug",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   // TODO: Add a property for storing downloaded image data?
   case rarity extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.rarity,
     propertyName = "Rarity",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case effect extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effect,
     propertyName = "Effect",
     propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case flavourText extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.flavourText,
     propertyName = "Flavour text",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty

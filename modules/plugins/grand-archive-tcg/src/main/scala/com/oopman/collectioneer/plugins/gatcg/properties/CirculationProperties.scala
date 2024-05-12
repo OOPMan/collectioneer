@@ -14,19 +14,19 @@ enum CirculationProperties(val property: Property):
     pk = CirculationPropertyUUIDs.foil,
     propertyName = "Foil",
     propertyTypes = List(PropertyType.boolean),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case population extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.population,
     propertyName = "Population",
     propertyTypes = List(PropertyType.int),
-    propertyValues = PropertyValues.singleValue,
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case uuid extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.uuid,
     propertyName = "UUID",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
 
  

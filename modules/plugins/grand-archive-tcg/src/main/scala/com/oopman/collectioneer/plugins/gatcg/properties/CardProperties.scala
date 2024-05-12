@@ -26,77 +26,83 @@ enum CardProperties(val property: Property):
     pk = CardPropertiesUUIDs.cardUID,
     propertyName = "Card UID",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case element extends CardProperties(Property(
     pk = CardPropertiesUUIDs.element,
     propertyName = "Element",
     propertyTypes = List(PropertyType.text),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case types extends CardProperties(Property(
     pk = CardPropertiesUUIDs.types,
     propertyName = "Types",
     propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case classes extends CardProperties(Property(
     pk = CardPropertiesUUIDs.classes,
     propertyName = "Classes",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case subTypes extends CardProperties(Property(
     pk = CardPropertiesUUIDs.subTypes,
     propertyName = "Subtypes",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case effect extends CardProperties(Property(
     pk = CardPropertiesUUIDs.effect,
     propertyName = "Effect",
-    propertyTypes = List(PropertyType.text)
+    propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case memoryCost extends CardProperties(Property(
     pk = CardPropertiesUUIDs.memoryCost,
     propertyName = "Memory Cost",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case reserveCost extends CardProperties(Property(
     pk = CardPropertiesUUIDs.reserveCost,
     propertyName = "Reserve Cost",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case level extends CardProperties(Property(
     pk = CardPropertiesUUIDs.level,
     propertyName = "Level",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case speed extends CardProperties(Property(
     pk = CardPropertiesUUIDs.speed,
     propertyName = "Speed",
     propertyTypes = List(PropertyType.text),
+    propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case legality extends CardProperties(Property(
     pk = CardPropertiesUUIDs.legality,
     propertyName = "Legality",
     propertyTypes = List(PropertyType.json),
+    propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case power extends CardProperties(Property(
     pk = CardPropertiesUUIDs.power,
     propertyName = "Power",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case life extends CardProperties(Property(
     pk = CardPropertiesUUIDs.life,
     propertyName = "Life",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case durability extends CardProperties(Property(
     pk = CardPropertiesUUIDs.durability,
     propertyName = "Durability",
     propertyTypes = List(PropertyType.smallint),
-    propertyValues = PropertyValues.singleValue
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
