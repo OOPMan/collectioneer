@@ -2,7 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValue}
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
-import com.oopman.collectioneer.given
+import com.oopman.collectioneer.{CoreProperties, given}
 
 private object CommonPropertiesUUIDs:
   val isGATCGSet = "84ab0f47-a357-4376-a3a9-e38845f2f87c"
@@ -16,7 +16,15 @@ private val isGATCGProperty = Property(
   pk = CommonPropertiesUUIDs.isGATCGProperty,
   propertyName = "Is GATCG Property",
   propertyTypes = List(PropertyType.boolean),
-  propertyValues = PropertyValues.singleValue
+  propertyValues = List(
+    PropertyValue(
+      property = CoreProperties.minValues,
+      smallintValues = List(1)
+    ),
+    PropertyValue(
+      property = CoreProperties.maxValues,
+      smallintValues = List(1)
+    ))
 )
 
 enum CommonProperties(val property: Property) :
