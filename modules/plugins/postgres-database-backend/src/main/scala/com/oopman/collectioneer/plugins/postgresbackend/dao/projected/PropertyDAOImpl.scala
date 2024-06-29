@@ -23,7 +23,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .groupBy(_.collection.pk)
       .flatMap((_, propertyValues) => propertyValues.zipWithIndex.map((propertyValue, index) => entity.raw.PropertyCollection(
         propertyPK = propertyValue.property.pk,
-        collectionPK = propertyValue.property.pk,
+        collectionPK = propertyValue.collection.pk,
         index = index,
         propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
       )))
