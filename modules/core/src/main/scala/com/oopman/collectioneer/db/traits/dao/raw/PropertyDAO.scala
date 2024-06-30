@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.db.traits.dao.raw
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.traits.entity.raw.Property
 
 import java.util.UUID
@@ -9,3 +10,4 @@ trait PropertyDAO:
   def createOrUpdateProperties(properties: Seq[Property]): Array[Int]
   def getAll: List[Property]
   def getAllMatchingPKs(propertyPKs: Seq[UUID]): List[Property]
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison]): List[Property]
