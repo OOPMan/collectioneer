@@ -29,6 +29,22 @@ object Property extends SQLSyntaxSupport[raw.Property]:
       modified = rs.zonedDateTime(p.modified)
     )
 
+  def apply(rs: WrappedResultSet) =
+    val propertyTypes = rs
+      .array("property_types")
+      .getArray()
+      .asInstanceOf[Array[Object]]
+      .map(s => PropertyType.valueOf(s.asInstanceOf[String]))
+      .toList
+    raw.Property(
+      pk = UUID.fromString(rs.string("pk")),
+      propertyName = rs.string("property_name"),
+      propertyTypes = propertyTypes,
+      deleted = rs.boolean("deleted"),
+      created = rs.zonedDateTime("created"),
+      modified = rs.zonedDateTime("modified")
+    )
+
   def propertiesSeqToBatchInsertSeq(properties: Seq[traits.entity.raw.Property]): Seq[Seq[Any]] =
     properties.map(p => Seq(
       p.pk,
