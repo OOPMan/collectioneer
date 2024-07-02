@@ -16,22 +16,27 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
   (implicit session: DBSession = AutoSession): Array[Int] =
     val distinctProperties = ProjectedProperty.collectProperties(properties)
     val collections = distinctProperties.map(p => entity.raw.Collection(pk = p.pk))
-    val propertyValues = properties.flatMap(property => property.propertyValues.map {
+    val propertyValues = distinctProperties.flatMap(property => property.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = property.pk))
     })
-    val propertyCollections = propertyValues
+    val propertyCollectionsA = distinctProperties.map(p => entity.raw.PropertyCollection(
+      propertyPK = p.pk,
+      collectionPK = p.pk,
+      propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
+    ))
+    val propertyCollectionsB = propertyValues
       .groupBy(_.collection.pk)
       .flatMap((_, propertyValues) => propertyValues.zipWithIndex.map((propertyValue, index) => entity.raw.PropertyCollection(
         propertyPK = propertyValue.property.pk,
         collectionPK = propertyValue.collection.pk,
-        index = index,
-        propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
+        index = index
       )))
       .toSeq
     performCreateOrUpdateProperties(distinctProperties)
     performCreateOrUpdateCollections(collections)
+    performCreateOrUpdatePropertyCollections(propertyCollectionsA ++ propertyCollectionsB)
     postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
-    performCreateOrUpdatePropertyCollections(propertyCollections)
+    Array.empty
 
   def createProperties(properties: Seq[ProjectedProperty])(implicit session: DBSession = AutoSession) =
     performCreateOrUpdatePropertiesOperation(
