@@ -1,7 +1,8 @@
 package com.oopman.collectioneer.cli
 
+import com.oopman.collectioneer.cli.actions.get.getCollections
 import com.oopman.collectioneer.cli.actions.imprt.importDatabase
-import com.oopman.collectioneer.cli.actions.list.{getCollections, listCollectionsAction, listProperties}
+import com.oopman.collectioneer.cli.actions.list.{listCollectionsAction, listPropertiesAction}
 import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.plugins.PluginConfig
@@ -9,7 +10,6 @@ import distage.{Injector, ModuleBase, ModuleDef}
 import io.circe.Json
 import io.circe.syntax.*
 import io.circe.yaml.*
-import io.circe.yaml.syntax.*
 import izumi.distage.plugins.load.PluginLoader
 import izumi.fundamentals.platform.functional.Identity
 import scalikejdbc.{GlobalSettings, LoggingSQLAndTimeSettings}
@@ -111,7 +111,7 @@ object CLI:
     .text("Add PropertyValue filters. Filter format is <UUID4><Operator><Value> (e.g. a82f8e14-0f5b-467f-a85d-0810537a41c5>=10). Multiple filters are ANDed together")
   val baseActions: List[ActionListItem] = List(
     (Verb.list, Subject.collections, None, listCollectionsAction, List(deletedOpt, virtualOp, propertyValueQueryArgs)),
-    (Verb.list, Subject.properties, None, listProperties, List(deletedOpt)),
+    (Verb.list, Subject.properties, None, listPropertiesAction, List(deletedOpt, propertyValueQueryArgs)),
     (Verb.list, Subject.plugins, None, _ => plugins.map(plugin => s"${plugin.getName} (${plugin.getVersion})").asJson, List()),
     (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
     (Verb.imprt, Subject.database, None, importDatabase, List(importDatasourceUriArgs))
@@ -179,7 +179,7 @@ object CLI:
           val result = action.map(_(config)).getOrElse(Map[String, String]().asJson)
           val resultString = config.outputFormat match
             case OutputFormat.json => result.spaces2SortKeys
-            case OutputFormat.yaml => result.asYaml.spaces2
+            case OutputFormat.yaml => io.circe.yaml.Printer(preserveOrder = true).pretty(result)
           println(resultString)
 //        } finally {
 //          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.shutDown() }
