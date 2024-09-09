@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.PropertyValueQueryDSL.{Operator, PropertyValueComparison}
 import com.oopman.collectioneer.db.traits.dao.raw.{CollectionDAO, PropertyDAO}
 import com.oopman.collectioneer.db.{Injection, traits}
 import distage.*
@@ -37,29 +36,8 @@ case class ListCollectionsVerboseResult
 
 def listCollections(config: Config)(collectionDAO: traits.dao.raw.CollectionDAO) = collectionDAO.getAll
 
-def operatorToOperator(operator: String): Operator = operator match
-  case ">"  => Operator.greaterThan
-  case ">=" => Operator.greaterThanOrEqualTo
-  case "==" => Operator.equalTo
-  case "!=" => Operator.notEqualTo
-  case "<=" => Operator.lessThanOrEualTo
-  case "<"  => Operator.lessThan
-  case "~=" => Operator.like
-
 def listCollectionsByPropertyValueQueries(config: Config)(propertyDAO: PropertyDAO, collectionDAO: CollectionDAO) =
-  val propertyValueQueryPattern = "^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(>|>=|==|!=|<|<=|~=)(\\S+)$".r
-  val propertyValueQueriesStrings = config.propertyValueQueries.getOrElse(Nil)
-  val matches = propertyValueQueriesStrings.flatMap(propertyValueQuery => propertyValueQueryPattern.findFirstMatchIn(propertyValueQuery))
-  val propertyValueQueryStringComponents = Map.from(matches.map(matchResult => (UUID.fromString(matchResult.group(1)), (operatorToOperator(matchResult.group(2)), matchResult.group(3)))))
-  val propertyPKs = propertyValueQueryStringComponents.keys.toList
-  val properties = propertyDAO.getAllMatchingPKs(propertyPKs)
-  val propertyValueComparisons = for {
-    property <- properties
-    propertyType <- property.propertyTypes // TODO: This will cause issues if there is more than one PropertyType
-    (operator, value) <- propertyValueQueryStringComponents.get(property.pk)
-  } yield PropertyValueComparison(property, operator, value)
-  collectionDAO.getAllRelatedMatchingPropertyValues(propertyValueComparisons)
-
+  collectionDAO.getAllRelatedMatchingPropertyValues(generatePropertyValueComparisons(propertyDAO, config.propertyValueQueries))
 
 def listCollectionsAction(config: Config) =
   val collections = config.propertyValueQueries match
