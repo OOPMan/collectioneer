@@ -1,8 +1,6 @@
 package com.oopman.collectioneer.cli
 
-import com.oopman.collectioneer.cli.actions.get.getCollections
-import com.oopman.collectioneer.cli.actions.imprt.importDatabase
-import com.oopman.collectioneer.cli.actions.list.{listCollectionsAction, listPropertiesAction}
+import com.oopman.collectioneer.cli.actions
 import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.plugins.PluginConfig
@@ -110,11 +108,12 @@ object CLI:
     .action((propertyValueQuery, config) => config.copy(propertyValueQueries = config.propertyValueQueries.map(propertyValueQuery :: _).orElse(Some(propertyValueQuery :: Nil))))
     .text("Add PropertyValue filters. Filter format is <UUID4><Operator><Value> (e.g. a82f8e14-0f5b-467f-a85d-0810537a41c5>=10). Multiple filters are ANDed together")
   val baseActions: List[ActionListItem] = List(
-    (Verb.list, Subject.collections, None, listCollectionsAction, List(deletedOpt, virtualOp, propertyValueQueryArgs)),
-    (Verb.list, Subject.properties, None, listPropertiesAction, List(deletedOpt, propertyValueQueryArgs)),
+    (Verb.list, Subject.collections, None, actions.list.Collections.listCollectionsAction, List(deletedOpt, virtualOp, propertyValueQueryArgs)),
+    (Verb.list, Subject.properties, None, actions.list.Properties.listPropertiesAction, List(deletedOpt, propertyValueQueryArgs)),
     (Verb.list, Subject.plugins, None, _ => plugins.map(plugin => s"${plugin.getName} (${plugin.getVersion})").asJson, List()),
-    (Verb.get, Subject.collections, None, getCollections, List(uuidArgs)),
-    (Verb.imprt, Subject.database, None, importDatabase, List(importDatasourceUriArgs))
+    (Verb.get, Subject.collections, None, actions.get.Collections.getCollections, List(uuidArgs)),
+    (Verb.get, Subject.properties, None, actions.get.Properties.getProperties, List(uuidArgs)),
+    (Verb.imprt, Subject.database, None, actions.imprt.Database.importDatabase, List(importDatasourceUriArgs))
     // TODO: Add more
   )
   val actionsMap: ActionMap = baseActions
