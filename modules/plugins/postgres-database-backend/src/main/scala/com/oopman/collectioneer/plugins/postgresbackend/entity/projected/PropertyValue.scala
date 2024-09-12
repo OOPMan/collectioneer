@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 
-import com.oopman.collectioneer.db.entity.projected.{Collection, Property}
+import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.{entity, traits}
 import io.circe.*
@@ -11,22 +11,45 @@ import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
 
 object PropertyValue:
-  def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet) =
+  case class PropertyValueData
+  (
+    textValues: List[String],
+    byteValues: List[Array[Byte]],
+    smallintValues: List[Short],
+    intValues: List[Int],
+    bigintValues: List[BigInt],
+    numericValues: List[BigDecimal],
+    floatValues: List[Float],
+    doubleValues: List[Double],
+    booleanValues: List[Boolean],
+    dateValues: List[LocalDate],
+    timeValues: List[OffsetTime],
+    timestampValues: List[ZonedDateTime],
+    uuidValues: List[UUID],
+    jsonValues: List[Json]
+  )
+
+  def generatePropertyValueData(rs: WrappedResultSet): PropertyValueData =
+    PropertyValueData(
+      Utils.resultSetArrayToListOf[String](rs, "property_value_text"),
+      Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes"),
+      Utils.resultSetArrayToListOf[Short](rs, "property_value_smallint"),
+      Utils.resultSetArrayToListOf[Int](rs, "property_value_int"),
+      Utils.resultSetArrayToListOf[BigInt](rs, "property_value_bigint"),
+      Utils.resultSetArrayToListOf[BigDecimal](rs, "property_value_numeric"),
+      Utils.resultSetArrayToListOf[Float](rs, "property_value_float"),
+      Utils.resultSetArrayToListOf[Double](rs, "property_value_double"),
+      Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean"),
+      Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date"),
+      Utils.resultSetArrayToListOf[OffsetTime](rs, "property_value_time"),
+      Utils.resultSetArrayToListOf[ZonedDateTime](rs, "property_value_timestamp"),
+      Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid"),
+      Utils.resultSetArrayToListOf[String](rs, "property_value_json").map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
+    )
+
+  def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet): PropertyValue =
     val propertyTypes = Utils.resultSetArrayToPropertyTypeList(rs, "property_types")
-    val textValues = Utils.resultSetArrayToListOf[String](rs, "property_value_text")
-    val byteValues = Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes")
-    val smallintValues = Utils.resultSetArrayToListOf[Short](rs, "property_value_smallint")
-    val intValues = Utils.resultSetArrayToListOf[Int](rs, "property_value_int")
-    val bigintValues = Utils.resultSetArrayToListOf[BigInt](rs, "property_value_bigint")
-    val numericValues = Utils.resultSetArrayToListOf[BigDecimal](rs, "property_value_numeric")
-    val floatValues = Utils.resultSetArrayToListOf[Float](rs, "property_value_float")
-    val doubleValues = Utils.resultSetArrayToListOf[Double](rs, "property_value_double")
-    val booleanValues = Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean")
-    val dateValues = Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date")
-    val timeValues = Utils.resultSetArrayToListOf[OffsetTime](rs, "property_value_time")
-    val timestampValues = Utils.resultSetArrayToListOf[ZonedDateTime](rs, "property_value_timestamp")
-    val uuidValues = Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid")
-    val jsonValues = Utils.resultSetArrayToListOf[String](rs, "property_value_json") // TODO: Fix to decode JSON
+    val propertyValueData = generatePropertyValueData(rs)
     entity.projected.PropertyValue(
         property = entity.projected.Property(
           pk = UUID.fromString(rs.string("property_pk")),
@@ -37,20 +60,20 @@ object PropertyValue:
           modified = rs.zonedDateTime("modified"),
         ),
         collection = entity.projected.Collection(pk = UUID.fromString(rs.string("top_level_collection_pk"))),
-        textValues = textValues,
-        byteValues = byteValues,
-        smallintValues = smallintValues,
-        intValues = intValues,
-        bigintValues = bigintValues,
-        numericValues = numericValues,
-        floatValues = floatValues,
-        doubleValues = doubleValues,
-        booleanValues = booleanValues,
-        dateValues = dateValues,
-        timeValues = timeValues,
-        timestampValues = timestampValues,
-        uuidValues = uuidValues,
-        jsonValues = jsonValues.map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
+        textValues = propertyValueData.textValues,
+        byteValues = propertyValueData.byteValues,
+        smallintValues = propertyValueData.smallintValues,
+        intValues = propertyValueData.intValues,
+        bigintValues = propertyValueData.bigintValues,
+        numericValues = propertyValueData.numericValues,
+        floatValues = propertyValueData.floatValues,
+        doubleValues = propertyValueData.doubleValues,
+        booleanValues = propertyValueData.booleanValues,
+        dateValues = propertyValueData.dateValues,
+        timeValues = propertyValueData.timeValues,
+        timestampValues = propertyValueData.timestampValues,
+        uuidValues = propertyValueData.uuidValues,
+        jsonValues = propertyValueData.jsonValues
       )
 
   // TODO: Move this?
