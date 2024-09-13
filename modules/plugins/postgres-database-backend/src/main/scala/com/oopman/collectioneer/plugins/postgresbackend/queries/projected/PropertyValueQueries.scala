@@ -178,7 +178,7 @@ object PropertyValueQueries:
               GROUP BY cte3.collection_pk, cte3.property_pk
           )
           SELECT
-              cte4.collection_pk.pk AS parent_property_pk,
+              cte4.collection_pk AS parent_property_pk,
               /*
               parent_property.property_name AS parent_property_name,
               parent_property.property_types AS parent_property_types,
@@ -186,7 +186,7 @@ object PropertyValueQueries:
               parent_property.created AS parent_property_created,
               parent_property.modified AS parent_property_modified,
               */
-              cte4.property_pk.pk AS child_property_pk,
+              cte4.property_pk AS child_property_pk,
               /*
               child_property.property_name AS child_property_name,
               child_property.property_types AS child_property_types,
