@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.projected.ScalikePropertyDAO
 import com.oopman.collectioneer.db.traits.entity.projected.Property as ProjectedProperty
 import com.oopman.collectioneer.db.traits.entity.raw.{Collection, Property, PropertyCollection, PropertyCollectionRelationshipType}
@@ -137,3 +138,5 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       )
     }
     result.toList
+
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): List[ProjectedProperty] = ???
