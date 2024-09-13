@@ -28,7 +28,7 @@ object Properties:
   )
 
   def getProperties(config: Config): Json =
-    def getProperties(propertyDAO: traits.dao.raw.PropertyDAO) =
+    def getProperties(propertyDAO: traits.dao.projected.PropertyDAO) =
       val properties = propertyDAO.getAllMatchingPKs(config.uuids)
       GetPropertiesResult(
         dataSourceUri = config.datasourceUri,
@@ -40,7 +40,7 @@ object Properties:
           deleted = property.deleted,
           created = property.created, 
           modified = property.modified, 
-          properties = Map()
+          properties = Map.from(property.propertyValues.map(Common.propertyValuesToMapTuple))
         ))
       ).asJson
     Injection.produceRun(config)(getProperties)
