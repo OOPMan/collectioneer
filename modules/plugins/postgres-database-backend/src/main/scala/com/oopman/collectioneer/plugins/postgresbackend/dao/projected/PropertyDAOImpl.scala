@@ -85,7 +85,8 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .list
       .apply()
     val propertyUUIDs = propertyValueDataList
-      .flatMap((propertyPK1, propertyPK2, _) => Seq(propertyPK1, propertyPK2))
+      .map((_, childPropertyPK, _) => childPropertyPK)
+      .appendedAll(propertyPKs)
       .distinct
     val propertiesMap = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(propertyUUIDs).map(p => (p.pk, p)).toMap
     val propertyValueDataMap = propertyValueDataList
