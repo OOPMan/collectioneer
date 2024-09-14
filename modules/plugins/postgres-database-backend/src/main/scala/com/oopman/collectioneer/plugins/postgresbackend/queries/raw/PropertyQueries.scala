@@ -28,6 +28,12 @@ object PropertyQueries:
           SELECT ${Property.p1.result.*}
           FROM ${Property.as(Property.p1)}
      """
+    
+  def allPKs =
+    sql"""
+          SELECT p.pk
+          FROM property AS p
+       """
 
   def allMatchingPKs(propertyPKs: Seq[UUID]) =
     sql"""
