@@ -71,7 +71,13 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections,
     )
 
-  def getAll(implicit session: DBSession = AutoSession): List[ProjectedProperty] = ???
+  def getAll(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
+    val propertyPKs = postgresbackend.queries.raw.PropertyQueries
+      .allPKs
+      .map(rs => UUID.fromString(rs.string("pk")))
+      .list
+      .apply()
+    getAllMatchingPKs(propertyPKs)
 
   def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
     val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
