@@ -46,6 +46,7 @@ object PropertyQueries:
                                      fromColumn: String,
                                      propertyCollectionRelationshipType: PropertyCollectionRelationshipType,
                                      distinctOnColumnExpression: Option[String] = Some("p.pk"),
+                                     selectColumnExpression: String = "p.*",
                                      prefixSQL: String = "",
                                      suffixSQL: String = "") =
     val distinctOnSQL = distinctOnColumnExpression
@@ -53,7 +54,7 @@ object PropertyQueries:
       .getOrElse("")
     SQL(s"""
             $prefixSQL
-            SELECT $distinctOnSQL p.*
+            SELECT $distinctOnSQL $selectColumnExpression
             FROM $fromSQL AS f1
             INNER JOIN property__collection AS pc ON pc.collection_pk = f1.$fromColumn
             INNER JOIN property AS p ON p.pk = pc.collection_pk
