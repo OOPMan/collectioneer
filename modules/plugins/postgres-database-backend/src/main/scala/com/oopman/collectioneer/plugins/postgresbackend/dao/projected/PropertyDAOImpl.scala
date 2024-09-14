@@ -1,11 +1,15 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.projected.ScalikePropertyDAO
 import com.oopman.collectioneer.db.traits.entity.projected.Property as ProjectedProperty
 import com.oopman.collectioneer.db.traits.entity.raw.{Collection, Property, PropertyCollection, PropertyCollectionRelationshipType}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
+import com.oopman.collectioneer.plugins.postgresbackend.entity.projected.PropertyValue.generatePropertyValueData
 import scalikejdbc.*
+
+import java.util.UUID
 
 object PropertyDAOImpl extends ScalikePropertyDAO:
   private def performCreateOrUpdatePropertiesOperation
@@ -67,4 +71,88 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections,
     )
 
-  def getAll(implicit session: DBSession = AutoSession): List[ProjectedProperty] = ???
+  def getAll(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
+    val propertyPKs = postgresbackend.queries.raw.PropertyQueries
+      .allPKs
+      .map(rs => UUID.fromString(rs.string("pk")))
+      .list
+      .apply()
+    getAllMatchingPKs(propertyPKs)
+
+  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
+    val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
+      .propertyValuesByParentPropertyPKs()
+      .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
+      .map { rs => (
+        UUID.fromString(rs.string("parent_property_pk")),
+        UUID.fromString(rs.string("child_property_pk")),
+        generatePropertyValueData(rs)
+      )}
+      .list
+      .apply()
+    val propertyUUIDs = propertyValueDataList
+      .map((_, childPropertyPK, _) => childPropertyPK)
+      .appendedAll(propertyPKs)
+      .distinct
+    val propertiesMap = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(propertyUUIDs).map(p => (p.pk, p)).toMap
+    val propertyValueDataMap = propertyValueDataList
+      .groupBy(_._1)
+      .map((parentPropertyPK, propertyValueDataList) => (
+        parentPropertyPK,
+        propertyValueDataList.map((_, childPropertyPK, propertyValueData) => (childPropertyPK, propertyValueData)).toMap
+      ))
+    val result = for {
+      parentPropertyPK <- propertyPKs
+      property <- propertiesMap.get(parentPropertyPK)
+    } yield {
+      val propertyValues = for {
+        (childPropertyPK, propertyValueData) <- propertyValueDataMap.getOrElse(property.pk, Map())
+        childProperty <- propertiesMap.get(childPropertyPK)
+      } yield entity.projected.PropertyValue(
+        property = entity.projected.Property(
+          pk = childProperty.pk,
+          propertyName = childProperty.propertyName,
+          propertyTypes = childProperty.propertyTypes,
+          deleted = childProperty.deleted,
+          created = childProperty.created,
+          modified = childProperty.modified,
+          propertyValues = Nil
+        ),
+        collection = entity.projected.Collection(pk = parentPropertyPK),
+        textValues = propertyValueData.textValues,
+        byteValues = propertyValueData.byteValues,
+        smallintValues = propertyValueData.smallintValues,
+        intValues = propertyValueData.intValues,
+        bigintValues = propertyValueData.bigintValues,
+        numericValues = propertyValueData.numericValues,
+        floatValues = propertyValueData.floatValues,
+        doubleValues = propertyValueData.doubleValues,
+        booleanValues = propertyValueData.booleanValues,
+        dateValues = propertyValueData.dateValues,
+        timeValues = propertyValueData.timeValues,
+        timestampValues = propertyValueData.timestampValues,
+        uuidValues = propertyValueData.uuidValues,
+        jsonValues = propertyValueData.jsonValues
+      )
+      entity.projected.Property(
+        pk = property.pk,
+        propertyName = property.propertyName,
+        propertyTypes = property.propertyTypes,
+        deleted = property.deleted,
+        created = property.created,
+        modified = property.modified,
+        propertyValues = propertyValues.toList
+      )
+    }
+    result.toList
+
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): List[ProjectedProperty] =
+    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
+    val propertyPKs = postgresbackend.queries.raw.PropertyQueries
+      .innerJoiningPropertyCollection(s"($comparisonSQL)", "collection_pk", PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty, selectColumnExpression = "p.pk")
+      .bind(parameters: _*)
+      .map(rs => UUID.fromString(rs.string("pk")))
+      .list
+      .apply()
+    getAllMatchingPKs(propertyPKs)
+    
