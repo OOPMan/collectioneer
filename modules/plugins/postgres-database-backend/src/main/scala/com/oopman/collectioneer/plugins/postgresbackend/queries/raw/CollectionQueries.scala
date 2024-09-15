@@ -33,10 +33,18 @@ object CollectionQueries:
          WHERE ${Collection.c1.pk} IN (${collectionPKs})
        """
 
-  def allInnerJoining(fromSQL: String, fromColumn: String, prefixSQL: String = "", suffixSQL: String = "") =
+  def allInnerJoining(fromSQL: String, 
+                      fromColumn: String,
+                      distinctOnColumnExpression: Option[String] = Some("c1.pk"),
+                      selectColumnExpression: String = "c1.*", 
+                      prefixSQL: String = "", 
+                      suffixSQL: String = "") =
+    val distinctOnSQL = distinctOnColumnExpression
+      .map(columnExpression => s"DISTINCT ON ($columnExpression)")
+      .getOrElse("")
     SQL(s"""
           $prefixSQL
-          SELECT c1.*
+          SELECT $distinctOnSQL $selectColumnExpression
           FROM $fromSQL AS f1
           INNER JOIN collection AS c1 ON c1.pk = f1.$fromColumn
           $suffixSQL
