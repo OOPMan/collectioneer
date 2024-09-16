@@ -25,7 +25,7 @@ object CollectionQueries:
          SELECT ${Collection.c1.result.*}
          FROM ${Collection.as(Collection.c1)}
     """
-
+    
   def allMatchingPKs(collectionPKs: Seq[UUID]) =
     sql"""
          SELECT ${Collection.c1.result.*}
@@ -66,4 +66,4 @@ object CollectionQueries:
             WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
         )
       """
-    allInnerJoining("cte1", "collection_pk", prefixSQL)
+    allInnerJoining("cte1", "collection_pk", prefixSQL=prefixSQL)
