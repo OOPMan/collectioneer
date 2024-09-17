@@ -5,7 +5,7 @@
   be related to other Collections in some fashion or other. The most common relationship of a Collection to other
   Collections is that it functions as a parent Collection. For example, a Collection representing a MTG deck would
   function as a parent to the Collections representing each individual Card in the MTG deck. Further details on the
-  available relationships between Collections are documented below with the `collection__related_collection` table.
+  available relationships between Collections are documented below with the `collection_related_collection` table.
 
   Values recorded against the Properties associated with a Collection are grouped together using a Property Value Set,
   which functions as a tool to simplify the structure of the differently typed Property Value tables.
@@ -25,12 +25,12 @@ create table collection
     deleted boolean not null default false,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint collection__pk
+    constraint collection_pk
         primary key (pk)
 );
 
 /**
-  The collection__related_collection table is used to define relationships between different Collections
+  The collection_related_collection table is used to define relationships between different Collections
   within the dataset.
 
   The relationship column defines the relationship between the Collection and the Related Collection. The possible
@@ -43,9 +43,9 @@ create table collection
     Collection being a specific boardgame within that Collection Y.
     // TODO: Rewrite
   * `SourceOfPropertiesAndPropertyValues` indicates that the Related Collection functions as a source of Properties that the Collection
-    may make use of in addition to any explicitly associated with it via the `property__collection` table. For
+    may make use of in addition to any explicitly associated with it via the `property_collection` table. For
     example, we may have Collection A that is associated with the property common to all boardgames via the
-    `property__collection` table (E.g. Minimum number of players, Maximum number of players, Genres, etc). If we have
+    `property_collection` table (E.g. Minimum number of players, Maximum number of players, Genres, etc). If we have
     a Collection B, representing an actual specific boardgame it in turn can associate itself with Collection A and
     indicate Collection A to be a `source_of_property` which in turn allows the application to determine that for
     Collection B the property associated with Collection A may be used.
@@ -67,32 +67,32 @@ create table relationship
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint collection__related_collection__pk
+    constraint collection_related_collection_pk
         primary key (pk),
-    constraint collection__related_collection__collection_pk_fk
+    constraint collection_related_collection_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint collection__related_collection__related_collection_pk_fk
+    constraint collection_related_collection_related_collection_pk_fk
         foreign key (related_collection_pk) references collection(pk)
 );
 
 /**
-  The relationship__collection table is used to define relationships between Relationships themselves and individual
+  The relationship_collection table is used to define relationships between Relationships themselves and individual
   Collections for the purpose of allowing Properties and Property Values to be associated with the Relationship object.
 
   This allows for metadata about the Relationship between two Collections to be stored and interacted with
  */
-create table relationship__collection
+create table relationship_collection
 (
     relationship_pk uuid not null,
     collection_pk uuid not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint relationship__collection__pk
+    constraint relationship_collection_pk
         primary key (relationship_pk, collection_pk),
-    constraint relationship__collection__relationship_pk_fk
+    constraint relationship_collection_relationship_pk_fk
         foreign key (relationship_pk) references relationship(pk),
-    constraint relationship__collection__collection_pk_fk
+    constraint relationship_collection_collection_pk_fk
         foreign key (collection_pk) references collection(pk)
 );
 
@@ -119,12 +119,12 @@ create table property
     deleted boolean not null default false,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property__pk
+    constraint property_pk
         primary key (pk)
 );
 
 /**
-  The property__collection table is used to define define relationships between Collections and Properties.
+  The property_collection table is used to define define relationships between Collections and Properties.
 
   The relationship column defines the relationship between the Property and the Collection. The possible values for this
   column function as follows:
@@ -135,20 +135,20 @@ create table property
     are grouped as Properties of the associated Collection. Examples include metadata related to a specific Property,
     such as a default value, value constraints and similar elements.
  */
-create type property__collection__relationship_type as enum('PropertyOfCollection', 'CollectionOfPropertiesOfProperty');
-create table property__collection
+create type property_collection_relationship_type as enum('PropertyOfCollection', 'CollectionOfPropertiesOfProperty');
+create table property_collection
 (
     property_pk uuid not null,
     collection_pk uuid not null,
     index int not null default 0,
-    property__collection_relationship_type property__collection__relationship_type not null default 'PropertyOfCollection',
+    property_collection_relationship_type property_collection_relationship_type not null default 'PropertyOfCollection',
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property__collection__pk
+    constraint property_collection_pk
         primary key (property_pk, collection_pk),
-    constraint property__collection__property_pk_fk
+    constraint property_collection_property_pk_fk
         foreign key (property_pk) references property(pk),
-    constraint property__collection__collection_pk_fk
+    constraint property_collection_collection_pk_fk
         foreign key (collection_pk) references collection(pk)
 );
 
@@ -161,11 +161,11 @@ create table property_value_text
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_varchar__pk
+    constraint property_value_varchar_pk
         primary key (pk),
-    constraint property_value_varchar__collection_pk_fk
+    constraint property_value_varchar_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_varchar__property_pk_fk
+    constraint property_value_varchar_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -178,11 +178,11 @@ create table property_value_bytes
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_varbinary__pk
+    constraint property_value_varbinary_pk
         primary key (pk),
-    constraint property_value_varbinary__collection_pk_fk
+    constraint property_value_varbinary_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_varbinary__property_pk_fk
+    constraint property_value_varbinary_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -195,11 +195,11 @@ create table property_value_smallint
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_smallint__pk
+    constraint property_value_smallint_pk
         primary key (pk),
-    constraint property_value_smallint__collection_pk_fk
+    constraint property_value_smallint_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_smallint__property_pk_fk
+    constraint property_value_smallint_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -212,11 +212,11 @@ create table property_value_int
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_int__pk
+    constraint property_value_int_pk
         primary key (pk),
-    constraint property_value_int__collection_pk_fk
+    constraint property_value_int_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_int__property_pk_fk
+    constraint property_value_int_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -229,11 +229,11 @@ create table property_value_bigint
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_bigint__pk
+    constraint property_value_bigint_pk
         primary key (pk),
-    constraint property_value_bigint__collection_pk_fk
+    constraint property_value_bigint_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_bigint__property_pk_fk
+    constraint property_value_bigint_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -246,11 +246,11 @@ create table property_value_numeric
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_numeric__pk
+    constraint property_value_numeric_pk
         primary key (pk),
-    constraint property_value_numeric__collection_pk_fk
+    constraint property_value_numeric_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_numeric__property_pk_fk
+    constraint property_value_numeric_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -263,11 +263,11 @@ create table property_value_float
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_float__pk
+    constraint property_value_float_pk
         primary key (pk),
-    constraint property_value_float__collection_pk_fk
+    constraint property_value_float_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_float__property_pk_fk
+    constraint property_value_float_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -280,11 +280,11 @@ create table property_value_double
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_double__pk
+    constraint property_value_double_pk
         primary key (pk),
-    constraint property_value_double__collection_pk_fk
+    constraint property_value_double_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_double__property_pk_fk
+    constraint property_value_double_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -297,11 +297,11 @@ create table property_value_boolean
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_boolean__pk
+    constraint property_value_boolean_pk
         primary key (pk),
-    constraint property_value_boolean__collection_pk_fk
+    constraint property_value_boolean_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_boolean__property_pk_fk
+    constraint property_value_boolean_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -314,11 +314,11 @@ create table property_value_date
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_date__pk
+    constraint property_value_date_pk
         primary key (pk),
-    constraint property_value_date__collection_pk_fk
+    constraint property_value_date_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_date__property_pk_fk
+    constraint property_value_date_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -331,11 +331,11 @@ create table property_value_time
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_time__pk
+    constraint property_value_time_pk
         primary key (pk),
-    constraint property_value_time__collection_pk_fk
+    constraint property_value_time_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_time__property_pk_fk
+    constraint property_value_time_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -348,11 +348,11 @@ create table property_value_timestamp
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_timestamp__pk
+    constraint property_value_timestamp_pk
         primary key (pk),
-    constraint property_value_timestamp__collection_pk_fk
+    constraint property_value_timestamp_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_timestamp__property_pk_fk
+    constraint property_value_timestamp_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -365,11 +365,11 @@ create table property_value_uuid
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_uuid__pk
+    constraint property_value_uuid_pk
         primary key (pk),
-    constraint property_value_uuid__collection_pk_fk
+    constraint property_value_uuid_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_uuid__property_pk_fk
+    constraint property_value_uuid_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -382,10 +382,10 @@ create table property_value_json
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_json__pk
+    constraint property_value_json_pk
         primary key (pk),
-    constraint property_value_json__collection_pk_fk
+    constraint property_value_json_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_json__property_pk_fk
+    constraint property_value_json_property_pk_fk
         foreign key (property_pk) references property(pk)
 );

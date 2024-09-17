@@ -56,8 +56,8 @@ object PropertyQueries:
             $prefixSQL
             SELECT $distinctOnSQL $selectColumnExpression
             FROM $fromSQL AS f1
-            INNER JOIN property__collection AS pc ON pc.collection_pk = f1.$fromColumn
+            INNER JOIN property_collection AS pc ON pc.collection_pk = f1.$fromColumn
             INNER JOIN property AS p ON p.pk = pc.collection_pk
-            WHERE pc.property__collection_relationship_type = '${propertyCollectionRelationshipType.toString}'
+            WHERE pc.property_collection_relationship_type = '${propertyCollectionRelationshipType.toString}'
             $suffixSQL
         """)
