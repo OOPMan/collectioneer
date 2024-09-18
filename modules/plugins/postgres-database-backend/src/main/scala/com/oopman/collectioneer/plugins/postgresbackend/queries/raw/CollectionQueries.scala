@@ -26,11 +26,11 @@ object CollectionQueries:
          FROM ${Collection.as(Collection.c1)}
     """
     
-  def allMatchingPKs(collectionPKs: Seq[UUID]) =
+  def allMatchingPKs =
     sql"""
          SELECT ${Collection.c1.result.*}
          FROM ${Collection.as(Collection.c1)}
-         WHERE ${Collection.c1.pk} IN (${collectionPKs})
+         WHERE ${Collection.c1.pk} = ANY (?::uuid[])
        """
 
   def allInnerJoining(fromSQL: String, 

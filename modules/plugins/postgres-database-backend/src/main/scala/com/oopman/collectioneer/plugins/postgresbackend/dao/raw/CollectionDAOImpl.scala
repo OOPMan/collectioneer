@@ -32,7 +32,8 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     postgresbackend.queries.raw.CollectionQueries
-      .allMatchingPKs(collectionPKs)
+      .allMatchingPKs
+      .bind(session.connection.createArrayOf("varchar", collectionPKs.toArray))
       .map(postgresbackend.entity.raw.Collection(postgresbackend.entity.raw.Collection.c1.resultName))
       .list
       .apply()
