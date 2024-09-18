@@ -35,11 +35,11 @@ object PropertyQueries:
           FROM property AS p
        """
 
-  def allMatchingPKs(propertyPKs: Seq[UUID]) =
+  def allMatchingPKs =
     sql"""
           SELECT ${Property.p1.result.*}
           FROM ${Property.as(Property.p1)}
-          WHERE ${Property.p1.pk} IN (${propertyPKs})
+          WHERE ${Property.p1.pk} = ANY (?::uuid[])
        """
 
   def innerJoiningPropertyCollection(fromSQL: String,

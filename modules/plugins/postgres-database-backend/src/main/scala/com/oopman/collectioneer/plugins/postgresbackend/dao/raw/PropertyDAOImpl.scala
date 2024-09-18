@@ -33,7 +33,8 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
 
   def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession): List[Property] =
     postgresbackend.queries.raw.PropertyQueries
-      .allMatchingPKs(propertyPKs)
+      .allMatchingPKs
+      .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
       .map(postgresbackend.entity.raw.Property(postgresbackend.entity.raw.Property.p1.resultName))
       .list
       .apply()
