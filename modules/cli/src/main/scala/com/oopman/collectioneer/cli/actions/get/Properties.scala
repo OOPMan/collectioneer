@@ -26,22 +26,25 @@ object Properties:
     count: Int,
     properties: List[PropertyWithPropertyValues]
   )
-
+  
+  def propertyToPropertyWithPropertyValues(property: traits.entity.projected.Property): PropertyWithPropertyValues =
+    PropertyWithPropertyValues(
+      pk = property.pk,
+      propertyName = property.propertyName,
+      propertyTypes = property.propertyTypes.map(_.toString),
+      deleted = property.deleted,
+      created = property.created,
+      modified = property.modified,
+      properties = Map.from(property.propertyValues.map(Common.propertyValuesToMapTuple))
+    )
+    
   def getProperties(config: Config): Json =
     def getProperties(propertyDAO: traits.dao.projected.PropertyDAO) =
       val properties = propertyDAO.getAllMatchingPKs(config.uuids)
       GetPropertiesResult(
         dataSourceUri = config.datasourceUri,
         count = properties.size,
-        properties = properties.map(property => PropertyWithPropertyValues(
-          pk = property.pk,
-          propertyName = property.propertyName,
-          propertyTypes = property.propertyTypes.map(_.toString),
-          deleted = property.deleted,
-          created = property.created, 
-          modified = property.modified, 
-          properties = Map.from(property.propertyValues.map(Common.propertyValuesToMapTuple))
-        ))
+        properties = properties.map(propertyToPropertyWithPropertyValues)
       ).asJson
     Injection.produceRun(config)(getProperties)
 
