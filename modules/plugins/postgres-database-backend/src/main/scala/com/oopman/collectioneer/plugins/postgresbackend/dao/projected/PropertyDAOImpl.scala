@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
 import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
+import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.projected.ScalikePropertyDAO
 import com.oopman.collectioneer.db.traits.entity.projected.Property as ProjectedProperty
 import com.oopman.collectioneer.db.traits.entity.raw.{Collection, Property, PropertyCollection, PropertyCollectionRelationshipType}
@@ -155,4 +156,30 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .list
       .apply()
     getAllMatchingPKs(propertyPKs)
-    
+
+  def getAllByPropertyCollection
+  (collectionPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
+  (implicit session: DBSession = AutoSession): Map[UUID, List[ProjectedProperty]] =
+    val collectionPKsByPropertyPK = postgresbackend.queries.raw.PropertyQueries
+      .allByPropertyCollection("p.pk")
+      .bind(
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
+      )
+      .map(rs => (
+        UUID.fromString(rs.string("pk")),
+        Utils.resultSetArrayToListOf[UUID](rs, "collection_pks")
+      ))
+      .list
+      .apply()
+      .toMap
+    val properties = getAllMatchingPKs(collectionPKsByPropertyPK.keys.toSeq)
+    val collectionPKPropertyPairs = for {
+      property <- properties
+      collectionPK <- collectionPKsByPropertyPK.getOrElse(property.pk, Nil)
+    } yield (collectionPK, property)
+    val result = for {
+      (collectionPK, collectionPKPropertyPairsForCollection) <- collectionPKPropertyPairs.groupBy(_._1)
+    } yield (collectionPK, collectionPKPropertyPairsForCollection.map(_._2))
+    result
+
