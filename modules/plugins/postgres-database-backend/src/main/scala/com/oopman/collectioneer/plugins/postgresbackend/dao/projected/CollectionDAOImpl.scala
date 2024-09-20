@@ -1,10 +1,12 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.entity.projected.PropertyValue
 import com.oopman.collectioneer.db.scalikejdbc.traits
 import com.oopman.collectioneer.db.traits.entity.projected.{Collection as ProjectedCollection, Property as ProjectedProperty}
-import com.oopman.collectioneer.db.traits.entity.raw.{Collection, PropertyCollection}
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationshipType.PropertyOfCollection
+import com.oopman.collectioneer.db.traits.entity.raw.{Collection, PropertyCollection, PropertyCollectionRelationshipType}
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
 
@@ -23,6 +25,7 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
     val distinctCollections = collections.distinctBy(_.pk)
     val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.map(_.property)))
     val distinctProperties = collectionPKPropetiesListSeq.flatMap(_._2).distinctBy(_.pk)
+    // TODO: Use a for expression here
     val propertyCollections = collectionPKPropetiesListSeq.flatMap((collectionPK, properties) => properties.map(property => entity.raw.PropertyCollection(propertyPK = property.pk, collectionPK = collectionPK)))
     val distinctPropertyCollections = propertyCollections
       .distinctBy(propertyCollection => (propertyCollection.propertyPK, propertyCollection.collectionPK))
@@ -53,5 +56,25 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
 
   def getAll(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
+  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedCollection] =
+    val collections = postgresbackend.dao.raw.CollectionDAOImpl.getAllMatchingPKs(collectionPKs)
+    val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllByPropertyCollection(
+      collectionPKs = collectionPKs,
+      propertyCollectionRelationshipTypes = PropertyCollectionRelationshipType.PropertyOfCollection :: Nil
+    )
+    val propertyValues = postgresbackend.dao.projected.PropertyValueDAOImpl.getPropertyValuesByCollectionUUIDs(collectionPKs)
+    val propertyValuesMap = propertyValues.groupBy(_.collection.pk)
+    val results = for {
+      collection <- collections
+    } yield entity.projected.Collection(
+        pk = collection.pk,
+        virtual = collection.virtual,
+        deleted = collection.deleted,
+        created = collection.modified,
+        modified = collection.modified,
+        properties = propertiesByCollection.getOrElse(collection.pk, Nil),
+        propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil)
+      )
+    results
 
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
