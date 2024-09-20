@@ -4,8 +4,6 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelations
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw.Property
 import scalikejdbc.*
 
-import java.util.UUID
-
 object PropertyQueries:
 
   def insert =
@@ -41,6 +39,16 @@ object PropertyQueries:
           FROM ${Property.as(Property.p1)}
           WHERE ${Property.p1.pk} = ANY (?::uuid[])
        """
+    
+  def allByPropertyCollection(selectColumnExpression: String = "p.*") =
+    SQL(s"""
+          SELECT $selectColumnExpression, array_agg(pc.collection_pk) AS collection_pks
+          FROM property_collection AS pc
+          INNER JOIN property AS p ON p.pk = pc.property_pk
+          WHERE pc.collection_pk = ANY (?::uuid[])
+          AND pc.property_collection_relationship_type = ANY (?::property_collection_relationship_type[])
+          GROUP BY p.pk
+       """)
 
   def innerJoiningPropertyCollection(fromSQL: String,
                                      fromColumn: String,
