@@ -52,7 +52,7 @@ object PropertyValue:
     val propertyValueData = generatePropertyValueData(rs)
     entity.projected.PropertyValue(
         property = entity.projected.Property(
-          pk = UUID.fromString(rs.string("property_pk")),
+          pk = UUID.fromString(rs.string("pk")),
           propertyName = rs.string("property_name"),
           propertyTypes = propertyTypes,
           deleted = rs.boolean("deleted"),
