@@ -13,6 +13,7 @@ case class Collection
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   properties: List[traits.entity.projected.Property] = Nil,
+  relatedProperties: List[traits.entity.projected.Property] = Nil,
   propertyValues: List[traits.entity.projected.PropertyValue] = Nil
 ) extends traits.entity.projected.Collection
 
