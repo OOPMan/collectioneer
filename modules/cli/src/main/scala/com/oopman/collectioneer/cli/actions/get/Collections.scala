@@ -18,8 +18,9 @@ object Collections:
     deleted: Boolean = false,
     created: ZonedDateTime = ZonedDateTime.now(),
     modified: ZonedDateTime = ZonedDateTime.now(),
-    properties: List[PropertyWithPropertyValues],
-    propertyValues: Map[String, List[String]]
+    properties: List[PropertyWithPropertyValues] = Nil,
+    relatedProperties: List[PropertyWithPropertyValues] = Nil,
+    propertyValues: Map[String, List[String]] = Map()
   )
 
   case class GetCollectionsResult
@@ -44,6 +45,7 @@ object Collections:
             created = collection.created,
             modified = collection.modified,
             properties = collection.properties.map(propertyToPropertyWithPropertyValues),
+            relatedProperties = collection.relatedProperties.map(propertyToPropertyWithPropertyValues),
             propertyValues = Map
               .from(collection.propertyValues.map(Common.propertyValuesToMapTuple))
           ))).asJson
