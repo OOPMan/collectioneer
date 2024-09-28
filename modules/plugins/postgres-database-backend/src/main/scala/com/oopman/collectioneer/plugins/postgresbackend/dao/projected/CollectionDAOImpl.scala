@@ -58,7 +58,7 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedCollection] =
     val collections = postgresbackend.dao.raw.CollectionDAOImpl.getAllMatchingPKs(collectionPKs)
-    val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllByPropertyCollection(
+    val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllRelatedByPropertyCollection(
       collectionPKs = collectionPKs,
       propertyCollectionRelationshipTypes = PropertyCollectionRelationshipType.PropertyOfCollection :: Nil
     )
@@ -66,15 +66,19 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
     val propertyValuesMap = propertyValues.groupBy(_.collection.pk)
     val results = for {
       collection <- collections
-    } yield entity.projected.Collection(
+    } yield {
+      val (relatedProperties, properties) = propertiesByCollection.getOrElse(collection.pk, Nil).partition(_._1)
+      entity.projected.Collection(
         pk = collection.pk,
         virtual = collection.virtual,
         deleted = collection.deleted,
         created = collection.modified,
         modified = collection.modified,
-        properties = propertiesByCollection.getOrElse(collection.pk, Nil),
+        properties = properties.map(_._2),
+        relatedProperties = relatedProperties.map(_._2),
         propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil)
       )
+    }
     results
 
   def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
