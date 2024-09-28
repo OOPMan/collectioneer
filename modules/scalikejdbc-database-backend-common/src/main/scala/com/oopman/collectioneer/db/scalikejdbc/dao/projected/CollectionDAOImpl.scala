@@ -14,8 +14,10 @@ class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDat
   def createOrUpdateCollections(collections: Seq[Collection]): Array[Int] =
     dbProvider() localTx { implicit session => db.dao.projected.CollectionDAO.createOrUpdateCollections(collections) }
 
-  def getAll: List[Collection] = ???
+  def getAll: List[Collection] =
+    dbProvider() readOnly { implicit session => db.dao.projected.CollectionDAO.getAll }
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection] = ???
+  def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection] =
+    dbProvider() readOnly { implicit session => db.dao.projected.CollectionDAO.getAllMatchingPKs(collectionPKs) }
 
   

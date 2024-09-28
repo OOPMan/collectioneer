@@ -1,13 +1,14 @@
 package com.oopman.collectioneer.cli.actions.get
 
 import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.cli.actions.get.Properties.{PropertyWithPropertyValues, propertyToPropertyWithPropertyValues}
 import com.oopman.collectioneer.db.{Injection, traits}
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
 import java.time.ZonedDateTime
-import java.util.{HexFormat, UUID}
+import java.util.UUID
 
 object Collections:
   case class CollectionWithPropertyValues
@@ -17,7 +18,9 @@ object Collections:
     deleted: Boolean = false,
     created: ZonedDateTime = ZonedDateTime.now(),
     modified: ZonedDateTime = ZonedDateTime.now(),
-    properties: Map[String, List[String]]
+    properties: List[PropertyWithPropertyValues] = Nil,
+    relatedProperties: List[PropertyWithPropertyValues] = Nil,
+    propertyValues: Map[String, List[String]] = Map()
   )
 
   case class GetCollectionsResult
@@ -29,11 +32,8 @@ object Collections:
 
   
   def getCollections(config: Config): Json =
-    def getCollections(collectionDAO: traits.dao.raw.CollectionDAO, propertyValueDAO: traits.dao.projected.PropertyValueDAO) =
-      // TODO: use Projected CollectionDAO to retrieve Project Collection objects containing all data
+    def getCollections(collectionDAO: traits.dao.projected.CollectionDAO) =
       val collections = collectionDAO.getAllMatchingPKs(config.uuids)
-      val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(config.uuids)
-      val propertyValuesByPVSUUID = propertyValues.groupBy(_.collection.pk)
       GetCollectionsResult(
         dataSourceUri = config.datasourceUri,
         count = collections.size,
@@ -44,9 +44,9 @@ object Collections:
             deleted = collection.deleted,
             created = collection.created,
             modified = collection.modified,
-            properties = Map
-              .from(propertyValuesByPVSUUID
-              .getOrElse(collection.pk, Nil)
-              .map(Common.propertyValuesToMapTuple))
+            properties = collection.properties.map(propertyToPropertyWithPropertyValues),
+            relatedProperties = collection.relatedProperties.map(propertyToPropertyWithPropertyValues),
+            propertyValues = Map
+              .from(collection.propertyValues.map(Common.propertyValuesToMapTuple))
           ))).asJson
     Injection.produceRun(config)(getCollections)

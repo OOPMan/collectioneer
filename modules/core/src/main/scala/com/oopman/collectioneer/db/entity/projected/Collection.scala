@@ -12,7 +12,8 @@ case class Collection
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  properties: List[Property] = Nil,
-  propertyValues: List[PropertyValue] = Nil
+  properties: List[traits.entity.projected.Property] = Nil,
+  relatedProperties: List[traits.entity.projected.Property] = Nil,
+  propertyValues: List[traits.entity.projected.PropertyValue] = Nil
 ) extends traits.entity.projected.Collection
 

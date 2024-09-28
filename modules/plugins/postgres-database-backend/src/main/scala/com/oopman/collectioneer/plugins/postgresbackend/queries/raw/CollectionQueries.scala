@@ -25,18 +25,26 @@ object CollectionQueries:
          SELECT ${Collection.c1.result.*}
          FROM ${Collection.as(Collection.c1)}
     """
-
-  def allMatchingPKs(collectionPKs: Seq[UUID]) =
+    
+  def allMatchingPKs =
     sql"""
          SELECT ${Collection.c1.result.*}
          FROM ${Collection.as(Collection.c1)}
-         WHERE ${Collection.c1.pk} IN (${collectionPKs})
+         WHERE ${Collection.c1.pk} = ANY (?::uuid[])
        """
 
-  def allInnerJoining(fromSQL: String, fromColumn: String, prefixSQL: String = "", suffixSQL: String = "") =
+  def allInnerJoining(fromSQL: String, 
+                      fromColumn: String,
+                      distinctOnColumnExpression: Option[String] = Some("c1.pk"),
+                      selectColumnExpression: String = "c1.*", 
+                      prefixSQL: String = "", 
+                      suffixSQL: String = "") =
+    val distinctOnSQL = distinctOnColumnExpression
+      .map(columnExpression => s"DISTINCT ON ($columnExpression)")
+      .getOrElse("")
     SQL(s"""
           $prefixSQL
-          SELECT c1.*
+          SELECT $distinctOnSQL $selectColumnExpression
           FROM $fromSQL AS f1
           INNER JOIN collection AS c1 ON c1.pk = f1.$fromColumn
           $suffixSQL
@@ -58,4 +66,4 @@ object CollectionQueries:
             WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
         )
       """
-    allInnerJoining("cte1", "collection_pk", prefixSQL)
+    allInnerJoining("cte1", "collection_pk", prefixSQL=prefixSQL)

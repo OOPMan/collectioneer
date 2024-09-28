@@ -8,7 +8,7 @@ object RelationshipQueries:
           INSERT INTO relationship(pk, collection_pk, related_collection_pk, relationship_type, index)
           VALUES (?, ?, ?, ?::relationship_type, ?)
        """
-    
+
   def upsert =
     sql"""
           INSERT INTO relationship(pk, collection_pk, related_collection_pk, relationship_type, index)
@@ -18,11 +18,11 @@ object RelationshipQueries:
           relationship_type = excluded.relationship_type::relationship_type, index = excluded.index, modified = now()
        """
 
-  protected val collectionPKEqualsAny = sqls"collection_pk = ANY (?::uuid[])"
-  protected val relatedCollectionPKEqualsAny = sqls"related_collection_pk = ANY (?::uuid[])"
-  protected val relationshipTypeEqualsAny = sqls"relationship_type = ANY (?::relationship_type[])"
+  private val collectionPKEqualsAny = sqls"collection_pk = ANY (?::uuid[])"
+  private val relatedCollectionPKEqualsAny = sqls"related_collection_pk = ANY (?::uuid[])"
+  private val relationshipTypeEqualsAny = sqls"relationship_type = ANY (?::relationship_type[])"
 
-  def selectBySQLSyntax(sqlSyntaxSeq: SQLSyntax*) =
+  private def selectBySQLSyntax(sqlSyntaxSeq: SQLSyntax*) =
     val whereClauses = sqlSyntaxSeq.reduce((lhs, rhs) => lhs.and(rhs))
     sql"""
           SELECT *
@@ -30,12 +30,12 @@ object RelationshipQueries:
           WHERE $whereClauses
        """
 
-  def selectByRelatedCollectionPKsAndRelationshipTypes =
+  def selectByRelatedCollectionPKsAndRelationshipTypes: SQL[Nothing, NoExtractor] =
     selectBySQLSyntax(relatedCollectionPKEqualsAny, relationshipTypeEqualsAny)
 
-  def selectByCollectionPKsAndRelationshipTypes =
+  def selectByCollectionPKsAndRelationshipTypes: SQL[Nothing, NoExtractor] =
     selectBySQLSyntax(collectionPKEqualsAny, relationshipTypeEqualsAny)
 
-  def selectByPKsAndRelationshipTypes =
+  def selectByPKsAndRelationshipTypes: SQL[Nothing, NoExtractor] =
     selectBySQLSyntax(collectionPKEqualsAny, relatedCollectionPKEqualsAny, relationshipTypeEqualsAny)
 

@@ -24,5 +24,11 @@ object PropertyCollectionDAOImpl extends ScalikePropertyCollectionDAO:
 
   def getAllMatchingPropertyPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyCollection] = ???
 
-  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyCollection] = ???
+  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[PropertyCollection] =
+    postgresbackend.queries.raw.PropertyCollectionQueries
+      .getAllMatchingCollectionPKs
+      .bind(session.connection.createArrayOf("varchar", collectionPKs.toArray))
+      .map(postgresbackend.entity.raw.PropertyCollection.apply(postgresbackend.entity.raw.PropertyCollection.pc1.resultName))
+      .list
+      .apply()
   

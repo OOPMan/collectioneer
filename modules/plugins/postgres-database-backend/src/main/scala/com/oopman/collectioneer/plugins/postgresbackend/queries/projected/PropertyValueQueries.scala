@@ -51,7 +51,7 @@ object PropertyValueQueries:
           ),
           cte4(distinct_property_pk) AS (
               SELECT distinct on (pc.property_pk) pc.property_pk
-              FROM property__collection AS pc
+              FROM property_collection AS pc
               INNER JOIN cte2 ON cte2.distinct_collection_pk = pc.collection_pk
           ),
           cte5(distinct_property_pks) AS (
@@ -63,7 +63,7 @@ object PropertyValueQueries:
                    array_remove(array_agg(related_collection_pk), NULL) as related_collection_pk,
                    property_pk
             FROM cte1
-            LEFT JOIN property__collection AS pc ON (cte1.top_level_collection_pk = pc.collection_pk OR pc.collection_pk = cte1.related_collection_pk)
+            LEFT JOIN property_collection AS pc ON (cte1.top_level_collection_pk = pc.collection_pk OR pc.collection_pk = cte1.related_collection_pk)
             WHERE pc.property_pk IS NOT NULL
             GROUP BY top_level_collection_pk, property_pk
           ),
@@ -144,14 +144,14 @@ object PropertyValueQueries:
     sql"""WITH
           cte1(collection_pk) AS (
               SELECT pc.collection_pk
-              FROM property__collection AS pc
+              FROM property_collection AS pc
               WHERE pc.property_pk = ANY (?::uuid[])
-              AND pc.property__collection_relationship_type = 'CollectionOfPropertiesOfProperty'),
+              AND pc.property_collection_relationship_type = 'CollectionOfPropertiesOfProperty'),
           cte2(property_pk, collection_pk) AS (
               SELECT pc.property_pk, pc.collection_pk
-              FROM property__collection AS pc
+              FROM property_collection AS pc
               INNER JOIN cte1 ON cte1.collection_pk = pc.collection_pk
-              WHERE pc.property__collection_relationship_type = 'PropertyOfCollection'
+              WHERE pc.property_collection_relationship_type = 'PropertyOfCollection'
           ),
           cte3($cte3ColumnsSQLSyntax) AS ($cte3InnerSQLSyntax),
           cte4(collection_pk, property_pk, property_value_bigint, property_value_boolean, property_value_bytes,
