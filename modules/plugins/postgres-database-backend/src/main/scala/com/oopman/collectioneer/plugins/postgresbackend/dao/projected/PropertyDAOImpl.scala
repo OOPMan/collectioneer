@@ -157,6 +157,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .apply()
     getAllMatchingPKs(propertyPKs)
 
+  // TODO: This has an issue: It doesn't recursively obtain the Properties for each Collection
   def getAllByPropertyCollection
   (collectionPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
   (implicit session: DBSession = AutoSession): Map[UUID, List[ProjectedProperty]] =
@@ -182,4 +183,29 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       (collectionPK, collectionPKPropertyPairsForCollection) <- collectionPKPropertyPairs.groupBy(_._1)
     } yield (collectionPK, collectionPKPropertyPairsForCollection.map(_._2))
     result
-
+    
+  def getAllRelatedByPropertyCollection
+  (collectionPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
+  (implicit session: DBSession = AutoSession): Map[UUID, List[(Boolean, ProjectedProperty)]] =
+    val initialData = postgresbackend.queries.raw.PropertyQueries
+      .allByRelatedPropertyCollection("p.pk")
+      .bind(
+        session.connection.createArrayOf("varchar", collectionPKs.toArray),
+        session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
+      )
+      .map(rs => (
+        UUID.fromString(rs.string("top_level_collection_pk")),
+        UUID.fromString(rs.string("pk")),
+        rs.boolean("is_inherited")
+      ))
+      .list
+      .apply()
+    val propertyPKs = initialData.map(_._2).distinct
+    val properties = getAllMatchingPKs(propertyPKs).map(p => (p.pk, p)).toMap
+    val result = for {
+      (collection_pk, property_pk, is_inherited) <- initialData
+      property <- properties.get(property_pk)
+    } yield (collection_pk, (is_inherited, property))
+    for {
+      (collection_pk, groupedTuples) <- result.groupBy(_._1)
+    } yield (collection_pk, groupedTuples.map(_._2))
