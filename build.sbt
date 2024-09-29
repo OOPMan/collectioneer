@@ -17,7 +17,8 @@ lazy val sttpLibraryDependencies = Seq(
 lazy val flywayVersion = "10.6.0"
 lazy val scalikeJDBCDependencies = Seq(
   "org.flywaydb"                    % "flyway-core"                 % flywayVersion,
-  "org.scalikejdbc"                 %% "scalikejdbc"                % "4.0.0",
+  "org.scalikejdbc"                 %% "scalikejdbc"                % "4.2.1",
+  "org.scalikejdbc"                 %% "scalikejdbc-test"           % "4.2.1"               % "test",
 )
 lazy val commonSettings = Seq(
   version := "0.1.0",
@@ -28,13 +29,12 @@ lazy val commonSettings = Seq(
   ),
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
-    "ch.qos.logback"                  % "logback-classic"             % "1.2.3",
+    "ch.qos.logback"                  % "logback-classic"             % "1.5.6",
     "io.7mind.izumi"                  %% "distage-core"               % "1.1.0",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.1.0",
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
-    "org.scalatest"                   %% "scalatest-funsuite"         % "3.2.18"            % "test"
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
