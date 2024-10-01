@@ -13,6 +13,7 @@ import org.postgresql.PGProperty
 import org.postgresql.ds.PGSimpleDataSource
 
 import java.sql.{Connection, DriverManager}
+import java.util.UUID
 import javax.sql.DataSource
 
 
@@ -80,14 +81,33 @@ class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends
 object EmbeddedPostgresDatabaseBackendPlugin:
   protected val configEmbeddedPostgresMap: collection.mutable.Map[String, EmbeddedPostgres] = collection.mutable.Map()
 
+class TestPostgresDatabaseBackendPlugin(override val config: Config) extends EmbeddedPostgresDatabaseBackendPlugin(config):
+  protected lazy val embeddedPostgres = EmbeddedPostgres
+    .builderWithDefaults()
+    .setDataDirectory((os.pwd / UUID.randomUUID().toString).wrapped)
+    .setRemoveDataOnShutdown(true)
+    .setServerVersion("15")
+    .build()
+
+  override def compatibleWithDatasourceUri: Boolean =
+    config.datasourceUri == "jdbc:testpostgresql"
+
+  override def getDatasource: DataSource =
+    embeddedPostgres.createDefaultDataSource()
+
+  override def shutDown(): Unit = embeddedPostgres.close()
+
 
 object PostgresDatabaseBackendPluginDef extends PluginDef:
   many[DatabaseBackendPlugin]
     .add[PostgresDatabaseBackendPlugin]
     .add[EmbeddedPostgresDatabaseBackendPlugin]
+    .add[TestPostgresDatabaseBackendPlugin]
   many[ScalikeJDBCDatabaseBackendPlugin]
     .add[PostgresDatabaseBackendPlugin]
     .add[EmbeddedPostgresDatabaseBackendPlugin]
+    .add[TestPostgresDatabaseBackendPlugin]
   many[Plugin]
     .add[PostgresDatabaseBackendPlugin]
     .add[EmbeddedPostgresDatabaseBackendPlugin]
+    .add[TestPostgresDatabaseBackendPlugin]
