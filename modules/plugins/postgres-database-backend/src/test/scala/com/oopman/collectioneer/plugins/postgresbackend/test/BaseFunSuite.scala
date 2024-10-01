@@ -18,5 +18,11 @@ object DatabaseBackendPluginSupport:
 abstract class BaseFunSuite extends FixtureAnyFlatSpec with AutoRollback with BeforeAndAfterAll:
 
   override def db(): DB =
-    if (!DatabaseBackendPluginSupport.initialized) throw RuntimeException("Boo!")
+    if (!DatabaseBackendPluginSupport.initialized) throw RuntimeException("Failed to initialize DatabaseBackendPlugin")
     DB(conn = ConnectionPool.borrow(), settingsProvider = SettingsProvider.default)
+
+class DatabaseBackendPluginSupportInit extends BaseFunSuite:
+
+  behavior of "DatabaseBackendPluginSupportInit"
+
+  it should "Initialize the Database" in { implicit session => assert(true) }
