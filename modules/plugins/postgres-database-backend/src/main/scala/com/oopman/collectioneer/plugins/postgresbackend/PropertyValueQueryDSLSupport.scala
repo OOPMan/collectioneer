@@ -4,11 +4,12 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*
 
+import java.sql
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
 
 object PropertyValueQueryDSLSupport:
-  def makeJDBCArray(values: Array[Value])(implicit session: DBSession = AutoSession) =
+  def makeJDBCArray(values: Array[Value])(implicit session: DBSession = AutoSession): sql.Array =
     val connection = session.connection
     values match
       case v: Array[BigInt] => connection.createArrayOf("BIGINT", values.asInstanceOf[Array[Object]])
@@ -25,7 +26,7 @@ object PropertyValueQueryDSLSupport:
       case v: Array[ZonedDateTime] => connection.createArrayOf("TIMESTAMP", values.asInstanceOf[Array[Object]])
       case v: Array[UUID] => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
 
-  def propertyTypeToCast(propertyType: PropertyType) = propertyType match
+  def propertyTypeToCast(propertyType: PropertyType): String = propertyType match
     case PropertyType.bytes => "bytea"
     case PropertyType.float => "real"
     case PropertyType.double => "double precision"
