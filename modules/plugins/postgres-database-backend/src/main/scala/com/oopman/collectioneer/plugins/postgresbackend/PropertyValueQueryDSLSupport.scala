@@ -17,7 +17,7 @@ object PropertyValueQueryDSLSupport:
       case v: Byte => connection.createArrayOf("BYTEA", values.asInstanceOf[Array[Object]])
       case v: LocalDate => connection.createArrayOf("DATE", values.asInstanceOf[Array[Object]])
       case v: Double => connection.createArrayOf("DOUBLE", values.asInstanceOf[Array[Object]])
-      case v: Float => connection.createArrayOf("FLOAT", values.asInstanceOf[Array[Object]])
+      case v: Float => connection.createArrayOf("REAL", values.asInstanceOf[Array[Object]])
       case v: Int => connection.createArrayOf("INT", values.asInstanceOf[Array[Object]])
       case v: io.circe.Json =>
         val jsonStrings = values.map { case v: io.circe.Json => v.spaces2 }

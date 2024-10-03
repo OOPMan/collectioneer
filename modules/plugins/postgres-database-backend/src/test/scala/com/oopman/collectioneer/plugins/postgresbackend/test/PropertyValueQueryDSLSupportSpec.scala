@@ -1,5 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test
 
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.boolean
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport
 
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
@@ -35,7 +37,7 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
 
   it should "create a java.sql.Array from an Array[Float]" in { implicit session =>
     val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(1.toFloat, 2.toFloat))
-    assert(result.getBaseTypeName == "float8")
+    assert(result.getBaseTypeName == "float4")
   }
 
   it should "create a java.sql.Array from an Array[Int]" in { implicit session =>
@@ -73,3 +75,16 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
     val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(UUID.randomUUID(), UUID.randomUUID()))
     assert(result.getBaseTypeName == "varchar")
   }
+
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast"
+  
+  it should "convert PropertyType to String" in { implicit session => 
+    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.bytes) == "bytea")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.float) == "real")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.double) == "double precision")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.json) == "jsonb")
+  }
+
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL"
+
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL"
