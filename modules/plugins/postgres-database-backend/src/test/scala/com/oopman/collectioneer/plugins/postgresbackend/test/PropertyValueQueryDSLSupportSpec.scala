@@ -1,8 +1,9 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test
 
+import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.boolean
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport
+import com.oopman.collectioneer.{CoreProperties, given}
 
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
@@ -78,7 +79,7 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast"
   
-  it should "convert PropertyType to String" in { implicit session => 
+  it should "converts PropertyType to String" in { implicit session => 
     assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.bytes) == "bytea")
     assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.float) == "real")
     assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.double) == "double precision")
@@ -86,5 +87,22 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
   }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL"
+  
+  it should "generate a 2-Tuple containing a String and a Seq[Any]" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalTo "String"
+    val result = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(result._1.nonEmpty)
+    assert(result._2.length == 2)
+  }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL"
+
+  it should "generate a 2-Tuple containing a String and a Seq[Any]" in { implicit session =>
+    val comparisons: Seq[Comparison] = Seq(
+      CoreProperties.name equalTo "String",
+      CoreProperties.visible equalTo true
+    )
+    val result = PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
+    assert(result._1.nonEmpty)
+    assert(result._2.length == 4)
+  }
