@@ -70,6 +70,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl.getAllRelatedMatchingPropertyValues"
 
   it should "return a List of raw Collection objects matching the PropertyValueComparisons supplied, either directly or via Relationship" in { implicit session =>
+    import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.RelationshipDAOImpl
     import com.oopman.collectioneer.{CoreCollections, CoreProperties, given}
     val collection = Collection()
