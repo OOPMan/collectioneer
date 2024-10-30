@@ -23,6 +23,21 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.PropertyDAOImpl.createOrUpdateProperties"
 
+  it should "create a Property" in { implicit session =>
+    val property = Property()
+    val result = PropertyDAOImpl.createOrUpdateProperties(Seq(property))
+    assert(result.length > 0)
+  }
+
+  it should "update a Property" in { implicit session =>
+    val property = Property()
+    val result = PropertyDAOImpl.createOrUpdateProperties(Seq(property))
+    assert(result.length > 0)
+    val updatedProperty = property.copy(propertyName = "something different")
+    val newResult = PropertyDAOImpl.createOrUpdateProperties(Seq(property))
+    assert(newResult.length > 0)
+  }
+
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.PropertyDAOImpl.getAll"
   
   it should "return a list of Properties" in { implicit session =>
