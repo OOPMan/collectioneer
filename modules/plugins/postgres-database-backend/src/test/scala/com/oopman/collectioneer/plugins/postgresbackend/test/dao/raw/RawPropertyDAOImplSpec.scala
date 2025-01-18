@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.postgresbackend.test.dao.raw
 
 import com.oopman.collectioneer.{CoreProperties, given}
 import com.oopman.collectioneer.db.entity.raw.Property
+import com.oopman.collectioneer.db.traits.entity.raw.{PropertyCollectionRelationshipType, PropertyType}
 import com.oopman.collectioneer.plugins.postgresbackend.test.BaseFunSuite
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.PropertyDAOImpl
 
@@ -34,7 +35,7 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
     val result = PropertyDAOImpl.createOrUpdateProperties(Seq(property))
     assert(result.length > 0)
     val updatedProperty = property.copy(propertyName = "something different")
-    val newResult = PropertyDAOImpl.createOrUpdateProperties(Seq(property))
+    val newResult = PropertyDAOImpl.createOrUpdateProperties(Seq(updatedProperty))
     assert(newResult.length > 0)
   }
 
@@ -73,3 +74,19 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
   }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.PropertyDAOImpl.getAllByPropertyCollection"
+
+  it should "return a List of Properties associated with the supplied Collection PKs and PropertyCollectionRelationshipTypes" in { implicit session =>
+    import com.oopman.collectioneer.db.entity.projected.{Collection as ProjectedCollection, Property as ProjectedProperty, PropertyValue as ProjecetedPropertyValue}
+    import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.PropertyDAOImpl as ProjectedPropertyDAOImpl
+    import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.CollectionDAOImpl as ProjectedCollectionDAOImpl
+    val propertyA = ProjectedProperty(propertyName = "propertyA", propertyTypes = List(PropertyType.text))
+    val propertyB = ProjectedProperty(propertyName = "propertyB", propertyTypes = List(PropertyType.int))
+    val collection = ProjectedCollection( properties = List(propertyA, propertyB))
+    ProjectedCollectionDAOImpl.createCollections(Seq(collection))
+    val propertiesByCollection = PropertyDAOImpl.getAllByPropertyCollection(Seq(collection.pk), Seq(PropertyCollectionRelationshipType.PropertyOfCollection))
+    assert(propertiesByCollection.size == 1)
+    assert(propertiesByCollection(collection.pk).length == 2)
+    val inputPKs = Set(propertyA.pk, propertyB.pk)
+    val outputPKs = propertiesByCollection(collection.pk).map(_.pk).toSet
+    assert(outputPKs.equals(inputPKs))
+  }
