@@ -59,7 +59,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       )
       .map(rs => {
         val property = postgresbackend.entity.raw.Property.apply(rs)
-        Utils.resultSetArrayToListOf[String](rs, "collection_pks").map(UUID.fromString).map((_, property))
+        Utils.resultSetArrayToListOf[UUID](rs, "collection_pks").map((_, property))
       })
       .list
       .apply()
