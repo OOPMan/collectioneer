@@ -5,7 +5,7 @@
     <option name="customVMPath" />
     <option name="linkedExternalProjectsSettings">
       <SbtProjectSettings>
-        <option name="converterVersion" value="1" />
+        <option name="converterVersion" value="2" />
         <option name="enableDebugSbtShell" value="true" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
@@ -16,7 +16,10 @@
             <option value="$PROJECT_DIR$/modules/core" />
             <option value="$PROJECT_DIR$/modules/gui" />
             <option value="$PROJECT_DIR$/modules/plugins" />
+            <option value="$PROJECT_DIR$/modules/plugins/embedded-postgres-database-backend-cli" />
             <option value="$PROJECT_DIR$/modules/plugins/grand-archive-tcg" />
+            <option value="$PROJECT_DIR$/modules/plugins/postgres-database-backend" />
+            <option value="$PROJECT_DIR$/modules/scalikejdbc-database-backend-common" />
             <option value="$PROJECT_DIR$/project" />
           </set>
         </option>
@@ -26,5 +29,6 @@
         <option name="useSbtShellForImport" value="true" />
       </SbtProjectSettings>
     </option>
+    <option name="sbtOptions" value="-J-Xss64m" />
   </component>
 </project>

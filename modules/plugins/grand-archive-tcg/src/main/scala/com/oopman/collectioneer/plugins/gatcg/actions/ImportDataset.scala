@@ -54,19 +54,19 @@ def importDataset(cards: List[Card],
                   relationshipDAO: traits.dao.raw.RelationshipDAO) =
     val partialGetExistingMapByProperties = getExistingMapByProperties(rawCollectionDAO, propertyValueDAO, _, _)
     val existingSetsMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGSet eq true, Seq(SetProperties.setPrefix, SetProperties.setLanguage)
+      CommonProperties.isGATCGSet equalTo true, Seq(SetProperties.setPrefix, SetProperties.setLanguage)
     )
     val existingSetDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGSetData eq true , Seq(SetProperties.setPrefix, SetProperties.setLanguage)
+      CommonProperties.isGATCGSetData equalTo true , Seq(SetProperties.setPrefix, SetProperties.setLanguage)
     )
     val existingCardsMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGCard eq true, Seq(EditionProperties.cardUID, EditionProperties.editionUID)
+      CommonProperties.isGATCGCard equalTo true, Seq(EditionProperties.cardUID, EditionProperties.editionUID)
     )
     val existingCardDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGCardData eq true, Seq(CardProperties.cardUID)
+      CommonProperties.isGATCGCardData equalTo true, Seq(CardProperties.cardUID)
     )
     val existingEditionDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGEditionData eq true, Seq(EditionProperties.editionUID)
+      CommonProperties.isGATCGEditionData equalTo true, Seq(EditionProperties.editionUID)
     )
     val existingRelationships: Map[(UUID, UUID, RelationshipType), UUID] = getExistingRelationships(
       relationshipDAO,

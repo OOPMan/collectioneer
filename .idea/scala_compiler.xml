@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ScalaCompilerConfiguration">
     <profile name="sbt 1" modules="collectioneer_2112,repl" />
-    <profile name="sbt 2" modules="Collectioneer GUI">
+    <profile name="sbt 2" modules="Collectioneer GUI,collectioneer.Collectioneer GUI">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
       <option name="featureWarnings" value="true" />
@@ -17,14 +17,14 @@
         <parameter value="3.2-migration" />
       </parameters>
     </profile>
-    <profile name="sbt 3" modules="Collectioneer CLI Core">
+    <profile name="sbt 3" modules="Collectioneer CLI Core,collectioneer.Collectioneer CLI Core">
       <parameters>
         <parameter value="-Yretain-trees" />
         <parameter value="-Xmax-inlines" />
         <parameter value="64" />
       </parameters>
     </profile>
-    <profile name="sbt 4" modules="Collectioneer CLI,Collectioneer Core,Collectioneer REPL,Grand Archive TCG Plugin,collectioneer,grandArchiveTCG,plugins">
+    <profile name="sbt 4" modules="Collectioneer CLI,Collectioneer Core,Collectioneer REPL,Grand Archive TCG Plugin,PostgreSQL Database Backend,ScalikeJDBC Database Backend Common,collectioneer,collectioneer.Collectioneer CLI,collectioneer.Collectioneer Core,collectioneer.Embedded PostgreSQL Database Backend CLI,collectioneer.Grand Archive TCG Plugin,collectioneer.PostgreSQL Database Backend,collectioneer.ScalikeJDBC Database Backend Common,collectioneer.plugins,grandArchiveTCG,plugins,scalikeJDBCDatabaseBackendCommon">
       <parameters>
         <parameter value="-Yretain-trees" />
       </parameters>

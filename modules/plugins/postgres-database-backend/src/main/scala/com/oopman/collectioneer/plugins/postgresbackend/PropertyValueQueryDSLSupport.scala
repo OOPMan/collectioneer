@@ -4,28 +4,34 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*
 
+import java.sql
 import java.time.{LocalDate, OffsetTime, ZonedDateTime}
 import java.util.UUID
 
 object PropertyValueQueryDSLSupport:
-  def makeJDBCArray(values: Array[Value])(implicit session: DBSession = AutoSession) =
+  def makeJDBCArray(values: Array[Value])(implicit session: DBSession = AutoSession): sql.Array =
     val connection = session.connection
-    values match
-      case v: Array[BigInt] => connection.createArrayOf("BIGINT", values.asInstanceOf[Array[Object]])
-      case v: Array[Boolean] => connection.createArrayOf("BOOLEAN", values.asInstanceOf[Array[Object]])
-      case v: Array[Byte] => connection.createArrayOf("TINYINT", values.asInstanceOf[Array[Object]])
-      case v: Array[LocalDate] => connection.createArrayOf("DATE", values.asInstanceOf[Array[Object]])
-      case v: Array[Double] => connection.createArrayOf("DOUBLE", values.asInstanceOf[Array[Object]])
-      case v: Array[Float] => connection.createArrayOf("FLOAT", values.asInstanceOf[Array[Object]])
-      case v: Array[Int] => connection.createArrayOf("INT", values.asInstanceOf[Array[Object]])
-      case v: Array[io.circe.Json] => connection.createArrayOf("VARCHAR", v.map(_.spaces2).asInstanceOf[Array[Object]])
-      case v: Array[BigDecimal] => connection.createArrayOf("NUMERIC", values.asInstanceOf[Array[Object]])
-      case v: Array[String] => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
-      case v: Array[OffsetTime] => connection.createArrayOf("TIME", values.asInstanceOf[Array[Object]])
-      case v: Array[ZonedDateTime] => connection.createArrayOf("TIMESTAMP", values.asInstanceOf[Array[Object]])
-      case v: Array[UUID] => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
+    val result = for (v <- values.headOption) yield v match {
+      case v: BigInt => connection.createArrayOf("BIGINT", values.asInstanceOf[Array[Object]])
+      case v: Boolean => connection.createArrayOf("BOOLEAN", values.asInstanceOf[Array[Object]])
+      case v: Byte => connection.createArrayOf("BYTEA", values.asInstanceOf[Array[Object]])
+      case v: LocalDate => connection.createArrayOf("DATE", values.asInstanceOf[Array[Object]])
+      case v: Double => connection.createArrayOf("DOUBLE", values.asInstanceOf[Array[Object]])
+      case v: Float => connection.createArrayOf("REAL", values.asInstanceOf[Array[Object]])
+      case v: Int => connection.createArrayOf("INT", values.asInstanceOf[Array[Object]])
+      case v: io.circe.Json =>
+        val jsonStrings = values.map { case v: io.circe.Json => v.spaces2 }
+        connection.createArrayOf("VARCHAR", jsonStrings.asInstanceOf[Array[Object]])
+      case v: BigDecimal => connection.createArrayOf("NUMERIC", values.asInstanceOf[Array[Object]])
+      case v: String => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
+      case v: OffsetTime => connection.createArrayOf("TIME", values.asInstanceOf[Array[Object]])
+      case v: ZonedDateTime => connection.createArrayOf("TIMESTAMP", values.asInstanceOf[Array[Object]])
+      case v: UUID => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
+      case _ => connection.createArrayOf("VARCHAR", Array.empty)
+    }
+    result.getOrElse(connection.createArrayOf("VARCHAR", Array.empty))
 
-  def propertyTypeToCast(propertyType: PropertyType) = propertyType match
+  def propertyTypeToCast(propertyType: PropertyType): String = propertyType match
     case PropertyType.bytes => "bytea"
     case PropertyType.float => "real"
     case PropertyType.double => "double precision"
@@ -45,7 +51,8 @@ object PropertyValueQueryDSLSupport:
         case Operator.like => " LIKE "
       }
       val (operatorSuffix, value, castSuffix) = rhs match {
-        case a: Seq[Value] => (" ANY ", makeJDBCArray(a.toArray), "[]")
+        case seq: Seq[Value] => (" ANY ", makeJDBCArray(seq.toArray), "[]")
+        case arr: Array[Value] => (" ANY ", makeJDBCArray(arr), "[]")
         case _ => ("", rhs, "")
       }
       val sqlAndParameters = lhs.propertyTypes.map(propertyType =>
