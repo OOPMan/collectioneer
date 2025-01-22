@@ -1,6 +1,5 @@
 package com.oopman.collectioneer.plugins.gatcg.actions.ImportDataset
 
-import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
@@ -12,74 +11,17 @@ import com.oopman.collectioneer.{CoreProperties, given}
 
 import java.util.UUID
 
-def getExistingMapByProperties(rawCollectionDAO: traits.dao.raw.CollectionDAO,
-                               propertyValueDAO: traits.dao.projected.PropertyValueDAO,
-                               comparison: Comparison,
-                               properties: Seq[Property]): Map[Seq[String], UUID] =
-  val collections = rawCollectionDAO.getAllMatchingPropertyValues(Seq(comparison))
-  val propertyValues = propertyValueDAO.getPropertyValuesByCollectionUUIDs(collections.map(_.pk), properties.map(_.pk))
-  val propertyValuesByCollectionPK = propertyValues.groupBy(_.collection.pk)
-  val propertyValuesByPropertyPKByCollectionPK = propertyValuesByCollectionPK.map((pk, propertyValues) => (pk, propertyValues.groupBy(_.property.pk)))
-  val setsMapIterable = for {
-    (pk, propertyValuesByPropertyPK) <- propertyValuesByPropertyPKByCollectionPK
-    key = properties.flatMap(p => propertyValuesByPropertyPK.get(p.pk).map(_.head).flatMap(_.textValues.headOption) )
-  } yield (key, pk)
-  Map.from(setsMapIterable)
-
-def getExistingRelationships(relationshipDAO: traits.dao.raw.RelationshipDAO,
-                             existingCardPKs: Seq[UUID],
-                             existingSetPKs: Seq[UUID],
-                             existingSetDataPKs: Seq[UUID],
-                             existingEditionDataPKs: Seq[UUID],
-                             existingCardDataPKs: Seq[UUID]): Map[(UUID, UUID, RelationshipType), UUID] =
-  val gaTCGRootCollectionSetRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
-    existingSetPKs, Seq(GATCGRootCollection.pk), Seq(ParentCollection)
-  )
-  val cardSetRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
-    existingCardPKs, existingSetPKs, Seq(RelationshipType.ParentCollection)
-  )
-  val cardDataRelationships = relationshipDAO.getRelationshipsByPKsAndRelationshipTypes(
-    existingCardPKs, existingSetDataPKs ++ existingEditionDataPKs ++ existingCardDataPKs, Seq(RelationshipType.SourceOfPropertiesAndPropertyValues)
-  )
-  Map.from(
-    for { relationship <- gaTCGRootCollectionSetRelationships ++ cardSetRelationships ++ cardDataRelationships }
-    yield ((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType), relationship.pk)
-  )
-
 
 def importDataset(cards: List[Card],
                   collectionDAO: traits.dao.projected.CollectionDAO,
                   rawCollectionDAO: traits.dao.raw.CollectionDAO,
                   propertyValueDAO: traits.dao.projected.PropertyValueDAO,
                   relationshipDAO: traits.dao.raw.RelationshipDAO) =
-    val partialGetExistingMapByProperties = getExistingMapByProperties(rawCollectionDAO, propertyValueDAO, _, _)
-    val existingSetsMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGSet equalTo true, Seq(SetProperties.setPrefix, SetProperties.setLanguage)
-    )
-    val existingSetDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGSetData equalTo true , Seq(SetProperties.setPrefix, SetProperties.setLanguage)
-    )
-    val existingCardsMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGCard equalTo true, Seq(EditionProperties.cardUID, EditionProperties.editionUID)
-    )
-    val existingCardDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGCardData equalTo true, Seq(CardProperties.cardUID)
-    )
-    val existingEditionDataMap: Map[Seq[String], UUID] = partialGetExistingMapByProperties(
-      CommonProperties.isGATCGEditionData equalTo true, Seq(EditionProperties.editionUID)
-    )
-    val existingRelationships: Map[(UUID, UUID, RelationshipType), UUID] = getExistingRelationships(
-      relationshipDAO,
-      existingCardsMap.values.toSeq,
-      existingSetsMap.values.toSeq,
-      existingSetDataMap.values.toSeq,
-      existingEditionDataMap.values.toSeq,
-      existingCardDataMap.values.toSeq
-    )
     // Generate Sets
     val sets = cards.flatMap(_.editions.map(_.set)).distinctBy(set => (set.prefix, set.language))
+    val setUUIDS: Map[(String, String), UUID] = Map.from(sets.map(set => ((set.prefix, set.language), UUID.nameUUIDFromBytes(s"GATCG-set-${set.prefix}-${set.language}".getBytes))))
     val setMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
-      pk = existingSetsMap.getOrElse(Seq(set.prefix, set.language), UUID.randomUUID),
+      pk = setUUIDS.getOrElse((set.prefix, set.language), UUID.randomUUID),
       virtual = true,
       propertyValues = List(
         PropertyValue(property = CoreProperties.name, textValues = List(set.name)),
@@ -88,8 +30,9 @@ def importDataset(cards: List[Card],
         PropertyValue(property = CommonProperties.isGATCGSet, booleanValues = List(true))
       )
     ))))
+    val setDataUUIDS: Map[(String, String), UUID] = Map.from(sets.map(set => ((set.prefix, set.language), UUID.nameUUIDFromBytes(s"GATCG-setdata-${set.prefix}-${set.language}".getBytes))))
     val setDataMap = Map.from(sets.map(set => ((set.prefix, set.language), Collection(
-      pk = existingSetDataMap.getOrElse(Seq(set.prefix, set.language), UUID.randomUUID),
+      pk = setDataUUIDS.getOrElse((set.prefix, set.language), UUID.randomUUID),
       virtual = true,
       propertyValues = List(
         PropertyValue(property = SetProperties.setName, textValues = List(set.name)),
@@ -99,8 +42,9 @@ def importDataset(cards: List[Card],
       )
     ))))
     // Generate Collections containing CardProperties
+    val cardUUIDs = Map.from(cards.map(card => (card.uuid, UUID.nameUUIDFromBytes(s"GATCG-card-${card.uuid}".getBytes))))
     val cardDataMap = Map.from(cards.map(card => (card.uuid, Collection(
-      pk = existingCardDataMap.getOrElse(Seq(card.uuid), UUID.randomUUID),
+      pk = cardUUIDs.getOrElse(card.uuid, UUID.randomUUID),
       virtual = true,
       propertyValues = List(
         PropertyValue(property = CoreProperties.name, textValues = List(card.name)),
@@ -123,8 +67,9 @@ def importDataset(cards: List[Card],
     ))))
     // Generate Collections containing EditionProperties
     val editions = cards.flatMap(_.editions)
+    val editionUUIDs = Map.from(editions.map(edition => (edition.uuid, UUID.nameUUIDFromBytes(s"GATCG-edition-${edition.uuid}".getBytes))))
     val editionDataMap = Map.from(editions.map(edition => (edition.uuid, Collection(
-      pk = existingEditionDataMap.getOrElse(Seq(edition.uuid), UUID.randomUUID),
+      pk = editionUUIDs.getOrElse(edition.uuid, UUID.randomUUID),
       virtual = true,
       propertyValues = List(
         PropertyValue(property = EditionProperties.editionUID, textValues = List(edition.uuid)),
@@ -139,6 +84,7 @@ def importDataset(cards: List[Card],
       )
     ))))
     // Generate Card Collections that will be configured as children of Set Collections and source their Properties and PropertyValues from CardProperties and EditionProperties collections
+    val cardEditionUUIDs = Map.from(editions.map(edition => ((edition.card_id, edition.uuid), UUID.nameUUIDFromBytes(s"GATCG-card-edition-${edition.card_id}-${edition.uuid}".getBytes))))
     val cardsMap = Map.from(
       editions.map(edition => (
         (
@@ -148,7 +94,7 @@ def importDataset(cards: List[Card],
           cardDataMap.get(edition.card_id)
         ),
         Collection(
-          pk = existingCardsMap.getOrElse(Seq(edition.card_id, edition.uuid), UUID.randomUUID),
+          pk = cardEditionUUIDs.getOrElse((edition.card_id, edition.uuid), UUID.randomUUID),
           virtual = true,
           propertyValues = List(PropertyValue(property = CommonProperties.isGATCGCard, booleanValues = List(true)))
         )
@@ -158,18 +104,22 @@ def importDataset(cards: List[Card],
     val relationships = cardsMap.flatMap {
       case ((Some(set), Some(setData), Some(editionData), Some(cardData)), card) => List(
         Relationship(
+          pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${set.pk}-${ParentCollection}".getBytes),
           collectionPK = card.pk,
           relatedCollectionPK = set.pk,
           relationshipType = ParentCollection),
         Relationship(
+          pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${setData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
           collectionPK = card.pk,
           relatedCollectionPK = setData.pk,
           relationshipType = SourceOfPropertiesAndPropertyValues),
         Relationship(
+          pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${editionData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
           collectionPK = card.pk,
           relatedCollectionPK = editionData.pk,
           relationshipType = SourceOfPropertiesAndPropertyValues),
         Relationship(
+          pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${cardData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
           collectionPK = card.pk,
           relatedCollectionPK = cardData.pk,
           relationshipType = SourceOfPropertiesAndPropertyValues)
@@ -180,9 +130,13 @@ def importDataset(cards: List[Card],
     }
     val distinctRelationships = relationships
       .toList
-      .appendedAll(setMap.map((key, set) => Relationship(collectionPK = set.pk, relatedCollectionPK = GATCGRootCollection.pk, relationshipType = ParentCollection)))
+      .appendedAll(setMap.map((key, set) => Relationship(
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${set.pk}-${GATCGRootCollection.pk}-${ParentCollection}".getBytes),
+        collectionPK = set.pk,
+        relatedCollectionPK = GATCGRootCollection.pk,
+        relationshipType = ParentCollection
+      )))
       .distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
-      .filterNot(relationship => existingRelationships.contains((relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)))
     // Write data
     collectionDAO.createOrUpdateCollections(
       List(GATCGRootCollection) ++ setDataMap.values.toList ++ editionDataMap.values.toList ++
