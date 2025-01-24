@@ -7,6 +7,6 @@ import java.util.UUID
 trait CollectionDAO:
   def createCollections(collections: Seq[Collection]): Array[Int]
   def createOrUpdateCollections(collections: Seq[Collection]): Array[Int]
-  def getAll: List[Collection]
-  def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection]
+  def getAll(propertyPKs: Option[List[UUID]] = None): List[Collection]
+  def getAllMatchingPKs(collectionPKs: Seq[UUID], propertyPKs: Option[List[UUID]] = None): List[Collection]
 

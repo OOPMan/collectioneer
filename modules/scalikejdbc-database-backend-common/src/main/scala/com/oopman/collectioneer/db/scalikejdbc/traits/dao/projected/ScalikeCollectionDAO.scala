@@ -8,6 +8,6 @@ import java.util.UUID
 trait ScalikeCollectionDAO:
   def createCollections(collections: Seq[Collection])(implicit session: DBSession): Array[Int]
   def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession): Array[Int]
-  def getAll(implicit session: DBSession): List[Collection]
-  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): List[Collection]
+  def getAll(propertyPKs: Option[List[UUID]] = None)(implicit session: DBSession): List[Collection]
+  def getAllMatchingPKs(collectionPKs: Seq[UUID], propertyPKs: Option[List[UUID]] = None)(implicit session: DBSession): List[Collection]
 
