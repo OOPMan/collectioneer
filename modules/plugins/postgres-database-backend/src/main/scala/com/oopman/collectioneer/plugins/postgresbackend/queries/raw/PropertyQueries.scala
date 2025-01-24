@@ -40,17 +40,20 @@ object PropertyQueries:
           WHERE ${Property.p1.pk} = ANY (?::uuid[])
        """
     
-  def allByPropertyCollection(selectColumnExpression: String = "p.*") =
+  def allByPropertyCollection(selectColumnExpression: String = "p.*", includePropertiesFilter: Boolean = false) =
+    val propertyPKsWhereClause = if includePropertiesFilter then sqls"AND pc.property_pk = ANY (?::uuid[])" else SQLSyntax.empty
     SQL(s"""
             SELECT $selectColumnExpression, array_agg(pc.collection_pk) AS collection_pks
             FROM property_collection AS pc
             INNER JOIN property AS p ON p.pk = pc.property_pk
             WHERE pc.collection_pk = ANY (?::uuid[])
             AND pc.property_collection_relationship_type = ANY (?::property_collection_relationship_type[])
+            $propertyPKsWhereClause
             GROUP BY p.pk
        """)
 
-  def allByRelatedPropertyCollection(selectColumnExpression: String = "p.*") =
+  def allByRelatedPropertyCollection(selectColumnExpression: String = "p.*", includePropertiesFilter: Boolean = false) =
+    val propertyPKsWhereClause = if includePropertiesFilter then sqls"AND pc.property_pk = ANY (?::uuid[])" else SQLSyntax.empty
     SQL(s"""WITH RECURSIVE
             cte1(top_level_collection_pk, collection_pk, related_collection_pk, index) AS (
                 SELECT c.pk AS top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
@@ -75,6 +78,7 @@ object PropertyQueries:
                     OR pc.collection_pk = cte1.related_collection_pk)
                 WHERE pc.property_pk IS NOT NULL
                 AND pc.property_collection_relationship_type = ANY (?::property_collection_relationship_type[])
+                $propertyPKsWhereClause
                 GROUP BY top_level_collection_pk, property_pk)
             SELECT cte2.is_inherited, cte2.top_level_collection_pk, $selectColumnExpression
             FROM cte2
