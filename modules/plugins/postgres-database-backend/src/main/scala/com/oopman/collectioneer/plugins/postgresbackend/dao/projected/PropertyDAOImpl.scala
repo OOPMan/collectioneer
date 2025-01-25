@@ -159,14 +159,19 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
 
   // TODO: This has an issue: It doesn't recursively obtain the Properties for each Collection
   def getAllByPropertyCollection
-  (collectionPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
+  (collectionPKs: Seq[UUID], propertyPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
   (implicit session: DBSession = AutoSession): Map[UUID, List[ProjectedProperty]] =
+    val bindings = Seq(
+      session.connection.createArrayOf("varchar", collectionPKs.toArray),
+      session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
+    ) ++ (
+      if propertyPKs.nonEmpty
+      then Seq(session.connection.createArrayOf("varchar", propertyPKs.toArray))
+      else Nil
+    )
     val collectionPKsByPropertyPK = postgresbackend.queries.raw.PropertyQueries
-      .allByPropertyCollection("p.pk")
-      .bind(
-        session.connection.createArrayOf("varchar", collectionPKs.toArray),
-        session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
-      )
+      .allByPropertyCollection("p.pk", includePropertiesFilter = propertyPKs.nonEmpty)
+      .bind(bindings: _*)
       .map(rs => (
         UUID.fromString(rs.string("pk")),
         Utils.resultSetArrayToListOf[UUID](rs, "collection_pks")
@@ -185,14 +190,19 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     result
     
   def getAllRelatedByPropertyCollection
-  (collectionPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
+  (collectionPKs: Seq[UUID], propertyPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
   (implicit session: DBSession = AutoSession): Map[UUID, List[(Boolean, ProjectedProperty)]] =
+    val bindings = Seq(
+      session.connection.createArrayOf("varchar", collectionPKs.toArray),
+      session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
+    ) ++ (
+      if propertyPKs.nonEmpty
+      then Seq(session.connection.createArrayOf("varchar", propertyPKs.toArray))
+      else Nil
+    )
     val initialData = postgresbackend.queries.raw.PropertyQueries
-      .allByRelatedPropertyCollection("p.pk")
-      .bind(
-        session.connection.createArrayOf("varchar", collectionPKs.toArray),
-        session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
-      )
+      .allByRelatedPropertyCollection("p.pk", includePropertiesFilter = propertyPKs.nonEmpty)
+      .bind(bindings: _*)
       .map(rs => (
         UUID.fromString(rs.string("top_level_collection_pk")),
         UUID.fromString(rs.string("pk")),
@@ -200,8 +210,8 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       ))
       .list
       .apply()
-    val propertyPKs = initialData.map(_._2).distinct
-    val properties = getAllMatchingPKs(propertyPKs).map(p => (p.pk, p)).toMap
+    val retrievedPropertyPKs = initialData.map(_._2).distinct
+    val properties = getAllMatchingPKs(retrievedPropertyPKs).map(p => (p.pk, p)).toMap
     val result = for {
       (collection_pk, property_pk, is_inherited) <- initialData
       property <- properties.get(property_pk)
