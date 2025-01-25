@@ -63,7 +63,7 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
       propertyPKs = propertyPKs,
       propertyCollectionRelationshipTypes = PropertyCollectionRelationshipType.PropertyOfCollection :: Nil
     )
-    val propertyValues = postgresbackend.dao.projected.PropertyValueDAOImpl.getPropertyValuesByCollectionUUIDs(collectionPKs)
+    val propertyValues = postgresbackend.dao.projected.PropertyValueDAOImpl.getPropertyValuesByCollectionUUIDs(collectionPKs, propertyPKs)
     val propertyValuesMap = propertyValues.groupBy(_.collection.pk)
     val results = for {
       collection <- collections
