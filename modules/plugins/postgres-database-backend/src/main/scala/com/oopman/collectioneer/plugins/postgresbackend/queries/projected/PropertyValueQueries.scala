@@ -28,7 +28,7 @@ object PropertyValueQueries:
     )
 
   def propertyValuesByCollectionPKs(includePropertiesFilter: Boolean = false) =
-    val whereClauses = if includePropertiesFilter then sqls"WHERE p.pk = ANY (?::uuid[])" else SQLSyntax.empty
+    val cte8WhereClause = if includePropertiesFilter then sqls"WHERE cte6.property_pk = ANY (?::uuid[])" else SQLSyntax.empty
     val (cte7ColumnsSQLSyntax, cte7InnerSQLSyntax) = generatePropertyValuesByCollectionPKsCTE7QueryComponent()
     // TODO: Include complete details on top-level collection
     sql"""WITH RECURSIVE cte1(top_level_collection_pk, collection_pk, related_collection_pk, index, level) AS (
@@ -94,6 +94,7 @@ object PropertyValueQueries:
               LEFT JOIN cte7 ON (
                   cte6.property_pk = cte7.property_pk AND
                   ((cte6.top_level_collection_pk = cte7.collection_pk AND cte6.related_collection_pk = '{}') OR cte7.collection_pk = ANY (cte6.related_collection_pk)))
+              $cte8WhereClause
               GROUP BY cte6.top_level_collection_pk, cte6.related_collection_pk, cte6.property_pk
           )
           SELECT
@@ -116,7 +117,6 @@ object PropertyValueQueries:
               cte8.related_collection_pk
           FROM cte8
           INNER JOIN property AS p ON cte8.property_pk = p.pk
-          $whereClauses
         """
 
   def generatePropertyValuesByParentPropertyPKsCTE3SelectComponent(inputPropertyType: PropertyType): String =
