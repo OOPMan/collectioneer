@@ -3,7 +3,7 @@ package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.ScalikeCollectionDAO
 import com.oopman.collectioneer.db.traits.entity.raw.Collection
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.{SortDirection, entity, traits}
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
 
@@ -29,6 +29,13 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .map(postgresbackend.entity.raw.Collection(postgresbackend.entity.raw.Collection.c1.resultName))
       .list
       .apply()
+
+  def getAllMatchingConstraints(comparisons: Seq[Comparison] = Nil,
+                                collectionPKs: Option[Seq[UUID]] = None,
+                                parentCollectionPKs: Option[Seq[UUID]] = None,
+                                sortPropertyPKs: Seq[(UUID, SortDirection)] = Nil,
+                                offset: Option[Int] = None,
+                                limit: Option[Int] = None)(implicit session: DBSession): List[Collection] = ???
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     postgresbackend.queries.raw.CollectionQueries

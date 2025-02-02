@@ -10,11 +10,12 @@ trait CollectionDAO:
   def createCollections(collections: Seq[Collection]): Array[Int]
   def createOrUpdateCollections(collections: Seq[Collection]): Array[Int]
   def getAll: List[Collection]
-  def getAll(comparisons: Seq[Comparison] = Nil,
-             sortPropertyPKs: Seq[(UUID, SortDirection)] = Nil,
-             parentCollectionPKs: Option[Seq[UUID]] = None,
-             offset: Option[Int] = None,
-             limit: Option[Int] = None): List[Collection]
+  def getAllMatchingConstraints(comparisons: Seq[Comparison] = Nil,
+                                collectionPKs: Option[Seq[UUID]] = None,
+                                parentCollectionPKs: Option[Seq[UUID]] = None,
+                                sortPropertyPKs: Seq[(UUID, SortDirection)] = Nil,
+                                offset: Option[Int] = None,
+                                limit: Option[Int] = None): List[Collection]
   def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection]
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection]
   def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison]): List[Collection]
