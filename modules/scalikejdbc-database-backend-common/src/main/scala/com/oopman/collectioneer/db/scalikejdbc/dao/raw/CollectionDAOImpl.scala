@@ -4,7 +4,7 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.{SortDirection, traits}
-import com.oopman.collectioneer.db.traits.entity.raw.Collection
+import com.oopman.collectioneer.db.traits.entity.raw.{Collection, Property}
 
 import java.util.UUID
 
@@ -22,12 +22,12 @@ class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDat
   def getAllMatchingConstraints(comparisons: Seq[Comparison] = Nil,
                                 collectionPKs: Option[Seq[UUID]] = None,
                                 parentCollectionPKs: Option[Seq[UUID]] = None,
-                                sortPropertyPKs: Seq[(UUID, SortDirection)] = Nil,
+                                sortProperties: Seq[(Property, SortDirection)] = Nil,
                                 offset: Option[Int] = None,
                                 limit: Option[Int] = None): List[Collection] =
     dbProvider() readOnly { implicit session => db.dao.raw.CollectionDAO.getAllMatchingConstraints(
       comparisons = comparisons, collectionPKs = collectionPKs, parentCollectionPKs = parentCollectionPKs,
-      sortPropertyPKs = sortPropertyPKs, offset = offset, limit = limit)
+      sortProperties = sortProperties, offset = offset, limit = limit)
     }
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID]): List[Collection] =
