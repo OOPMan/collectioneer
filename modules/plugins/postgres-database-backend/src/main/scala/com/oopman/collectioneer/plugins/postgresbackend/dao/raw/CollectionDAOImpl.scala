@@ -36,8 +36,13 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
                                 sortProperties: Seq[(Property, SortDirection)] = Nil,
                                 offset: Option[Int] = None,
                                 limit: Option[Int] = None)(implicit session: DBSession): List[Collection] =
-    // TODO: Implement
-    Nil
+    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons).unzip
+    postgresbackend.queries.raw.CollectionQueries
+      .allMatchingConstraints(comparisonSQL, collectionPKs, parentCollectionPKs, sortProperties, offset, limit)
+      .bind(parameters.getOrElse(Nil): _*)
+      .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
+      .list
+      .apply()
 
   def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
     postgresbackend.queries.raw.CollectionQueries
