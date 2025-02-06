@@ -102,7 +102,10 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
       CoreProperties.name equalTo "String",
       CoreProperties.visible equalTo true
     )
-    val result = PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
-    assert(result._1.nonEmpty)
-    assert(result._2.length == 4)
+    PropertyValueQueryDSLSupport
+      .comparisonsToSQL(comparisons)
+      .map { (comparisonsSQL, parameters) =>
+        assert(comparisonsSQL.nonEmpty)
+        assert(parameters.length == 4)
+      }
   }

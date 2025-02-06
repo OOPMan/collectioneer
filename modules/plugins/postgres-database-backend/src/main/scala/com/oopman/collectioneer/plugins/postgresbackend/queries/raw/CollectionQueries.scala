@@ -40,10 +40,6 @@ object CollectionQueries:
              WITH RECURSIVE
                     innerCTE1(root_collection_pk, collection_pk, level) AS (
                         SELECT pv.collection_pk AS root_collection_pk, pv.collection_pk, 0 AS level
-                        /*
-                        The contents of this FROM will be generated dynamically based on any PropertyValues chosen
-                        to filter the Collections by
-                        */
                         FROM ($fromSQLSyntax) AS pv
                         UNION
                         SELECT

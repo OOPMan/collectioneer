@@ -83,6 +83,5 @@ object PropertyValueQueryDSLSupport:
         case LogicalOperator.and => (s"($lhsSQL) INTERSECT ($rhsSQL)", lhsParameters ++ rhsParameters)
         case LogicalOperator.or => (s"($lhsSQL) UNION ($rhsSQL)", lhsParameters ++ rhsParameters)
   
-  def comparisonsToSQL(comparisons: Seq[Comparison])(implicit sessions: DBSession = AutoSession): (String, Seq[Any]) =
-    comparisonToSQL(comparisons.reduce((c1, c2) => c1 and c2))
-    
+  def comparisonsToSQL(comparisons: Seq[Comparison])(implicit sessions: DBSession = AutoSession): Option[(String, Seq[Any])] =
+    comparisons.reduceOption((c1, c2) => c1 and c2).map(comparisonToSQL)
