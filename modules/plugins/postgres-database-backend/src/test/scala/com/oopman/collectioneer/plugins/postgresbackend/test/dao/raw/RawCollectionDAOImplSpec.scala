@@ -7,7 +7,11 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.{bigint, boole
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.SourceOfPropertiesAndPropertyValues
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.BaseFunSuite
+import io.circe.parser.parse
 import scalikejdbc.DBSession
+
+import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.util.UUID
 
 class RawCollectionDAOImplSpec extends BaseFunSuite:
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl.createCollections"
@@ -95,11 +99,12 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl.getAllMatchingConstraints"
 
   def getAllMatchingConstraintsFixture(implicit session: DBSession) = new {
+    import io.circe._, io.circe.parser._
     import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.RelationshipDAOImpl
     import com.oopman.collectioneer.db.entity.projected.{
       Collection as ProjectedCollection,
       Property as ProjectedProperty,
-      PropertyValue as ProjecetedPropertyValue
+      PropertyValue as ProjectedPropertyValue
     }
     import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.{
       CollectionDAOImpl as ProjectedCollectionDAOImpl,
@@ -128,6 +133,30 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     )
     ProjectedPropertyDAOImpl.createProperties(allProperties)
     // TODO: Collection fiuxtures
+    val rootCollectionA = ProjectedCollection()
+    val childAofRootA = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("1")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("1".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(1.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(1)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(1))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(1.1))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(1f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(1f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-01-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+01:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-01-01T00:00:00+01:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{1:true}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("1"), intValues = List(1))
+    ))
+    val childBofRootA = ProjectedCollection(propertyValues = List())
+    val childCofRootA = ProjectedCollection(propertyValues = List())
+    val rootCollectionB = ProjectedCollection()
+    val childAofRootB = ProjectedCollection(propertyValues = List())
+    val childBofRootB = ProjectedCollection(propertyValues = List())
+    val childCofRootB = ProjectedCollection(propertyValues = List())
     // TODO: Relationship fixtures
   }
 
