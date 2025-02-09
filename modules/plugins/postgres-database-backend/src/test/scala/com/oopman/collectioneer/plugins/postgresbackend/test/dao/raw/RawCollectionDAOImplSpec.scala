@@ -4,7 +4,7 @@ import com.oopman.collectioneer.CoreCollections
 import com.oopman.collectioneer.db.entity.raw.{Collection, Relationship}
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.{bigint, boolean, bytes, date, double, float, int, json, numeric, smallint, text, time, timestamp, uuid}
-import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.SourceOfPropertiesAndPropertyValues
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.BaseFunSuite
 import io.circe.parser.parse
@@ -131,9 +131,9 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       doubleProperty, booleanProperty, dateProperty, timeProperty, timestampProperty, uuidProperty, jsonProperty,
       compositeProperty
     )
-    ProjectedPropertyDAOImpl.createProperties(allProperties)
-    // TODO: Collection fiuxtures
-    val rootCollectionA = ProjectedCollection()
+    ProjectedPropertyDAOImpl.createOrUpdateProperties(allProperties)
+    // Collection fiuxtures
+    val rootA = ProjectedCollection()
     val childAofRootA = ProjectedCollection(propertyValues = List(
       ProjectedPropertyValue(property = textProperty, textValues = List("1")),
       ProjectedPropertyValue(property = bytesProperty, byteValues = List("1".getBytes)),
@@ -151,13 +151,106 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{1:true}").getOrElse(Json.Null))),
       ProjectedPropertyValue(property = compositeProperty, textValues = List("1"), intValues = List(1))
     ))
-    val childBofRootA = ProjectedCollection(propertyValues = List())
-    val childCofRootA = ProjectedCollection(propertyValues = List())
-    val rootCollectionB = ProjectedCollection()
-    val childAofRootB = ProjectedCollection(propertyValues = List())
-    val childBofRootB = ProjectedCollection(propertyValues = List())
-    val childCofRootB = ProjectedCollection(propertyValues = List())
-    // TODO: Relationship fixtures
+    val childBofRootA = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("2")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("2".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(2.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(2)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(2))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(2.2))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(2f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(2f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(false)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-02-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+02:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-02-01T00:00:00+02:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{2:false}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("2"), intValues = List(2))
+    ))
+    val childCofRootA = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("3")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("3".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(3.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(3)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(3))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(3.1))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(3f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(3f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-03-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+03:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-03-01T00:00:00+01:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("a83eb86f-dbcb-4271-96e2-d7b97943953b"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{3:true}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("3"), intValues = List(1))
+    ))
+    val rootB = ProjectedCollection()
+    val childAofRootB = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("1")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("1".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(1.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(1)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(1))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(1.1))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(1f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(1f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-01-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+01:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-01-01T00:00:00+01:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2f2010ae-5c99-4cd4-8d02-4ae15c12a942"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{1:true}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("1"), intValues = List(1))
+    ))
+    val childBofRootB = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("2")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("2".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(2.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(2)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(2))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(2.2))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(2f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(2f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(false)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-02-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+02:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-02-01T00:00:00+02:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("fb6f4ab1-3145-4338-b359-527695cb538c"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{2:false}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("2"), intValues = List(2))
+    ))
+    val childCofRootB = ProjectedCollection(propertyValues = List(
+      ProjectedPropertyValue(property = textProperty, textValues = List("3")),
+      ProjectedPropertyValue(property = bytesProperty, byteValues = List("3".getBytes)),
+      ProjectedPropertyValue(property = smallintProperty, smallintValues = List(3.toShort)),
+      ProjectedPropertyValue(property = intProperty, intValues = List(3)),
+      ProjectedPropertyValue(property = bigintProperty, bigintValues = List(BigInt(3))),
+      ProjectedPropertyValue(property = numericProperty, numericValues = List(BigDecimal(3.3))),
+      ProjectedPropertyValue(property = floatProperty, floatValues = List(3f)),
+      ProjectedPropertyValue(property = doubleProperty, doubleValues = List(3f)),
+      ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
+      ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-03-01"))),
+      ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+03:00"))),
+      ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-03-03T00:00:00+03:00"))),
+      ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2ab4b796-7c3d-4f25-8686-f9b5e3103121"))),
+      ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{3:true}").getOrElse(Json.Null))),
+      ProjectedPropertyValue(property = compositeProperty, textValues = List("3"), intValues = List(3))
+    ))
+    val allCollections = Seq(
+      rootA, childAofRootA, childBofRootA, childCofRootA, rootB, childAofRootB, childBofRootB, childCofRootB
+    )
+    ProjectedCollectionDAOImpl.createOrUpdateCollections(allCollections)
+    // Relationship fixtures
+    val relationships = Seq(
+      Relationship(collectionPK = childAofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
+      Relationship(collectionPK = childBofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
+      Relationship(collectionPK = childCofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
+      Relationship(collectionPK = childAofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection),
+      Relationship(collectionPK = childBofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection),
+      Relationship(collectionPK = childCofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection)
+    )
+    RelationshipDAOImpl.createOrUpdateRelationships(relationships)
   }
 
   it should "return a List of raw Collections objects matching the supplied Constraints" in { implicit session =>
