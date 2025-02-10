@@ -47,7 +47,7 @@ object CollectionQueries:
                             r.collection_pk,
                             innerCTE1.level + 1 as level
                         FROM innerCTE1
-                                 LEFT JOIN relationship AS r ON r.related_collection_pk = innerCTE1.collection_pk
+                        LEFT JOIN relationship AS r ON r.related_collection_pk = innerCTE1.collection_pk
                         WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
                     )
                 SELECT innerCTE1.root_collection_pk
@@ -104,19 +104,23 @@ object CollectionQueries:
       .getOrElse(SQLSyntax.empty)
     val cte3JoinsSQL = indexedSortProperties
       .map((sortProperty, propertyIndex) => {
+        val propertyPK = SQLSyntax.createUnsafely(sortProperty._1.pk.toString)
         sqls"""
             LEFT JOIN property_value_text AS property$propertyIndex ON (
-              property$propertyIndex.property_pk = ${sortProperty._1.pk} AND
+              property$propertyIndex.property_pk = '$propertyPK'::uuid AND
               (property$propertyIndex.collection_pk = cte2.top_level_collection_pk OR property$propertyIndex.collection_pk = ANY (cte2.related_collection_pks))
             )
         """
       })
+      .reduceOption((left, right) => sqls"$left\n$right")
+      .getOrElse(SQLSyntax.empty)
     val orderBySQL = indexedSortProperties
       .map((sortProperty, propertyIndex) => {
         val sortDirection = if sortProperty._2.eq(SortDirection.Asc) then SQLSyntax.asc else SQLSyntax.desc
         sqls"property$propertyIndex $sortDirection"
       })
       .reduceOption((left, right) => sqls"$left, $right")
+      .map(s => sqls"ORDER BY $s")
       .getOrElse(SQLSyntax.empty)
     val offsetSQL = offset.map(SQLSyntax.offset).getOrElse(SQLSyntax.empty)
     val limitSQL = limit.map(SQLSyntax.limit).getOrElse(SQLSyntax.empty)
@@ -129,7 +133,9 @@ object CollectionQueries:
                              0    as index,
                              0    as level
                       FROM collection AS c
+                      /* START cte1BodySQL */
                       $cte1BodySQL
+                      /* END cte1BodySQL */
               ),
               cte2(top_level_collection_pk, related_collection_pks) AS (
                   SELECT cte1.top_level_collection_pk, array_agg(cte1.related_collection_pk) as related_collection_pks
@@ -139,9 +145,10 @@ object CollectionQueries:
               cte3(top_level_collection_pk $cte3OutputsSQL) AS (
                   SELECT cte2.top_level_collection_pk $cte3SelectsSQL
                   FROM cte2
+                  /* START cte3JoinsSQL */
                   $cte3JoinsSQL
+                  /* END cte3JoinsSQL */
                   GROUP BY cte2.top_level_collection_pk
-
               )
           SELECT c.*, cte3.*
           FROM cte3
