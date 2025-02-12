@@ -88,26 +88,35 @@ object CollectionQueries:
       then
         sqls"""WHERE c.pk IN (${cte1BodyComponents.reduce((left, right) => sqls"$left INTERSECT $right")})"""
       else SQLSyntax.empty
-
-    val indexedSortProperties = sortProperties
+    val unpackedSortProperties = for {
+      (sortProperty, direction) <- sortProperties
+      propertyType <- sortProperty.propertyTypes
+    } yield (sortProperty.pk, propertyType, direction)
+    val indexedSortProperties = unpackedSortProperties
       .zipWithIndex
-      .map((sortProperties, index) => (sortProperties, SQLSyntax.createUnsafely(index.toString)))
+      .map {
+        case ((pk, propertyType, direction), index) => (
+          SQLSyntax.createUnsafely(pk.toString),
+          SQLSyntax.createUnsafely(propertyType.toString),
+          if direction.eq(SortDirection.Asc) then SQLSyntax.asc else SQLSyntax.desc,
+          SQLSyntax.createUnsafely(index.toString)
+        )
+      }
     val cte3OutputsSQL = indexedSortProperties
-      .map((_, propertyIndex) => sqls"property$propertyIndex")
+      .map((pk, propertyType, direction, propertyIndex) => sqls"property$propertyIndex")
       .reduceOption((left, right) => sqls"$left, $right")
       .map(s => sqls",$s")
       .getOrElse(SQLSyntax.empty)
     val cte3SelectsSQL = indexedSortProperties
-      .map((_, propertyIndex) => sqls"array_agg(property$propertyIndex.property_value)")
+      .map((pk, propertyType, direction, propertyIndex) => sqls"array_agg(property$propertyIndex.property_value)")
       .reduceOption((left, right) => sqls"$left, $right")
       .map(s => sqls",$s")
       .getOrElse(SQLSyntax.empty)
     val cte3JoinsSQL = indexedSortProperties
-      .map((sortProperty, propertyIndex) => {
-        val propertyPK = SQLSyntax.createUnsafely(sortProperty._1.pk.toString)
+      .map((pk, propertyType, direction, propertyIndex) => {
         sqls"""
-            LEFT JOIN property_value_text AS property$propertyIndex ON (
-              property$propertyIndex.property_pk = '$propertyPK'::uuid AND
+            LEFT JOIN property_value_$propertyType AS property$propertyIndex ON (
+              property$propertyIndex.property_pk = '$pk'::uuid AND
               (property$propertyIndex.collection_pk = cte2.top_level_collection_pk OR property$propertyIndex.collection_pk = ANY (cte2.related_collection_pks))
             )
         """
@@ -115,9 +124,8 @@ object CollectionQueries:
       .reduceOption((left, right) => sqls"$left\n$right")
       .getOrElse(SQLSyntax.empty)
     val orderBySQL = indexedSortProperties
-      .map((sortProperty, propertyIndex) => {
-        val sortDirection = if sortProperty._2.eq(SortDirection.Asc) then SQLSyntax.asc else SQLSyntax.desc
-        sqls"property$propertyIndex $sortDirection"
+      .map((pk, propertyType, direction, propertyIndex) => {
+        sqls"property$propertyIndex $direction"
       })
       .reduceOption((left, right) => sqls"$left, $right")
       .map(s => sqls"ORDER BY $s")
