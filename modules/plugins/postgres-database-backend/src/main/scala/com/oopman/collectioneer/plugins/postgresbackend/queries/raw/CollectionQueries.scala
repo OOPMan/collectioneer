@@ -55,19 +55,25 @@ object CollectionQueries:
           """
     }
     val collectionPKsSQLSyntax = collectionPKs.map { collectionPKs =>
+      val collectionPKsSQLSyntax = SQLSyntax.createUnsafely(
+        collectionPKs.map(_.toString).reduce((left, right) => s"$left, $right")
+      )
       sqls"""
              SELECT pk
              FROM collection
-             WHERE pk IN ($collectionPKs)
+             WHERE pk = ANY ('{$collectionPKsSQLSyntax}'::uuid[])
           """
     }
     val parentCollectionPKsSQLSyntax = parentCollectionPKs.map { parentCollectionPKs =>
       if parentCollectionPKs.nonEmpty
       then
+        val parentCollectionPKsSQLSyntax = SQLSyntax.createUnsafely(
+          parentCollectionPKs.map(_.toString).reduce((left, right) => s"$left, $right")
+        )
         sqls"""
                SELECT r.collection_pk
                FROM relationship AS r
-               WHERE r.related_collection_pk IN ($parentCollectionPKs)
+               WHERE r.related_collection_pk = ANY ('{$parentCollectionPKsSQLSyntax}'::uuid[])
                AND r.relationship_type = 'ParentCollection'
             """
       else
