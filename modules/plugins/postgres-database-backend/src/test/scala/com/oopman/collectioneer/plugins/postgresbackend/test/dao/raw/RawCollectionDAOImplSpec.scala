@@ -99,23 +99,22 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
     import fixtures._
-    // TODO: All parameters test
+    val expectedCollectionPKs = List(
+      childCofRootB, childBofRootB, childAofRootB, childCofRootA, childBofRootA, childAofRootA
+    ).map(_.pk)
     val collections = CollectionDAOImpl.getAllMatchingConstraints(
       comparisons = Seq(
         intProperty gte 1,
         intProperty lte 6
       ),
-      collectionPKs = None,
-      parentCollectionPKs = None,
+      collectionPKs = Some(expectedCollectionPKs),
+      parentCollectionPKs = Some(List(rootA, rootB).map(_.pk)),
       sortProperties = Seq((intProperty, SortDirection.Desc)),
-      offset = None,
-      limit = None
+      offset = Some(0),
+      limit = Some(10)
     )
     assert(collections.length == 6)
     val collectionPKs = collections.map(_.pk)
-    val expectedCollectionPKs = List(
-      childCofRootB, childBofRootB, childAofRootB, childCofRootA, childBofRootA, childAofRootA
-    ).map(_.pk)
     assertResult(expectedCollectionPKs)(collectionPKs)
   }
 
@@ -124,3 +123,4 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   // TODO: Test of Collections constraint
   // TODO: Test of Offset
   // TODO: Test of Limit
+  // TODO: Test with no parameters
