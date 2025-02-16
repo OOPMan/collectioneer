@@ -52,7 +52,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+01:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-01-01T00:00:00+01:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{1:true}").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"1":true}""").getOrElse(Json.Null))),
     ProjectedPropertyValue(property = compositeProperty, textValues = List("1"), intValues = List(1))
   ))
   val childBofRootA = ProjectedCollection(propertyValues = List(
@@ -69,7 +69,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+02:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-02-01T00:00:00+02:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{2:false}").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"2":false}""").getOrElse(Json.Null))),
     ProjectedPropertyValue(property = compositeProperty, textValues = List("2"), intValues = List(2))
   ))
   val childCofRootA = ProjectedCollection(propertyValues = List(
@@ -86,8 +86,8 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+03:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-03-01T00:00:00+01:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("a83eb86f-dbcb-4271-96e2-d7b97943953b"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{3:true}").getOrElse(Json.Null))),
-    ProjectedPropertyValue(property = compositeProperty, textValues = List("3"), intValues = List(1))
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"3":true}""").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = compositeProperty, textValues = List("3"), intValues = List(3))
   ))
   val rootB = ProjectedCollection()
   val childAofRootB = ProjectedCollection(propertyValues = List(
@@ -104,7 +104,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+04:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-04-01T00:00:00+04:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2f2040ae-5c99-4cd4-8d02-4ae45c42a942"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{4:true}").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"4":true}""").getOrElse(Json.Null))),
     ProjectedPropertyValue(property = compositeProperty, textValues = List("4"), intValues = List(4))
   ))
   val childBofRootB = ProjectedCollection(propertyValues = List(
@@ -121,7 +121,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+05:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("5055-05-01T00:00:00+05:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("fb6f4ab1-3145-4338-b359-557695cb538c"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{5:false}").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"5":false}""").getOrElse(Json.Null))),
     ProjectedPropertyValue(property = compositeProperty, textValues = List("5"), intValues = List(5))
   ))
   val childCofRootB = ProjectedCollection(propertyValues = List(
@@ -138,7 +138,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+06:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-06-06T00:00:00+06:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2ab4b796-7c6d-4f25-8686-f9b5e6106121"))),
-    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("{6:true}").getOrElse(Json.Null))),
+    ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"6":true}""").getOrElse(Json.Null))),
     ProjectedPropertyValue(property = compositeProperty, textValues = List("6"), intValues = List(6))
   ))
   val allCollections = Seq(
