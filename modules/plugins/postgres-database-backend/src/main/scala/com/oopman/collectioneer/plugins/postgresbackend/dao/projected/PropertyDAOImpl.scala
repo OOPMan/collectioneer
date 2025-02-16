@@ -148,14 +148,18 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     result.toList
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): List[ProjectedProperty] =
-    val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
-    val propertyPKs = postgresbackend.queries.raw.PropertyQueries
-      .innerJoiningPropertyCollection(s"($comparisonSQL)", "collection_pk", PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty, selectColumnExpression = "p.pk")
-      .bind(parameters: _*)
-      .map(rs => UUID.fromString(rs.string("pk")))
-      .list
-      .apply()
-    getAllMatchingPKs(propertyPKs)
+    val result = postgresbackend.PropertyValueQueryDSLSupport
+      .comparisonsToSQL(comparisons)
+      .map { (comparisonSQL, parameters) =>
+        val propertyPKs = postgresbackend.queries.raw.PropertyQueries
+          .innerJoiningPropertyCollection(s"($comparisonSQL)", "collection_pk", PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty, selectColumnExpression = "p.pk")
+          .bind(parameters: _*)
+          .map(rs => UUID.fromString(rs.string("pk")))
+          .list
+          .apply()
+        getAllMatchingPKs(propertyPKs)
+      }
+    result.getOrElse(getAll)
 
   // TODO: This has an issue: It doesn't recursively obtain the Properties for each Collection
   def getAllByPropertyCollection
