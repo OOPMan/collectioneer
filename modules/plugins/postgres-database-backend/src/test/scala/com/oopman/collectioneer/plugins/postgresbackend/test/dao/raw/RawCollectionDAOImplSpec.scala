@@ -118,7 +118,6 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     assertResult(expectedCollectionPKs)(collectionPKs)
   }
 
-  // TODO: Test of PropertyValueComparisons
   it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueComparisons)" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
@@ -196,8 +195,58 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     assert(collectionsO.length == 2)
   }
 
-  // TODO: Test of ParentCollections constraint
-  // TODO: Test of Collections constraint
-  // TODO: Test of Offset
-  // TODO: Test of Limit
-  // TODO: Test with no parameters
+  it should "return a List of raw Collections objects matching the supplied constraints (ParentCollections)" in { implicit session =>
+    val fixtures = new Fixtures()
+    import fixtures._
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(parentCollectionPKs = Some(Seq(rootA.pk)))
+    assert(collectionsA.length == 3)
+    assertResult(Set(childAofRootA.pk, childBofRootA.pk, childCofRootA.pk))(collectionsA.map(_.pk).toSet)
+  }
+
+  it should "return a List of raw Collections objects matching the supplied constraints (Collections)" in { implicit session =>
+    val fixtures = new Fixtures()
+    import fixtures._
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(collectionPKs = Some(Seq(
+      rootA.pk, childCofRootA.pk, rootB.pk, childAofRootB.pk
+    )))
+    assert(collectionsA.length == 4)
+    assertResult(Set(rootA.pk, childCofRootA.pk, rootB.pk, childAofRootB.pk))(collectionsA.map(_.pk).toSet)
+  }
+
+  it should "return a List of raw Collections objects matching the supplied constraints (SortProperties)" in { implicit session =>
+    val fixtures = new Fixtures()
+    import fixtures._
+    val expectedCollectionPKs = List(
+      childCofRootB, childBofRootB, childAofRootB, childCofRootA, childBofRootA, childAofRootA
+    ).map(_.pk)
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(
+      parentCollectionPKs = Some(Seq(rootA.pk, rootB.pk)),
+      sortProperties = Seq((compositeProperty, SortDirection.Desc))
+    )
+    assert(collectionsA.length == 6)
+    assertResult(expectedCollectionPKs)(collectionsA.map(_.pk))
+  }
+
+  it should "return a List of raw Collections objects matching the supplied constraints (Offset)" in { implicit session =>
+    val fixtures = new Fixtures()
+    import fixtures._
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(
+      parentCollectionPKs = Some(Seq(rootA.pk, rootB.pk)),
+      offset = Some(3)
+    )
+    assert(collectionsA.length == 3)
+  }
+
+  it should "return a List of raw Collections objects matching the supplied constraints (Limit)" in { implicit session =>
+    val fixtures = new Fixtures()
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(
+      limit = Some(4)
+    )
+    assert(collectionsA.length == 4)
+  }
+
+  it should "return a List of raw Collections objects matching the supplied constraints (No Parameters)" in { implicit session =>
+    val fixtures = new Fixtures()
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints()
+    assert(collectionsA.nonEmpty)
+  }
