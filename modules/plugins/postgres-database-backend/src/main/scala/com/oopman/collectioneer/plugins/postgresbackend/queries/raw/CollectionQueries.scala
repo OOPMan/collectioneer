@@ -127,7 +127,7 @@ object CollectionQueries:
             )
         """
       })
-      .reduceOption((left, right) => sqls"$left\n$right")
+      .reduceOption((left, right) => sqls"$left $right")
       .getOrElse(SQLSyntax.empty)
     val orderBySQL = indexedSortProperties
       .map((pk, propertyType, direction, propertyIndex) => {
