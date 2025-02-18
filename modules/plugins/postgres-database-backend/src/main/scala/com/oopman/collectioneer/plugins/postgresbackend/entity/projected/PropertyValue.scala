@@ -7,7 +7,7 @@ import io.circe.*
 import io.circe.parser.*
 import scalikejdbc.WrappedResultSet
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime, ZoneId}
 import java.util.UUID
 
 object PropertyValue:
@@ -23,7 +23,7 @@ object PropertyValue:
     doubleValues: List[Double],
     booleanValues: List[Boolean],
     dateValues: List[LocalDate],
-    timeValues: List[OffsetTime],
+    timeValues: List[LocalTime],
     timestampValues: List[ZonedDateTime],
     uuidValues: List[UUID],
     jsonValues: List[Json]
@@ -35,14 +35,14 @@ object PropertyValue:
       Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes"),
       Utils.resultSetArrayToListOf[Short](rs, "property_value_smallint"),
       Utils.resultSetArrayToListOf[Int](rs, "property_value_int"),
-      Utils.resultSetArrayToListOf[BigInt](rs, "property_value_bigint"),
-      Utils.resultSetArrayToListOf[BigDecimal](rs, "property_value_numeric"),
+      Utils.resultSetArrayToListOf[Long](rs, "property_value_bigint").map(BigInt.apply),
+      Utils.resultSetArrayToListOf[java.math.BigDecimal](rs, "property_value_numeric").map(BigDecimal.javaBigDecimal2bigDecimal),
       Utils.resultSetArrayToListOf[Float](rs, "property_value_float"),
       Utils.resultSetArrayToListOf[Double](rs, "property_value_double"),
       Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean"),
-      Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date"),
-      Utils.resultSetArrayToListOf[OffsetTime](rs, "property_value_time"),
-      Utils.resultSetArrayToListOf[ZonedDateTime](rs, "property_value_timestamp"),
+      Utils.resultSetArrayToListOf[java.sql.Date](rs, "property_value_date").map(_.toLocalDate),
+      Utils.resultSetArrayToListOf[java.sql.Time](rs, "property_value_time").map(_.toLocalTime),
+      Utils.resultSetArrayToListOf[java.sql.Timestamp](rs, "property_value_timestamp").map(_.toLocalDateTime.atZone(ZoneId.systemDefault)),
       Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid"),
       Utils.resultSetArrayToListOf[String](rs, "property_value_json").map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
     )
