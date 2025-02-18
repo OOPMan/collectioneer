@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.{entity, traits}
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 case class PropertyValue
@@ -19,7 +19,7 @@ case class PropertyValue
   doubleValues: List[Double] = Nil,
   booleanValues: List[Boolean] = Nil,
   dateValues: List[LocalDate] = Nil,
-  timeValues: List[OffsetTime] = Nil,
+  timeValues: List[LocalTime] = Nil,
   timestampValues: List[ZonedDateTime] = Nil,
   uuidValues: List[UUID] = Nil,
   jsonValues: List[io.circe.Json] = Nil

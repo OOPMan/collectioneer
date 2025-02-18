@@ -4,7 +4,7 @@ import com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
 import scalikejdbc.*
 
-import java.time.{OffsetTime, ZonedDateTime}
+import java.time.{LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class PropertyValueTimeSQLSyntaxSupport(override val tableName: String)

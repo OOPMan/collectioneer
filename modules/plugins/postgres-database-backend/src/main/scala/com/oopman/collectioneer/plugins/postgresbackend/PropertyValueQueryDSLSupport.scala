@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import scalikejdbc.*
 
 import java.sql
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 object PropertyValueQueryDSLSupport:
@@ -24,7 +24,7 @@ object PropertyValueQueryDSLSupport:
         connection.createArrayOf("VARCHAR", jsonStrings.asInstanceOf[Array[Object]])
       case v: BigDecimal => connection.createArrayOf("NUMERIC", values.asInstanceOf[Array[Object]])
       case v: String => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
-      case v: OffsetTime => connection.createArrayOf("TIME", values.asInstanceOf[Array[Object]])
+      case v: LocalTime => connection.createArrayOf("TIME", values.asInstanceOf[Array[Object]])
       case v: ZonedDateTime => connection.createArrayOf("TIMESTAMP", values.asInstanceOf[Array[Object]])
       case v: UUID => connection.createArrayOf("VARCHAR", values.asInstanceOf[Array[Object]])
       case _ => connection.createArrayOf("VARCHAR", Array.empty)

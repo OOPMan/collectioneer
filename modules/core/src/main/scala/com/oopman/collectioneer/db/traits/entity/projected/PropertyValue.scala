@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 trait PropertyValue:
@@ -16,7 +16,7 @@ trait PropertyValue:
   val doubleValues: List[Double]
   val booleanValues: List[Boolean]
   val dateValues: List[LocalDate]
-  val timeValues: List[OffsetTime]
+  val timeValues: List[LocalTime]
   val timestampValues: List[ZonedDateTime]
   val uuidValues: List[UUID]
   val jsonValues: List[io.circe.Json]

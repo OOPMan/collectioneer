@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db
 
 import com.oopman.collectioneer.db.traits.entity.raw.Property
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 
@@ -21,7 +21,7 @@ object PropertyValueQueryDSL:
     case and extends LogicalOperator
     case or extends LogicalOperator
 
-  type Value = BigInt | Boolean | Byte | LocalDate | Double | Float | Short | Int | io.circe.Json | BigDecimal | String | OffsetTime | ZonedDateTime | UUID
+  type Value = BigInt | Boolean | Byte | LocalDate | Double | Float | Short | Int | io.circe.Json | BigDecimal | String | LocalTime | ZonedDateTime | UUID
   type Values = Value | Seq[Value] | Array[Value]
   type Operand = Property | Values | Comparison
 
