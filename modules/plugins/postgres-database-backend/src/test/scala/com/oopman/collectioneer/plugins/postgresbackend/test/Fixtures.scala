@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.*
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import scalikejdbc.DBSession
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class Fixtures()(implicit session: DBSession):
@@ -49,7 +49,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(1f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-01-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+01:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("01:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-01-01T00:00:00+01:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"1":true}""").getOrElse(Json.Null))),
@@ -66,7 +66,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(2f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(false)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-02-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+02:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("02:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-02-01T00:00:00+02:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"2":false}""").getOrElse(Json.Null))),
@@ -83,7 +83,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(3f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-03-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+03:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("03:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-03-01T00:00:00+01:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("a83eb86f-dbcb-4271-96e2-d7b97943953b"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"3":true}""").getOrElse(Json.Null))),
@@ -101,7 +101,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(4f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-04-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+04:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("04:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-04-01T00:00:00+04:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2f2040ae-5c99-4cd4-8d02-4ae45c42a942"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"4":true}""").getOrElse(Json.Null))),
@@ -118,7 +118,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(5f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(false)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("5055-05-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+05:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("05:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("5055-05-01T00:00:00+05:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("fb6f4ab1-3145-4338-b359-557695cb538c"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"5":false}""").getOrElse(Json.Null))),
@@ -135,7 +135,7 @@ class Fixtures()(implicit session: DBSession):
     ProjectedPropertyValue(property = doubleProperty, doubleValues = List(6f)),
     ProjectedPropertyValue(property = booleanProperty, booleanValues = List(true)),
     ProjectedPropertyValue(property = dateProperty, dateValues = List(LocalDate.parse("2025-06-01"))),
-    ProjectedPropertyValue(property = timeProperty, timeValues = List(OffsetTime.parse("00:00:00+06:00"))),
+    ProjectedPropertyValue(property = timeProperty, timeValues = List(LocalTime.parse("06:00:00"))),
     ProjectedPropertyValue(property = timestampProperty, timestampValues = List(ZonedDateTime.parse("2025-06-06T00:00:00+06:00"))),
     ProjectedPropertyValue(property = uuidProperty, uuidValues = List(UUID.fromString("2ab4b796-7c6d-4f25-8686-f9b5e6106121"))),
     ProjectedPropertyValue(property = jsonProperty, jsonValues = List(parse("""{"6":true}""").getOrElse(Json.Null))),

@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.db.traits.entity.raw
 
 import java.sql.{Blob, Clob}
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 sealed trait PropertyValue[T]:
@@ -23,7 +23,7 @@ trait PropertyValueFloat extends PropertyValue[Float]
 trait PropertyValueDouble extends PropertyValue[Double]
 trait PropertyValueBoolean extends PropertyValue[Boolean]
 trait PropertyValueDate extends PropertyValue[LocalDate]
-trait PropertyValueTime extends PropertyValue[OffsetTime]
+trait PropertyValueTime extends PropertyValue[LocalTime]
 trait PropertyValueTimestamp extends PropertyValue[ZonedDateTime]
 trait PropertyValueUUID extends PropertyValue[UUID]
 trait PropertyValueJSON extends PropertyValue[io.circe.Json]

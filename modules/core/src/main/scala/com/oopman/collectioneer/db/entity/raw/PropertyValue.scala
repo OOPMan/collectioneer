@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 case class PropertyValueBigDecimal
@@ -134,7 +134,7 @@ case class PropertyValueTime
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValue: OffsetTime = OffsetTime.now(),
+  propertyValue: LocalTime = LocalTime.now(),
 ) extends raw.PropertyValueTime
 
 case class PropertyValueTimestamp

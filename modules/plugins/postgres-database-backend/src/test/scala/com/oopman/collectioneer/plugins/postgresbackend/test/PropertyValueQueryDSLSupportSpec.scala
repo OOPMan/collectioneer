@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport
 import com.oopman.collectioneer.{CoreProperties, given}
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
@@ -62,8 +62,8 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
     assert(result.getBaseTypeName == "varchar")
   }
 
-  it should "create a java.sql.Array from an Array[OffsetTime]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(OffsetTime.now()))
+  it should "create a java.sql.Array from an Array[LocalTime]" in { implicit session =>
+    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(LocalTime.now()))
     assert(result.getBaseTypeName == "time")
   }
 

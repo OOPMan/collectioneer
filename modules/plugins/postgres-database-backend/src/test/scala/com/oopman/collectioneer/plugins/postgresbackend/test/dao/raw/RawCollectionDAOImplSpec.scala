@@ -7,7 +7,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCol
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.{BaseFunSuite, Fixtures}
 
-import java.time.{LocalDate, OffsetTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class RawCollectionDAOImplSpec extends BaseFunSuite:
@@ -168,9 +168,9 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsJ.length == 3)
     val collectionsK = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      timeProperty lt OffsetTime.parse("00:00:00+04:00")
+      timeProperty lt LocalTime.parse("04:00:00")
     ))
-    assert(collectionsK.length == 6) // TODO: Should be 3, probably due to using TIME without time zone datatype
+    assert(collectionsK.length == 3)
     val collectionsL = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       timestampProperty lte ZonedDateTime.parse("2025-04-01T00:00:00+04:00")
     ))
