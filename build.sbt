@@ -1,7 +1,7 @@
 import scala.collection.Seq
 
 lazy val scala213Version      = "2.13.10"
-lazy val scala3Version        = "3.3.1"
+lazy val scala3Version        = "3.6.3"
 lazy val circeVersion         = "0.14.6"
 lazy val circeLibraryDependencies = Seq(
   "io.circe" %% "circe-core"    % circeVersion,
@@ -35,6 +35,8 @@ lazy val commonSettings = Seq(
     "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
+    "org.typelevel"                   %% "shapeless3-deriving"        % "3.4.3",
+    "org.typelevel"                   %% "shapeless3-typeable"        % "3.4.3"
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
