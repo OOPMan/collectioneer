@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.projected
 
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
-import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast
+import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToScalarCast
 import scalikejdbc.*
 
 object PropertyValueQueries:
@@ -10,8 +10,8 @@ object PropertyValueQueries:
   def generatePropertyValuesByCollectionPKsCTE7SelectComponent(inputPropertyType: PropertyType): String =
     val selectElements = PropertyType.values.map(propertyType =>
       if (inputPropertyType == propertyType)
-      then s"pv.property_value::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
-      else s"NULL::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
+      then s"pv.property_value::${propertyTypeToScalarCast(propertyType)} AS property_value_$propertyType"
+      else s"NULL::${propertyTypeToScalarCast(propertyType)} AS property_value_$propertyType"
     ).mkString(", ")
     s"""SELECT pv.pk, pv.collection_pk, pv.property_pk, pv.index, $selectElements
         |FROM property_value_$inputPropertyType AS pv
@@ -122,8 +122,8 @@ object PropertyValueQueries:
   def generatePropertyValuesByParentPropertyPKsCTE3SelectComponent(inputPropertyType: PropertyType): String =
     val selectElements = PropertyType.values.map(propertyType =>
       if (inputPropertyType == propertyType)
-      then s"pv.property_value::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
-      else s"NULL::${propertyTypeToCast(propertyType)} AS property_value_$propertyType"
+      then s"pv.property_value::${propertyTypeToScalarCast(propertyType)} AS property_value_$propertyType"
+      else s"NULL::${propertyTypeToScalarCast(propertyType)} AS property_value_$propertyType"
     ).mkString(", ")
     s"""SELECT pv.pk, pv.collection_pk, pv.property_pk, pv.index, $selectElements
         |FROM property_value_$inputPropertyType AS pv
