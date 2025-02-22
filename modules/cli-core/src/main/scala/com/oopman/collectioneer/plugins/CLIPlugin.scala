@@ -7,4 +7,4 @@ import io.circe.Json
 
 trait CLIPlugin extends Plugin:
   def getDefaultSubconfig: Subconfig
-  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[_, Config]])]
+  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])]

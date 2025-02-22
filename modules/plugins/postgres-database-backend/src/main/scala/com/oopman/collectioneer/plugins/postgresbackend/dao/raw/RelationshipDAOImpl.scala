@@ -11,13 +11,13 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
   def createRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] =
     postgresbackend.queries.raw.RelationshipQueries
       .insert
-      .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships): _*)
+      .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships)*)
       .apply()
 
   def createOrUpdateRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] =
     postgresbackend.queries.raw.RelationshipQueries
       .upsert
-      .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships): _*)
+      .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships)*)
       .apply()
 
   def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] = ???
