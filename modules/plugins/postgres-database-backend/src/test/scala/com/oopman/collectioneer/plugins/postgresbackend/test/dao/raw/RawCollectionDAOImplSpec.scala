@@ -126,11 +126,10 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       (textProperty like "%1%") or (textProperty equalTo "6")
     ))
     assert(collectionsA.length == 2)
-    // TODO: Currently broken. See https://github.com/OOPMan/collectioneer/issues/19
-//    val collectionsB = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-//      bytesProperty equalTo "1".getBytes
-//    ))
-//    assert(collectionsB.length == 1)
+    val collectionsB = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bytesProperty equalTo "1".getBytes
+    ))
+    assert(collectionsB.length == 1)
     val collectionsC = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       smallintProperty notEqualTo 2.toShort
     ))
@@ -176,7 +175,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsL.length == 4)
     val collectionsM = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      uuidProperty equalTo List(
+      uuidProperty equalToAny List(
         UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"),
         UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507")
       )
