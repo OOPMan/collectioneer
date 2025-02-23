@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.postgresbackend
 
 import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import org.apache.commons.codec.binary.Hex
 import scalikejdbc.*
 import shapeless3.typeable.{TypeCase, Typeable}
 
@@ -47,8 +48,7 @@ object PropertyValueQueryDSLSupport:
 
   given ToSQLArray[Array[Byte]] with
     extension (seq: Seq[Array[Byte]]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      // TODO: Fix to Array of Bytes to Array of hex-encoded strings
-      session.connection.createArrayOf("VARCHAR", seq.toArray)
+      session.connection.createArrayOf("BYTEA", seq.map("\\x" + Hex.encodeHexString(_)).toArray)
 
   given ToSQLArray[LocalDate] with
     extension (seq: Seq[LocalDate]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
