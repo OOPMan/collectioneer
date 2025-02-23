@@ -192,6 +192,11 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       (compositeProperty equalTo "1") or (compositeProperty equalTo 2)
     ))
     assert(collectionsO.length == 2)
+    // TODO: Add additional tests of Vector Comparison logic, particularly for Seq[Array[Byte]]
+    val collectionsP = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bytesProperty equalToAny Seq("1".getBytes, "2".getBytes)
+    ))
+    assert(collectionsP.length == 2)
   }
 
   it should "return a List of raw Collections objects matching the supplied constraints (ParentCollections)" in { implicit session =>
