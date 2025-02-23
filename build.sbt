@@ -29,14 +29,15 @@ lazy val commonSettings = Seq(
   ),
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
-    "ch.qos.logback"                  % "logback-classic"             % "1.5.6",
     "io.7mind.izumi"                  %% "distage-core"               % "1.2.16",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.16",
-    "com.novocode"                    % "junit-interface"             % "0.11"              % "test",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
     "org.typelevel"                   %% "shapeless3-deriving"        % "3.4.3",
-    "org.typelevel"                   %% "shapeless3-typeable"        % "3.4.3"
+    "org.typelevel"                   %% "shapeless3-typeable"        % "3.4.3",
+    "ch.qos.logback"                  %  "logback-classic"            % "1.5.6",
+    "com.novocode"                    %  "junit-interface"            % "0.11"              % "test",
+    "commons-codec"                   %  "commons-codec"              % "1.18.0"
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
