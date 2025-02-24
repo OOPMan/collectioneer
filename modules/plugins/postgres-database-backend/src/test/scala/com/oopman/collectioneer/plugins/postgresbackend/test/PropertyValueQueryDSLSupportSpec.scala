@@ -17,6 +17,14 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
     assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.double) == "double precision")
     assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.json) == "jsonb")
   }
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToVectorCast"
+
+  it should "converts PropertyType to String" in { implicit session =>
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.bytes) == "bytea[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.float) == "real[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.double) == "double precision[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.json) == "jsonb[]")
+  }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL"
   
