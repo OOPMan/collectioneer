@@ -9,90 +9,162 @@ import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
-  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.makeJDBCArray"
-  
-  it should "create a java.sql.Array from an Array[BigInt]" in { implicit session => 
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(BigInt(1), BigInt(2)))
-    assert(result.getBaseTypeName == "int8")
-  }
-
-  it should "create a java.sql.Array from an Array[Boolean]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(true, false))
-    assert(result.getBaseTypeName == "bool")
-  }
-
-  it should "create a java.sql.Array from an Array[Byte]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(1.toByte, 2.toByte))
-    assert(result.getBaseTypeName == "bytea")
-  }
-
-  it should "create a java.sql.Array from an Array[LocalDate]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(LocalDate.now()))
-    assert(result.getBaseTypeName == "date")
-  }
-
-  it should "create a java.sql.Array from an Array[Double]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(1.toDouble, 2.toDouble))
-    assert(result.getBaseTypeName == "float8")
-  }
-
-  it should "create a java.sql.Array from an Array[Float]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(1.toFloat, 2.toFloat))
-    assert(result.getBaseTypeName == "float4")
-  }
-
-  it should "create a java.sql.Array from an Array[Int]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(1, 2))
-    assert(result.getBaseTypeName == "int4")
-  }
-
-  it should "create a java.sql.Array from an Array[io.circe.Json]" in { implicit session =>
-    val json = io.circe.Json.fromString("{}")
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(json, json))
-    assert(result.getBaseTypeName == "varchar")
-  }
-
-  it should "create a java.sql.Array from an Array[BigDecimal]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(BigDecimal.valueOf(1.5)))
-    assert(result.getBaseTypeName == "numeric")
-  }
-
-  it should "create a java.sql.Array from an Array[String]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array("asas", "bada"))
-    assert(result.getBaseTypeName == "varchar")
-  }
-
-  it should "create a java.sql.Array from an Array[LocalTime]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(LocalTime.now()))
-    assert(result.getBaseTypeName == "time")
-  }
-
-  it should "create a java.sql.Array from an Array[ZonedDateTime]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(ZonedDateTime.now()))
-    assert(result.getBaseTypeName == "timestamp")
-  }
-
-  it should "create a java.sql.Array from an Array[UUID]" in { implicit session =>
-    val result = PropertyValueQueryDSLSupport.makeJDBCArray(Array(UUID.randomUUID(), UUID.randomUUID()))
-    assert(result.getBaseTypeName == "varchar")
-  }
-
-  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToCast"
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToScalarCast"
   
   it should "converts PropertyType to String" in { implicit session => 
-    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.bytes) == "bytea")
-    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.float) == "real")
-    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.double) == "double precision")
-    assert(PropertyValueQueryDSLSupport.propertyTypeToCast(PropertyType.json) == "jsonb")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.bytes) == "bytea")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.float) == "real")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.double) == "double precision")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToScalarCast(PropertyType.json) == "jsonb")
+  }
+  behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.propertyTypeToVectorCast"
+
+  it should "converts PropertyType to String" in { implicit session =>
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.bytes) == "bytea[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.float) == "real[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.double) == "double precision[]")
+    assert(PropertyValueQueryDSLSupport.propertyTypeToVectorCast(PropertyType.json) == "jsonb[]")
   }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonToSQL"
   
   it should "generate a 2-Tuple containing a String and a Seq[Any]" in { implicit session =>
     val comparison: Comparison = CoreProperties.name equalTo "String"
-    val result = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
-    assert(result._1.nonEmpty)
-    assert(result._2.length == 2)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+  }
+
+  it should "handle BigInt PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(BigInt.apply)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "int8")
+  }
+
+  it should "handle Boolean PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(true, false)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "bool")
+  }
+
+  it should "handle Array[Byte] PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq("some".getBytes, "bytes".getBytes)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "bytea")
+    // TODO: Confirm parameters are actually strings formatted suitably
+  }
+
+  it should "handle LocalDate PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(LocalDate.now(), LocalDate.now().plusDays(1))
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "date")
+  }
+
+  it should "handle Double PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(_.toDouble)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "float8")
+  }
+
+  it should "handle Float PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(_.toFloat)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "float4")
+  }
+
+  it should "handle Int PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "int4")
+  }
+
+  it should "handle io.circe.Json PropertyValueVectorComparisons" in { implicit session =>
+    val json = io.circe.Json.fromString("{}")
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(json, json)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "varchar")
+  }
+
+  it should "handle BigDecimal PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(BigDecimal.apply)
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "numeric")
+  }
+
+  it should "handle String PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq("1", "2")
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "varchar")
+  }
+
+  it should "handle LocalTime PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(LocalTime.now(), LocalTime.now().minusHours(1))
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "time")
+  }
+
+  it should "handle ZonedDateTime PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(ZonedDateTime.now(), ZonedDateTime.now().plusHours(5))
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "timestamp")
+  }
+
+  it should "handle UUID PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(UUID.randomUUID(), UUID.randomUUID())
+    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
+    assert(comparsonSQL.nonEmpty)
+    assert(parameters.length == 2)
+    assert(parameters.head.isInstanceOf[UUID])
+    assert(parameters(1).isInstanceOf[java.sql.Array])
+    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "varchar")
   }
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL"
@@ -102,8 +174,9 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
       CoreProperties.name equalTo "String",
       CoreProperties.visible equalTo true
     )
-    PropertyValueQueryDSLSupport
-      .comparisonsToSQL(comparisons)
+    val resultOption = PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons)
+    assert(resultOption.nonEmpty)
+    resultOption
       .map { (comparisonsSQL, parameters) =>
         assert(comparisonsSQL.nonEmpty)
         assert(parameters.length == 4)

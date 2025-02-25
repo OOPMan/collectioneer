@@ -153,7 +153,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .map { (comparisonSQL, parameters) =>
         val propertyPKs = postgresbackend.queries.raw.PropertyQueries
           .innerJoiningPropertyCollection(s"($comparisonSQL)", "collection_pk", PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty, selectColumnExpression = "p.pk")
-          .bind(parameters: _*)
+          .bind(parameters*)
           .map(rs => UUID.fromString(rs.string("pk")))
           .list
           .apply()
@@ -175,7 +175,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     )
     val collectionPKsByPropertyPK = postgresbackend.queries.raw.PropertyQueries
       .allByPropertyCollection("p.pk", includePropertiesFilter = propertyPKs.nonEmpty)
-      .bind(bindings: _*)
+      .bind(bindings*)
       .map(rs => (
         UUID.fromString(rs.string("pk")),
         Utils.resultSetArrayToListOf[UUID](rs, "collection_pks")
@@ -206,7 +206,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     )
     val initialData = postgresbackend.queries.raw.PropertyQueries
       .allByRelatedPropertyCollection("p.pk", includePropertiesFilter = propertyPKs.nonEmpty)
-      .bind(bindings: _*)
+      .bind(bindings*)
       .map(rs => (
         UUID.fromString(rs.string("top_level_collection_pk")),
         UUID.fromString(rs.string("pk")),

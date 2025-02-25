@@ -22,7 +22,7 @@ trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
     Flyway
       .configure()
       .dataSource(dataSource)
-      .locations(getMigrationLocations: _*)
+      .locations(getMigrationLocations*)
       .load()
       .migrate()
   override def shutDown(): Unit =

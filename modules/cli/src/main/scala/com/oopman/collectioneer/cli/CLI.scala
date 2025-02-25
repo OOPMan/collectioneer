@@ -16,7 +16,7 @@ import scopt.{OParser, OParserBuilder}
 import java.util.UUID
 
 type Action = Config => Json
-type ActionListItem = (Verb, Subject, Option[String], Action, List[OParser[_, Config]])
+type ActionListItem = (Verb, Subject, Option[String], Action, List[OParser[?, Config]])
 type PluginNameActionListItemMap = Map[Option[String], ActionListItem]
 type SubjectMap = Map[Subject, PluginNameActionListItemMap]
 type ActionMap = Map[Verb, SubjectMap]
@@ -52,7 +52,7 @@ def generateSubjectCmds
   builder.cmd(subject.name)
     .text(subject.help.getOrElse(verb, ""))
     .action((_, config) => config.copy(subject = Some(subject)))
-    .children(oParserItems: _*)
+    .children(oParserItems*)
 
 def generateVerbCmd
 (builder: OParserBuilder[Config])
@@ -61,7 +61,7 @@ def generateVerbCmd
   builder.cmd(verb.name)
     .text(verb.help)
     .action((_, config) => config.copy(verb = Some(verb)))
-    .children(oParserItems: _*)
+    .children(oParserItems*)
 
 object CLI:
   val builder: OParserBuilder[Config] = OParser.builder[Config]
@@ -132,7 +132,7 @@ object CLI:
   val parser: OParser[Unit, Config] =
     import builder.*
 
-    val oParserItems: List[OParser[_, Config]] = List(
+    val oParserItems: List[OParser[?, Config]] = List(
       head("collectioneer-cli", "master"),
       help("help").text("Coming soon..."),
       opt[Unit]("json")
@@ -157,7 +157,7 @@ object CLI:
     ) ++ actionsMap.map(generateVerbCmd(builder)).toList
     OParser.sequence(
       programName("Collectioneer CLI"),
-      oParserItems: _*
+      oParserItems*
     )
 
   def main(args: Array[String]): Unit =

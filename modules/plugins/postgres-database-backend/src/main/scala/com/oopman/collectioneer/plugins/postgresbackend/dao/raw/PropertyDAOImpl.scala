@@ -15,13 +15,13 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
   def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyQueries
       .insert
-      .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties): _*)
+      .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties)*)
       .apply()
 
   def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyQueries
       .upsert
-      .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties): _*)
+      .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties)*)
       .apply()
 
   def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
@@ -45,7 +45,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .map((comparisonSQL, parameters) =>
         postgresbackend.queries.raw.PropertyQueries
           .innerJoiningPropertyCollection(s"($comparisonSQL)", "collection_pk", PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty)
-          .bind(parameters: _*)
+          .bind(parameters*)
           .map(resultSet => postgresbackend.entity.raw.Property.apply(resultSet))
           .list
           .apply()

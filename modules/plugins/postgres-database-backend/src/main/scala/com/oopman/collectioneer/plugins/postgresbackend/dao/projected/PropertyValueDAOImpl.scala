@@ -14,7 +14,7 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
         (if propertyUUIDs.nonEmpty then Seq(session.connection.createArrayOf("varchar", propertyUUIDs.toArray)) else Nil)
     postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByCollectionPKs(propertyUUIDs.nonEmpty)
-      .bind(bindings: _*)
+      .bind(bindings*)
       .map(postgresbackend.entity.projected.PropertyValue.generatePropertyValuesFromWrappedResultSet)
       .list
       .apply()

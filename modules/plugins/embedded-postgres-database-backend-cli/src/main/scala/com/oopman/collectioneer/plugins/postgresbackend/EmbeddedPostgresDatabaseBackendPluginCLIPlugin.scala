@@ -17,7 +17,7 @@ object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
 
   def getDefaultSubconfig: Subconfig = EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig()
 
-  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[_, Config]])] =
+  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])] =
     List(
       (Verb.get, Subject.database, getDatabase, List())
     )

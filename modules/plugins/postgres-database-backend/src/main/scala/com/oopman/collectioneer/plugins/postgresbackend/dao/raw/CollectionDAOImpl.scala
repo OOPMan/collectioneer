@@ -14,13 +14,13 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
   def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .insert
-      .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections): _*)
+      .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections)*)
       .apply()
 
   def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .upsert
-      .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections): _*)
+      .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections)*)
       .apply()
 
   def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
@@ -39,7 +39,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
     val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons).unzip
     postgresbackend.queries.raw.CollectionQueries
       .allMatchingConstraints(comparisonSQL, collectionPKs, parentCollectionPKs, sortProperties, offset, limit)
-      .bind(parameters.getOrElse(Nil): _*)
+      .bind(parameters.getOrElse(Nil)*)
       .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
       .list
       .apply()
@@ -58,7 +58,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .map((comparisonSQL, parameters) => 
         postgresbackend.queries.raw.CollectionQueries
           .allInnerJoining(s"($comparisonSQL)", "collection_pk")
-          .bind(parameters: _*)
+          .bind(parameters*)
           .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
           .list
           .apply()
@@ -71,7 +71,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .map((comparisonSQL, parameters) => 
         postgresbackend.queries.raw.CollectionQueries
         .allRelatedMatchingPropertyValues(comparisonSQL)
-        .bind(parameters: _*)
+        .bind(parameters*)
         .map(resultSet => postgresbackend.entity.raw.Collection.apply(resultSet))
         .list
         .apply()

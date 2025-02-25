@@ -118,7 +118,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     assertResult(expectedCollectionPKs)(collectionPKs)
   }
 
-  it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueComparisons)" in { implicit session =>
+  it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueScalarComparisons)" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
     import fixtures._
@@ -126,11 +126,10 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       (textProperty like "%1%") or (textProperty equalTo "6")
     ))
     assert(collectionsA.length == 2)
-    // TODO: Currently broken. See https://github.com/OOPMan/collectioneer/issues/19
-//    val collectionsB = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-//      bytesProperty equalTo "1".getBytes
-//    ))
-//    assert(collectionsB.length == 1)
+    val collectionsB = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bytesProperty equalTo "1".getBytes
+    ))
+    assert(collectionsB.length == 1)
     val collectionsC = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       smallintProperty notEqualTo 2.toShort
     ))
@@ -176,7 +175,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsL.length == 4)
     val collectionsM = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      uuidProperty equalTo List(
+      uuidProperty equalToAny List(
         UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"),
         UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507")
       )
@@ -191,6 +190,86 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
 //    assert(collectionsN.length == 1)
     val collectionsO = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       (compositeProperty equalTo "1") or (compositeProperty equalTo 2)
+    ))
+    assert(collectionsO.length == 2)
+    // TODO: Add additional tests of Vector Comparison logic, particularly for Seq[Array[Byte]]
+    val collectionsP = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bytesProperty equalToAny Seq("1".getBytes, "2".getBytes)
+    ))
+    assert(collectionsP.length == 2)
+  }
+
+  it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueVectorComparisons)" in { implicit session =>
+    import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
+    val fixtures = new Fixtures()
+    import fixtures._
+    val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      textProperty equalToAny Seq("1", "6")
+    ))
+    assert(collectionsA.length == 2)
+    val collectionsB = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bytesProperty equalToAny Seq("1".getBytes, "2".getBytes)
+    ))
+    assert(collectionsB.length == 2)
+    val collectionsC = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      smallintProperty notEqualToAny Seq(2.toShort, 3.toShort)
+    ))
+    assert(collectionsC.length == 6)
+    val collectionsD = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      intProperty gteAll Seq(0, 4),
+    ))
+    assert(collectionsD.length == 3)
+    val collectionsE = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      bigintProperty lteAny Seq(BigInt(5), BigInt(4))
+    ))
+    assert(collectionsE.length == 5)
+    val collectionsF = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      numericProperty gtAny Seq(BigDecimal(1.1), BigDecimal(3.3))
+    ))
+    assert(collectionsF.length == 5)
+    val collectionsG = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      floatProperty notEqualToAll Seq(1f, 2f)
+    ))
+    assert(collectionsG.length == 4)
+    val collectionsH = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      doubleProperty equalToAny Seq(2f, 3f, 4f)
+    ))
+    assert(collectionsH.length == 3)
+    val collectionsI = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      booleanProperty equalToAny Seq(true, false)
+    ))
+    assert(collectionsI.length == 6)
+    val collectionsJ = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      dateProperty gtAll Seq(LocalDate.parse("2025-03-01"))
+    ))
+    assert(collectionsJ.length == 3)
+    val collectionsK = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      timeProperty ltAny Seq(LocalTime.parse("04:00:00"))
+    ))
+    assert(collectionsK.length == 3)
+    val collectionsL = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      timestampProperty lteAny Seq(
+        ZonedDateTime.parse("2025-04-01T00:00:00+04:00"),
+        ZonedDateTime.parse("2025-05-01T00:00:00+05:00")
+      )
+    ))
+    assert(collectionsL.length == 4)
+    val collectionsM = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      uuidProperty equalToAny Seq(
+        UUID.fromString("0735c441-6574-4e47-8f33-13528a9eba11"),
+        UUID.fromString("d84f3689-e322-45f4-96f7-80602f70d507")
+      )
+    ))
+    assert(collectionsM.length == 2)
+    //TODO: Currently broken. See https://github.com/OOPMan/collectioneer/issues/20
+    //    import io.circe.*
+    //    import io.circe.parser.*
+    //    val collectionsN = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+    //      jsonProperty equalTo parse("""{"1":true}""").getOrElse(Json.Null)
+    //    ))
+    //    assert(collectionsN.length == 1)
+    val collectionsO = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      compositeProperty equalToAny Seq("1", "2")
     ))
     assert(collectionsO.length == 2)
   }

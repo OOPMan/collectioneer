@@ -11,13 +11,13 @@ object PropertyCollectionDAOImpl extends ScalikePropertyCollectionDAO:
   def createPropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyCollectionQueries
       .insert
-      .batch(postgresbackend.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections): _*)
+      .batch(postgresbackend.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections)*)
       .apply()
 
   def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] =
     postgresbackend.queries.raw.PropertyCollectionQueries
       .upsert
-      .batch(postgresbackend.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections): _*)
+      .batch(postgresbackend.entity.raw.PropertyCollection.propertyCollectionSeqToBatchUpsertSeq(propertyCollections)*)
       .apply()
 
   def deletePropertyCollections(propertyCollections: Seq[PropertyCollection])(implicit session: DBSession = AutoSession): Array[Int] = ???

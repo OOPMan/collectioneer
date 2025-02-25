@@ -44,7 +44,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
   def getSubconfigFromConfig(config: Config): GATCGPluginConfig =
     config.subconfigs.getOrElse(getShortName, getDefaultSubconfig).asInstanceOf[GATCGPluginConfig]
 
-  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[_, Config]])] =
+  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])] =
     val datasetPathOpt = builder.opt[File]("gatcg-json-dataset-path")
       .optional()
       .action((f, config) => config.copy(subconfigs = config.subconfigs.updated(getShortName, getSubconfigFromConfig(config).copy(grandArchiveTCGJSON = Some(f)))))
