@@ -28,6 +28,7 @@ object PropertyValueQueryDSLSupport:
   private val `Seq[Double]` = TypeCase[Seq[Double]]
   private val `Seq[Float]` = TypeCase[Seq[Float]]
   private val `Seq[Int]` = TypeCase[Seq[Int]]
+  private val `Seq[Short]` = TypeCase[Seq[Short]]
   private val `Seq[io.circe.Json]` = TypeCase[Seq[io.circe.Json]]
   private val `Seq[BigDecimal]` = TypeCase[Seq[BigDecimal]]
   private val `Seq[LocalTime]` = TypeCase[Seq[LocalTime]]
@@ -65,6 +66,10 @@ object PropertyValueQueryDSLSupport:
   given ToSQLArray[Int] with
     extension (seq: Seq[Int]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
       session.connection.createArrayOf("INT", seq.toArray)
+
+  given ToSQLArray[Short] with
+    extension (seq: Seq[Short]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
+      session.connection.createArrayOf("SMALLINT", seq.toArray)
 
   given ToSQLArray[io.circe.Json] with
     extension (seq: Seq[io.circe.Json]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
@@ -162,6 +167,7 @@ object PropertyValueQueryDSLSupport:
         case `Seq[Double]`(seq) => seq.toSQLArray
         case `Seq[Float]`(seq) => seq.toSQLArray
         case `Seq[Int]`(seq) => seq.toSQLArray
+        case `Seq[Short]`(seq) => seq.toSQLArray
         case `Seq[io.circe.Json]`(seq) => seq.toSQLArray
         case `Seq[BigDecimal]`(seq) => seq.toSQLArray
         case `Seq[LocalTime]`(seq) => seq.toSQLArray
