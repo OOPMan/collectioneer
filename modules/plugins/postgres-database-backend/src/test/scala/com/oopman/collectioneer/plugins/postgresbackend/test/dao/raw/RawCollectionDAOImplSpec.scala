@@ -7,6 +7,8 @@ import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCol
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.{BaseFunSuite, Fixtures}
 
+import io.circe.*
+import io.circe.parser.*
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
@@ -181,13 +183,10 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       )
     ))
     assert(collectionsM.length == 2)
-    //TODO: Currently broken. See https://github.com/OOPMan/collectioneer/issues/20
-//    import io.circe.*
-//    import io.circe.parser.*
-//    val collectionsN = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-//      jsonProperty equalTo parse("""{"1":true}""").getOrElse(Json.Null)
-//    ))
-//    assert(collectionsN.length == 1)
+    val collectionsN = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      jsonProperty equalTo parse("""{"1":true}""").getOrElse(Json.Null)
+    ))
+    assert(collectionsN.length == 1)
     val collectionsO = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       (compositeProperty equalTo "1") or (compositeProperty equalTo 2)
     ))
@@ -261,13 +260,12 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
       )
     ))
     assert(collectionsM.length == 2)
-    //TODO: Currently broken. See https://github.com/OOPMan/collectioneer/issues/20
-    //    import io.circe.*
-    //    import io.circe.parser.*
-    //    val collectionsN = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-    //      jsonProperty equalTo parse("""{"1":true}""").getOrElse(Json.Null)
-    //    ))
-    //    assert(collectionsN.length == 1)
+    val collectionsN = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
+      jsonProperty equalToAny Seq(
+        parse("""{"1":true}""").getOrElse(Json.Null),
+        parse("""{"2":false}""").getOrElse(Json.Null)
+    )))
+    assert(collectionsN.length == 2)
     val collectionsO = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       compositeProperty equalToAny Seq("1", "2")
     ))
