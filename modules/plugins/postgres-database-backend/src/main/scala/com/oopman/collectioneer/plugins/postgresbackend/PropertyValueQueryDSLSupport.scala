@@ -156,7 +156,11 @@ object PropertyValueQueryDSLSupport:
 
   def comparisonToSQL(comparison: Comparison)(implicit session: DBSession = AutoSession): (String, Seq[Any]) = comparison match
     case PropertyValueScalarComparison(lhs, operator, rhs) =>
-      generateSqlAndParameters(lhs.pk, lhs.propertyTypes, generateOperatorString(operator), propertyTypeToScalarCast, rhs)
+      val value = rhs match {
+        case json: io.circe.Json => json.spaces2
+        case _ => rhs
+      }
+      generateSqlAndParameters(lhs.pk, lhs.propertyTypes, generateOperatorString(operator), propertyTypeToScalarCast, value)
 
     case PropertyValueVectorComparison(lhs, operator, rhs) =>
       val values = rhs match {
