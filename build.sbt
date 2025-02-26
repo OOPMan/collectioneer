@@ -25,7 +25,10 @@ lazy val commonSettings = Seq(
   scalaVersion := scala3Version,
   crossScalaVersions := Seq(scala213Version, scala3Version),
   scalacOptions ++= Seq(
-    "-Yretain-trees",
+    "-Yretain-trees", "-java-output-version:21"
+  ),
+  javacOptions ++= Seq(
+    "-source", "21", "-target", "21"
   ),
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
@@ -98,18 +101,10 @@ lazy val gui = project
   .settings(
     name := "Collectioneer GUI",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature"),
-    scalacOptions ++= (
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, _)) =>
-          Seq("-explain", "-explain-types", "-rewrite", "-source", "3.2-migration")
-        case _ =>
-          Seq("-Xlint", "-explaintypes")
-      }
-      ),
     fork := true,
-    mainClass := Some("ScalaFXHelloWorld"),
+    mainClass := Some("com.oopman.collectioneer.gui.CollectioneerGUI"),
     libraryDependencies ++= Seq(
-      "org.scalafx"             %% "scalafx"          % "20.0.0-R31",
+      "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
     )
   )
   .dependsOn(core)
