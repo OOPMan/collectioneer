@@ -37,6 +37,7 @@ lazy val commonSettings = Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
     "io.7mind.izumi"                  %% "distage-core"               % "1.2.16",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.16",
+    "dev.zio"                         %% "zio"                        % "2.1.16",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
     "org.typelevel"                   %% "shapeless3-deriving"        % "3.4.3",
