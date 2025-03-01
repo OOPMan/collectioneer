@@ -23,14 +23,14 @@ object Collections:
 
   case class ListCollectionsResult
   (
-    dataSourceUri: String,
+    dataSourceUri: Option[String],
     count: Int,
     uuids: List[UUID]
   )
 
   case class ListCollectionsVerboseResult
   (
-    dataSourceUri: String,
+    dataSourceUri: Option[String],
     count: Int,
     collections: List[traits.entity.raw.Collection]
   )
@@ -42,8 +42,8 @@ object Collections:
 
   def listCollectionsAction(config: Config): Json =
     val collections = config.propertyValueQueries match
-      case Some(_) => Injection.produceRun(config)(listCollectionsByPropertyValueQueries(config))
-      case None => Injection.produceRun(config)(listCollections(config))
+      case Some(_) => Injection.produceRun(Some(config))(listCollectionsByPropertyValueQueries(config))
+      case None => Injection.produceRun(Some(config))(listCollections(config))
     if config.verbose then
       // TODO: Verbose list includes all property values for each collection
       ListCollectionsVerboseResult(

@@ -147,7 +147,7 @@ object CLI:
       opt[String]("datasourceUri")
         .text("JDBC URI")
         // TODO: Add validator
-        .action((datasourceUri, config) => config.copy(datasourceUri = datasourceUri)),
+        .action((datasourceUri, config) => config.copy(datasourceUri = Some(datasourceUri))),
       opt[String]("datasourceUsername")
         .text("Datasource username")
         .action((datasourceUsername, config) => config.copy(datasourceUsername = datasourceUsername)),
@@ -169,7 +169,7 @@ object CLI:
           singleLineMode = !config.verbose
         )
 //        try {
-          Injection.produceRun(config) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp() }
+          Injection.produceRun(Some(config)) { (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp() }
           // Process CLI arguments
           val action = for {
             verb <- config.verb

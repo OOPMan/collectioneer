@@ -56,7 +56,7 @@ case class Config
   action: Config => Json = config => "".asJson,
   verb: Option[Verb] = None,
   subject: Option[Subject] = None,
-  datasourceUri: String = "jdbc:embeddedpostgresql://./collection",
+  datasourceUri: Option[String] = Some("jdbc:embeddedpostgresql://./collection"),
   datasourceUsername: String = "sa",
   datasourcePassword: String = "",
   verbose: Boolean = false,

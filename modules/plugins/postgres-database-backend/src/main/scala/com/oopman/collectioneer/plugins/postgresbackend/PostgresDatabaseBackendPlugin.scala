@@ -25,20 +25,26 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
   def getVersion = "master"
 
   def compatibleWithDatasourceUri: Boolean =
-    org.postgresql.Driver().acceptsURL(config.datasourceUri)
+    config.datasourceUri.exists(org.postgresql.Driver().acceptsURL(_))
 
-  def getDatasource: DataSource =
-    val properties = org.postgresql.Driver.parseURL(config.datasourceUri, java.util.Properties())
-    val dataSource = PGSimpleDataSource()
-    dataSource.setServerNames(Array(PGProperty.PG_HOST.getOrDefault(properties)))
-    dataSource.setPortNumbers(Array(PGProperty.PG_PORT.getOrDefault(properties).toInt))
-    dataSource.setDatabaseName(PGProperty.PG_DBNAME.getOrDefault(properties))
-    dataSource.setUser(PGProperty.USER.getOrDefault(properties))
-    dataSource.setPassword(PGProperty.PASSWORD.getOrDefault(properties))
-    dataSource
+  def getDatasource: DataSource = config.datasourceUri match {
+    case Some(datasourceUri) =>
+      val properties = org.postgresql.Driver.parseURL(datasourceUri, java.util.Properties())
+      val dataSource = PGSimpleDataSource()
+      dataSource.setServerNames(Array(PGProperty.PG_HOST.getOrDefault(properties)))
+      dataSource.setPortNumbers(Array(PGProperty.PG_PORT.getOrDefault(properties).toInt))
+      dataSource.setDatabaseName(PGProperty.PG_DBNAME.getOrDefault(properties))
+      dataSource.setUser(PGProperty.USER.getOrDefault(properties))
+      dataSource.setPassword(PGProperty.PASSWORD.getOrDefault(properties))
+      dataSource
+    case _ => throw RuntimeException("config.datasourceUri is undefined!")  
+  }
+    
 
-  def getConnection: Connection =
-    DriverManager.getConnection(config.datasourceUri)
+  def getConnection: Connection = config.datasourceUri match {
+    case Some(datasourceUri) => DriverManager.getConnection(datasourceUri)
+    case _ => throw RuntimeException("config.datasourceUri is undefined")
+  }
 
   def getMigrationLocations: Seq[String] = Seq(
     "classpath:migrations/postgres",
@@ -52,22 +58,35 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
       include(PostgresDatabaseBackendModule)
 
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends PostgresDatabaseBackendPlugin(config):
+  // TODO: Maybe we should override the getName methods?
 
   override def compatibleWithDatasourceUri: Boolean =
-    config.datasourceUri.startsWith("jdbc:embeddedpostgresql:")
+    config.datasourceUri.exists(_.startsWith("jdbc:embeddedpostgresql:"))
 
-  override def getDatasource: DataSource =
-    // TODO: Support non-default datasource
-    configEmbeddedPostgresMap.getOrElseUpdate(
-      config.datasourceUri,
+  override def getDatasource: DataSource = config.datasourceUri match {
+    case Some(datasourceUri) => configEmbeddedPostgresMap.getOrElseUpdate(
+      datasourceUri,
       EmbeddedPostgres
         .builderWithDefaults()
-        // TODO: Customize based on URI
+          // TODO: Customize based on URI
         .setDataDirectory((os.pwd / "collection").wrapped)
         .setRemoveDataOnShutdown(false)
         .setServerVersion("15")
         .build()
-    ).createDefaultDataSource()
+      ).createDefaultDataSource()
+    case _ => throw RuntimeException("config.datasourceUri undefined!")
+  }
+//    // TODO: Support non-default datasource
+//    configEmbeddedPostgresMap.getOrElseUpdate(
+//      config.datasourceUri,
+//      EmbeddedPostgres
+//        .builderWithDefaults()
+//        // TODO: Customize based on URI
+//        .setDataDirectory((os.pwd / "collection").wrapped)
+//        .setRemoveDataOnShutdown(false)
+//        .setServerVersion("15")
+//        .build()
+//    ).createDefaultDataSource()
 
   override def getConnection: Connection =
     // TODO: Support connectiuon with custom username/password
@@ -75,7 +94,8 @@ class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config) extends
 
   override def shutDown(): Unit =
     super.shutDown()
-    configEmbeddedPostgresMap.get(config.datasourceUri).foreach(_.close())
+    config.datasourceUri.map(configEmbeddedPostgresMap.get(_).foreach(_.close()))
+//    configEmbeddedPostgresMap.get(config.datasourceUri).foreach(_.close())
 
 
 object EmbeddedPostgresDatabaseBackendPlugin:
@@ -90,7 +110,7 @@ class TestPostgresDatabaseBackendPlugin(override val config: Config) extends Emb
     .build()
 
   override def compatibleWithDatasourceUri: Boolean =
-    config.datasourceUri == "jdbc:testpostgresql"
+    config.datasourceUri.contains("jdbc:testpostgresql")
 
   override def getDatasource: DataSource =
     embeddedPostgres.createDefaultDataSource()
