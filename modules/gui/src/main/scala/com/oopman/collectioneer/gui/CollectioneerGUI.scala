@@ -20,16 +20,6 @@ object CollectioneerGUI extends JFXApp3 :
   // TODO: Create lazy vals for menu items
   // TODO: Implement handlers for menu items
   // TODO: Tie menu-bar width to stage width somehow
-  lazy val plugins = Injection.produceRun() { (databaseBackendGUIPlugins: Set[DatabaseBackendGUIPlugin]) => databaseBackendGUIPlugins }
-  lazy val pluginNodeMap = plugins.map(p => (p.getUIName, p.getNode)).toMap
-  lazy val pluginPicker: ChoiceBox[String] = new ChoiceBox[String]:
-    items = ObservableBuffer.from(pluginNodeMap.keys)
-    onAction = event => {
-      val selectedPlugin = pluginPicker.selectionModel().getSelectedItem
-      pluginNodeMap.get(selectedPlugin).map(pluginNode => centerVBox.children = Seq(pluginPicker, pluginNode))
-    }
-  lazy val centerVBox = new VBox:
-    children = Seq(pluginPicker)
 
   override def start(): Unit =
 
@@ -38,7 +28,6 @@ object CollectioneerGUI extends JFXApp3 :
       width = 1024
       height = 768
       scene = new Scene :
-        fill = Color.rgb(38, 38, 38)
         content = new BorderPane:
           top = new MenuBar:
             useSystemMenuBar = true
@@ -56,4 +45,4 @@ object CollectioneerGUI extends JFXApp3 :
                 )
               }
             )
-          center = centerVBox
+          center = DatabaseBackendPicker.getNode
