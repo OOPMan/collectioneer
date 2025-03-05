@@ -73,16 +73,17 @@ object EmbeddedPostgresDatabaseBackendPlugin:
   protected def decodePercentString(string: String): String =
     codec.decode(string.getBytes).map(_.toChar).mkString
 
-  def parseUrl(url: String) =
+  def parseUrl(url: String): (String, String, Map[String, String]) =
+    if !url.startsWith(prefix) then throw RuntimeException("Invalud JDBC URL!")
     val (server, parameters) = url.split("\\?", 2) match {
       case Array(server, parameters) => (server, parameters)
       case Array(server) => (server, "")
     }
     val (path, database) = server.split('/') match {
-      case Array(prefix, "", path, database) => (Some(path), database)
-      case Array(prefix, "", path) => (Some(path), defaultDatabase)
-      case Array(prefix) => (None, defaultDatabase)
-      case _ => throw RuntimeException("Invalid URI!")
+      case Array(_, "", path, database) => (Some(path), database)
+      case Array(_, "", path) => (Some(path), defaultDatabase)
+      case Array(_) => (None, defaultDatabase)
+      case _ => throw RuntimeException("Invalid JDBC URL!")
     }
     val decodedPath = path.map(decodePercentString).getOrElse(defaultPath)
     val decodedDatabase = decodePercentString(database)
