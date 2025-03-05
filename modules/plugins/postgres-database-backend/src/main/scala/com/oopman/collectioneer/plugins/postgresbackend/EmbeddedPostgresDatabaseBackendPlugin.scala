@@ -46,8 +46,12 @@ extends PostgresDatabaseBackendPlugin(config):
       if (database != EmbeddedPostgresDatabaseBackendPlugin.defaultDatabase) then
         val dataSource = embeddedPostgres.createDefaultDataSource()
         val connection = dataSource.getConnection
-        val statement = connection.createStatement()
-        statement.execute(s"CREATE DATABASE $database")
+        val preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM pg_database WHERE datname = ?")
+        preparedStatement.setString(1, database)
+        val resultSet = preparedStatement.executeQuery()
+        if !resultSet.next() then throw new RuntimeException(s"Empty ResultSet while trying to determine if database $database exists!")
+        val databaseExists = resultSet.getInt(1) == 1
+        if !databaseExists then connection.createStatement().execute(s"CREATE DATABASE $database")
       embeddedPostgres.createDataSource("postgres", database)
     case _ => throw RuntimeException("config.datasourceUri undefined!")
   }
