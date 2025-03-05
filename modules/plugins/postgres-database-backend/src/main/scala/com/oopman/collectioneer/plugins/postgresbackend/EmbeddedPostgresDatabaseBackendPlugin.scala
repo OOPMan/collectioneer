@@ -41,7 +41,7 @@ extends PostgresDatabaseBackendPlugin(config):
         for((key, value) <- parameters) builder = builder.addConnectionProperty(key, value)
         builder.build()
       val embeddedPostgres = EmbeddedPostgresDatabaseBackendPlugin
-        .configEmbeddedPostgresMap
+        .embeddedPostgresMap
         .getOrElseUpdate(datasourceUri, getEmbeddedPostgres)
       if (database != EmbeddedPostgresDatabaseBackendPlugin.defaultDatabase) then
         val dataSource = embeddedPostgres.createDefaultDataSource()
@@ -57,20 +57,26 @@ extends PostgresDatabaseBackendPlugin(config):
 
   override def shutDown(): Unit =
     super.shutDown()
-    for {
+    for
       datasourceUri <- config.datasourceUri
-      embeddedPostgres <- EmbeddedPostgresDatabaseBackendPlugin.configEmbeddedPostgresMap.get(datasourceUri)
-    } embeddedPostgres.close()
+      embeddedPostgres <- EmbeddedPostgresDatabaseBackendPlugin.embeddedPostgresMap.get(datasourceUri)
+    do
+      embeddedPostgres.close()
+      EmbeddedPostgresDatabaseBackendPlugin.embeddedPostgresMap.remove(datasourceUri)
+
 
 object EmbeddedPostgresDatabaseBackendPlugin:
-  protected val configEmbeddedPostgresMap: collection.mutable.Map[String, EmbeddedPostgres] = collection.mutable.Map()
+  private val embeddedPostgresMap: collection.mutable.Map[String, EmbeddedPostgres] = collection.mutable.Map()
 
-  protected val prefix = "jdbc:embeddedpostgresql:"
-  protected val defaultDatabase = "postgres"
-  protected val defaultPath = (os.home / "collectioneer" / "default").toString
-  protected val codec = PercentCodec(":/?#[]@!$&'()*+,;=".getBytes, false) // See https://datatracker.ietf.org/doc/html/rfc3986#section-2.2
+  protected val prefix: String = "jdbc:embeddedpostgresql:"
+  private val defaultDatabase = "postgres"
+  private val defaultPath = (os.home / "collectioneer" / "default").toString
+  protected val codec: PercentCodec = PercentCodec(":/?#[]@!$&'()*+,;=".getBytes, false) // See https://datatracker.ietf.org/doc/html/rfc3986#section-2.2
 
-  protected def decodePercentString(string: String): String =
+  def encodePercentString(string: String): String =
+    codec.encode(string.getBytes).map(_.toChar).mkString
+
+  def decodePercentString(string: String): String =
     codec.decode(string.getBytes).map(_.toChar).mkString
 
   def parseUrl(url: String): (String, String, Map[String, String]) =
