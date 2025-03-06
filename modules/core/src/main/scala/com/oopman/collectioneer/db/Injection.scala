@@ -13,7 +13,7 @@ object Injection:
   protected val injector: Injector[Identity] = Injector()
   private object emptyModule extends ModuleDef
   private object dummyConfig extends Config:
-    val datasourceUri = None
+    val datasourceUri: Option[String] = None
 
   def getInjectorAndModule[F[_], A](configOption: Option[Config] = None, inputModule: ModuleDef = emptyModule): (Injector[Identity], ModuleDef) =
     val config = configOption.getOrElse(dummyConfig)
@@ -26,8 +26,8 @@ object Injection:
     val finalModule = new ModuleDef:
       for (databaseBackendPlugin <- databaseBackendPluginOption) make[DatabaseBackendPlugin].from(databaseBackendPlugin)
       include(baseModule)
-      include(inputModule)
       for (databaseBackendPlugin <- databaseBackendPluginOption) include(databaseBackendPlugin.getDatabaseBackendModule)
+      include(inputModule)
     (injector, finalModule)
 
   def produceRun[F[_], A](configOption: Option[Config] = None, inputModule: ModuleDef = emptyModule): Functoid[Identity[A]] => Identity[A] =
