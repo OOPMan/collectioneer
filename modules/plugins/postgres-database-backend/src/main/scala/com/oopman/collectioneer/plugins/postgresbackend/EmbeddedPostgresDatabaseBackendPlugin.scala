@@ -25,7 +25,12 @@ import scala.util.Try
  */
 class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config, removeDataOnShutdown: Boolean = false)
 extends PostgresDatabaseBackendPlugin(config):
-  // TODO: Maybe we should override the getName methods?
+  override def getName = "Embedded PostgreSQL Database Backend"
+
+  override def getShortName = "embeddedpostgresbackend"
+
+  override def getVersion = "master"
+
   override def compatibleWithDatasourceUri: Boolean =
     config.datasourceUri.flatMap(datasourceUri => Try(EmbeddedPostgresDatabaseBackendPlugin.parseUrl(datasourceUri)).toOption).isDefined
 
