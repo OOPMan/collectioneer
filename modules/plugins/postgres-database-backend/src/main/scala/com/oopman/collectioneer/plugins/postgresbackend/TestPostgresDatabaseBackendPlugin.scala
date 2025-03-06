@@ -6,7 +6,7 @@ import de.softwareforge.testing.postgres.embedded.EmbeddedPostgres
 import java.util.UUID
 import javax.sql.DataSource
 
-class TestPostgresDatabaseBackendPlugin(override val config: Config) extends EmbeddedPostgresDatabaseBackendPlugin(config):
+class TestPostgresDatabaseBackendPlugin(override val config: Config) extends EmbeddedPostgresDatabaseBackendPlugin(config, removeDataOnShutdown = true):
   protected lazy val embeddedPostgres = EmbeddedPostgres
     .builderWithDefaults()
     .setDataDirectory((os.pwd / UUID.randomUUID().toString).wrapped)
@@ -15,7 +15,7 @@ class TestPostgresDatabaseBackendPlugin(override val config: Config) extends Emb
     .build()
 
   override def compatibleWithDatasourceUri: Boolean =
-    config.datasourceUri.contains("jdbc:testpostgresql")
+    config.datasourceUri.contains("jdbc:testpostgresql:")
 
   override def getDatasource: DataSource =
     embeddedPostgres.createDefaultDataSource()

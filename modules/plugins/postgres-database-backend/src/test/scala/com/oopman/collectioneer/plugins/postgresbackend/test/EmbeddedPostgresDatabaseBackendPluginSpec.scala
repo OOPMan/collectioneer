@@ -49,7 +49,7 @@ class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
     val path = os.pwd / UUID.randomUUID().toString
     val percentEncodedPath = EmbeddedPostgresDatabaseBackendPlugin.encodePercentString(path.toString)
     val config = TestConfig(Some(s"jdbc:embeddedpostgresql://$percentEncodedPath"))
-    val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, true).getDatasource
+    val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, removeDataOnShutdown = true).getDatasource
     val connection = dataSource.getConnection
     connection.createStatement().execute("CREATE TABLE test(pk INTEGER PRIMARY KEY);")
     connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);")
@@ -62,7 +62,7 @@ class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
     val path = os.pwd / UUID.randomUUID().toString
     val percentEncodedPath = EmbeddedPostgresDatabaseBackendPlugin.encodePercentString(path.toString)
     val config = TestConfig(Some(s"jdbc:embeddedpostgresql://$percentEncodedPath/custom_database"))
-    val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, true).getDatasource
+    val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, removeDataOnShutdown = true).getDatasource
     val connection = dataSource.getConnection
     connection.createStatement().execute("CREATE TABLE test(pk INTEGER PRIMARY KEY);")
     connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);")

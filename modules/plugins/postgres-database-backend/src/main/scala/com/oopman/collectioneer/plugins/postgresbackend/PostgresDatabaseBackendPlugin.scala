@@ -1,19 +1,14 @@
-package com.oopman.collectioneer.plugins.postgresbacken
+package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.db.scalikejdbc.ScalikeJDBCDatabaseBackendPlugin
-//import com.oopman.collectioneer.plugins.postgresbacken.EmbeddedPostgresDatabaseBackendPlugin.configEmbeddedPostgresMap
 import com.oopman.collectioneer.plugins.postgresbackend.PostgresDatabaseBackendModule
-import com.oopman.collectioneer.{Config, Plugin}
+import com.oopman.collectioneer.Config
 import com.typesafe.scalalogging.LazyLogging
-import de.softwareforge.testing.postgres.embedded.EmbeddedPostgres
 import izumi.distage.model.definition.ModuleDef
-import izumi.distage.plugins.PluginDef
 import org.postgresql.PGProperty
 import org.postgresql.ds.PGSimpleDataSource
 
 import java.sql.{Connection, DriverManager}
-import java.util.UUID
 import javax.sql.DataSource
 
 
@@ -55,7 +50,3 @@ class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatab
     new ModuleDef:
       include(scalikeJDBCDatabaseBackendModule)
       include(PostgresDatabaseBackendModule)
-
-
-//    configEmbeddedPostgresMap.get(config.datasourceUri).foreach(_.close())
-

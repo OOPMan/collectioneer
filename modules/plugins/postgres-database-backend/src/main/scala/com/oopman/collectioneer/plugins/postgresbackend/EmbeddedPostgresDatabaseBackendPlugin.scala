@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
 import com.oopman.collectioneer.Config
-import com.oopman.collectioneer.plugins.postgresbacken.PostgresDatabaseBackendPlugin
 import de.softwareforge.testing.postgres.embedded.EmbeddedPostgres
+import distage.Id
 import org.apache.commons.codec.net.PercentCodec
 
 import java.sql.Connection
@@ -23,7 +23,8 @@ import scala.util.Try
  *
  * @param config
  */
-class EmbeddedPostgresDatabaseBackendPlugin(override val config: Config, removeDataOnShutdown: Boolean = false)
+class EmbeddedPostgresDatabaseBackendPlugin
+(override val config: Config, val removeDataOnShutdown: Boolean @Id("EmbeddedPostgresDatabaseBackendPlugin.removeDataOnShutdown") = false )
 extends PostgresDatabaseBackendPlugin(config):
   override def getName = "Embedded PostgreSQL Database Backend"
 
