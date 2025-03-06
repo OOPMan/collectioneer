@@ -52,7 +52,7 @@ class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
     val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, true).getDatasource
     val connection = dataSource.getConnection
     connection.createStatement().execute("CREATE TABLE test(pk INTEGER PRIMARY KEY);")
-    connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);");
+    connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);")
     val resultSet = connection.createStatement().executeQuery("SELECT COUNT(*) FROM test WHERE pk = 1;")
     assert(resultSet.next())
     assert(resultSet.getInt(1) == 1)
@@ -65,7 +65,7 @@ class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
     val dataSource = EmbeddedPostgresDatabaseBackendPlugin(config, true).getDatasource
     val connection = dataSource.getConnection
     connection.createStatement().execute("CREATE TABLE test(pk INTEGER PRIMARY KEY);")
-    connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);");
+    connection.createStatement().execute("INSERT INTO test(pk) VALUES (1);")
     val resultSet1 = connection.createStatement().executeQuery("SELECT COUNT(*) FROM test WHERE pk = 1;")
     assert(resultSet1.next())
     assert(resultSet1.getInt(1) == 1)
@@ -106,7 +106,7 @@ class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
     val dataSource1 = embeddedPostgresDatabaseBackendPlugin1.getDatasource
     val connection1 = dataSource1.getConnection
     connection1.createStatement().execute("CREATE TABLE test(pk INTEGER PRIMARY KEY);")
-    connection1.createStatement().execute("INSERT INTO test(pk) VALUES (1);");
+    connection1.createStatement().execute("INSERT INTO test(pk) VALUES (1);")
     val resultSet1 = connection1.createStatement().executeQuery("SELECT current_database();")
     assert(resultSet1.next())
     assert(resultSet1.getString(1) == "custom_database")
