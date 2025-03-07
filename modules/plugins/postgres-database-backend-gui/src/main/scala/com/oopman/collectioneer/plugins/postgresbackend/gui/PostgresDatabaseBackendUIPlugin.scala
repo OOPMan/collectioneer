@@ -23,16 +23,15 @@ class PostgresDatabaseBackendUIPlugin extends DatabaseBackendGUIPlugin:
   protected lazy val databaseTextField = new TextField:
     text = "postgres"
 
-  GridPane.setConstraints(hostLabel, 0, 0, 1, 1)
-  GridPane.setConstraints(hostTextField, 1, 0, 3, 1)
-  GridPane.setConstraints(portLabel, 0, 1, 1, 1)
-  GridPane.setConstraints(portTextField, 1, 1, 1, 1)
-  GridPane.setConstraints(databaseLabel, 0, 2, 1, 1)
-  GridPane.setConstraints(databaseTextField, 1, 2, 3, 1)
   protected lazy val gridPane = new GridPane:
     hgap = 4
     vgap = 4
-    children ++= Seq(hostLabel, hostTextField, portLabel, portTextField, databaseLabel, databaseTextField)
+    add(hostLabel,          0, 0, 1, 1)
+    add(hostTextField,      1, 0, 3, 1)
+    add(portLabel,          0, 1, 1, 1)
+    add(portTextField,      1, 1, 3, 1)
+    add(databaseLabel,      0, 2, 1, 1)
+    add(databaseTextField,  1, 2, 3, 1)
 
   def getName: String = "PostgreSQL Database Backend UI"
 

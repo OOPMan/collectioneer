@@ -20,15 +20,14 @@ class EmbeddedPostgresDatabaseBackendUIPlugin extends DatabaseBackendGUIPlugin:
   protected lazy val databaseBaseNameInput = new TextField:
     text = "postgres"
 
-  GridPane.setConstraints(locationLabel, 0, 0, 1, 1)
-  GridPane.setConstraints(locationInput, 1, 0, 3, 1)
-  GridPane.setConstraints(locationChooserButton, 4, 0, 1, 1)
-  GridPane.setConstraints(databaseBaseLabel, 0, 1, 1, 1)
-  GridPane.setConstraints(databaseBaseNameInput, 1, 1, 3, 1)
   protected lazy val gridPane = new GridPane:
     hgap = 4
     vgap = 4
-    children ++= Seq(locationLabel, locationInput, locationChooserButton, databaseBaseLabel, databaseBaseNameInput)
+    add(locationLabel,          0, 0, 1, 1)
+    add(locationInput,          1, 0, 3, 1)
+    add(locationChooserButton,  4, 0, 1, 1)
+    add(databaseBaseLabel,      0, 1, 1, 1)
+    add(databaseBaseNameInput,  1, 1, 3, 1)
 
   def getName: String = "Embedded PostgreSQL Database Backend UI"
 
