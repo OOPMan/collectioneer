@@ -6,7 +6,7 @@ import com.oopman.collectioneer.db.scalikejdbc.ScalikeJDBCDatabaseBackendPlugin
 import izumi.distage.plugins.PluginDef
 
 object PostgresDatabaseBackendPluginDef extends PluginDef:
-  make[Boolean].named("EmbeddedPostgresDatabaseBackendPlugin.removeDataOnShutdown").from(false)
+  make[Boolean].named("com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.removeDataOnShutdown").from(false)
   many[DatabaseBackendPlugin]
     .add[PostgresDatabaseBackendPlugin]
     .add[EmbeddedPostgresDatabaseBackendPlugin]

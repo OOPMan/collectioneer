@@ -24,7 +24,7 @@ import scala.util.Try
  * @param config
  */
 class EmbeddedPostgresDatabaseBackendPlugin
-(override val config: Config, val removeDataOnShutdown: Boolean @Id("EmbeddedPostgresDatabaseBackendPlugin.removeDataOnShutdown") = false )
+(override val config: Config, val removeDataOnShutdown: Boolean @Id("com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.removeDataOnShutdown") = false )
 extends PostgresDatabaseBackendPlugin(config):
   override def getName = "Embedded PostgreSQL Database Backend"
 
