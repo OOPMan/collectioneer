@@ -3,16 +3,18 @@ package com.oopman.collectioneer.gui
 import com.oopman.collectioneer.db.Injection
 import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
 import scalafx.scene.Node
-import scalafx.scene.control.{Button, ChoiceBox, ProgressIndicator}
-import scalafx.scene.layout.{BorderPane, HBox, VBox}
+import scalafx.scene.control.ChoiceBox
+import scalafx.scene.layout.{BorderPane, HBox}
 import scalafx.scene.text.Text
 import scalafx.Includes.*
 import scalafx.collections.ObservableBuffer
-import scalafx.geometry.Pos.{CenterLeft, CenterRight}
 import scalafx.util.StringConverter
 
 object DatabaseBackendPicker:
-  lazy val plugins: Set[DatabaseBackendGUIPlugin] = Injection.produceRun() { (databaseBackendGUIPlugins: Set[DatabaseBackendGUIPlugin]) => databaseBackendGUIPlugins }
+  lazy val plugins: Set[DatabaseBackendGUIPlugin] =
+    Injection.produceRun(inputModule = CollectioneerGUI.collectioneerGUIModule) {
+      (databaseBackendGUIPlugins: Set[DatabaseBackendGUIPlugin]) => databaseBackendGUIPlugins
+    }
   lazy val pluginMap: Map[String, DatabaseBackendGUIPlugin] = plugins.map(plugin => (plugin.getUIName, plugin)).toMap
 
   lazy val pluginChoiceBoxLabel = new Text:
