@@ -1,12 +1,15 @@
 package com.oopman.collectioneer.plugins.postgresbackend.gui
 
-import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
+import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
+import distage.Id
 import scalafx.scene.Node
-import scalafx.scene.control.{Button, Label, TextField}
+import scalafx.scene.control.{Label, TextField}
 import scalafx.scene.layout.GridPane
+import scalafx.stage.Stage
 
 
-class PostgresDatabaseBackendUIPlugin extends DatabaseBackendGUIPlugin:
+class PostgresDatabaseBackendUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
+extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
   protected lazy val hostLabel = new Label:
     text = "Host"
 
