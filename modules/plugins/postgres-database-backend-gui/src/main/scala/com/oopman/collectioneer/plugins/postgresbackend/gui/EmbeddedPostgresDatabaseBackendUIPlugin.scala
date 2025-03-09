@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.gui
 
 import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
+import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.encodePercentString
 import distage.Id
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label, TextField}
@@ -10,35 +11,36 @@ import scalafx.Includes.*
 
 class EmbeddedPostgresDatabaseBackendUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
-  protected lazy val directoryChooser = new DirectoryChooser:
+  // TODO: Normalize variable names
+
+  private lazy val directoryChooser = new DirectoryChooser:
     initialDirectory = os.home.toIO
 
-  protected lazy val locationLabel = new Label:
+  private lazy val locationLabel = new Label:
     text = "Location"
 
-  protected lazy val locationInput = new TextField
+  private lazy val locationTextField = new TextField
 
-  protected lazy val locationChooserButton = new Button:
+  private lazy val locationPickerButton = new Button:
     text = "Pick"
     onAction = { e =>
-      val path =  directoryChooser.showDialog(stage)
-      locationInput.text = path.getAbsolutePath
+      Option(directoryChooser.showDialog(stage)).map(path => locationTextField.text = path.getAbsolutePath)
     }
 
-  protected lazy val databaseBaseLabel = new Label:
+  private lazy val databaseBaseLabel = new Label:
     text = "Database"
 
-  protected lazy val databaseBaseNameInput = new TextField:
+  private lazy val databasebaseTextField = new TextField:
     text = "postgres"
 
-  protected lazy val gridPane = new GridPane:
+  private lazy val gridPane = new GridPane:
     hgap = 4
     vgap = 4
     add(locationLabel,          0, 0, 1, 1)
-    add(locationInput,          1, 0, 3, 1)
-    add(locationChooserButton,  4, 0, 1, 1)
+    add(locationTextField,      1, 0, 3, 1)
+    add(locationPickerButton,   4, 0, 1, 1)
     add(databaseBaseLabel,      0, 1, 1, 1)
-    add(databaseBaseNameInput,  1, 1, 3, 1)
+    add(databasebaseTextField,  1, 1, 3, 1)
 
   def getName: String = "Embedded PostgreSQL Database Backend UI"
 
@@ -51,5 +53,6 @@ extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
   def getNode: Node = gridPane
 
   def getDatasourceURI: String =
-    // TODO: Generate URI
-    ""
+    val location = encodePercentString(locationTextField.getText)
+    val database = encodePercentString(databasebaseTextField.getText)
+    s"jdbc:embeddedpostgresql://$location/$database"
