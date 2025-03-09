@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.db.Injection
+import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
 import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
@@ -15,15 +15,39 @@ import scalafx.Includes.*
 import scalafx.collections.ObservableBuffer
 import scalafx.stage.Stage
 import distage.ModuleDef
+import scalafx.concurrent.Task
 
+import java.util.concurrent.ExecutorService
 import scala.language.implicitConversions
+import scala.util.Try
 
 object CollectioneerGUI extends JFXApp3 :
   // TODO: Create lazy vals for menu items
   // TODO: Implement handlers for menu items
   // TODO: Tie menu-bar width to stage width somehow
-  lazy val okayButton = new Button:
+  lazy val okayButton: Button = new Button:
     text = "Okay"
+    onAction = { e =>
+      // TODO: Handle config.datasourceUri being None
+      okayButton.disable = true
+      progressIndicator.visible = true
+      val config = DatabaseBackendPicker.getConfig()
+      val worker = Task {
+        Injection.produceRun(Some(config)) {
+          (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp()
+        }
+      }
+      worker.onSucceeded = { e =>
+        progressIndicator.visible = false
+      }
+      worker.onFailed = { e =>
+        progressIndicator.visible = false
+        okayButton.disable = false
+      }
+      val thread = new Thread(worker)
+      thread.setDaemon(true)
+      thread.start()
+    }
 
   lazy val progressIndicator = new ProgressIndicator:
     visible = false
