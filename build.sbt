@@ -20,6 +20,9 @@ lazy val scalikeJDBCDependencies = Seq(
   "org.scalikejdbc"                 %% "scalikejdbc"                % "4.2.1",
   "org.scalikejdbc"                 %% "scalikejdbc-test"           % "4.2.1"               % "test",
 )
+lazy val scalaFXDependencies = Seq(
+  "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
+)
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
@@ -34,6 +37,7 @@ lazy val commonSettings = Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
     "io.7mind.izumi"                  %% "distage-core"               % "1.2.16",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.16",
+    "dev.zio"                         %% "zio"                        % "2.1.16",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
     "org.typelevel"                   %% "shapeless3-deriving"        % "3.4.3",
@@ -94,6 +98,15 @@ lazy val cli = project
     plugins,
   )
 
+lazy val guiCore = project
+  .in(file("modules/gui-core"))
+  .settings(commonSettings)
+  .settings(
+    name := "Collectioner GUI Core",
+    libraryDependencies ++= scalaFXDependencies
+  )
+  .dependsOn(core)
+
 // Add JavaFX dependencies
 lazy val gui = project
   .in(file("modules/gui"))
@@ -103,11 +116,13 @@ lazy val gui = project
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature"),
     fork := true,
     mainClass := Some("com.oopman.collectioneer.gui.CollectioneerGUI"),
-    libraryDependencies ++= Seq(
-      "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
-    )
+    libraryDependencies ++= scalaFXDependencies
   )
-  .dependsOn(core)
+  .dependsOn(
+    core,
+    guiCore,
+    plugins
+  )
 
 lazy val scalikeJDBCDatabaseBackendCommon = project
   .in(file("modules/scalikejdbc-database-backend-common"))
@@ -126,11 +141,13 @@ lazy val plugins = project
   .aggregate(
     postgresDatabaseBackend,
     embeddedPostgresDatabaseBackendCLI,
+    postgresDatabaseBackendGUI,
     grandArchiveTCG,
   )
   .dependsOn(
     postgresDatabaseBackend,
     embeddedPostgresDatabaseBackendCLI,
+    postgresDatabaseBackendGUI,
     grandArchiveTCG
   )
 
@@ -159,6 +176,16 @@ lazy val embeddedPostgresDatabaseBackendCLI = project
     libraryDependencies ++= circeLibraryDependencies,
   )
   .dependsOn(cliCore, postgresDatabaseBackend)
+
+lazy val postgresDatabaseBackendGUI = project
+  .in(file("modules/plugins/postgres-database-backend-gui"))
+  .settings(commonSettings)
+  .settings(
+    name := "PostgreSQL Database Backend UI",
+    exportJars := true,
+    libraryDependencies ++= scalaFXDependencies
+  )
+  .dependsOn(guiCore, postgresDatabaseBackend)
 
 lazy val grandArchiveTCG = project
   .in(file("modules/plugins/grand-archive-tcg"))

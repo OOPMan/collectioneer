@@ -22,7 +22,7 @@ object Properties:
   )
   case class GetPropertiesResult
   (
-    dataSourceUri: String,
+    dataSourceUri: Option[String],
     count: Int,
     properties: List[PropertyWithPropertyValues]
   )
@@ -46,7 +46,7 @@ object Properties:
         count = properties.size,
         properties = properties.map(propertyToPropertyWithPropertyValues)
       ).asJson
-    Injection.produceRun(config)(getProperties)
+    Injection.produceRun(Some(config))(getProperties)
 
 
 

@@ -25,7 +25,7 @@ object Collections:
 
   case class GetCollectionsResult
   (
-    dataSourceUri: String,
+    dataSourceUri: Option[String],
     count: Int,
     collections: List[CollectionWithPropertyValues]
   )
@@ -49,4 +49,4 @@ object Collections:
             propertyValues = Map
               .from(collection.propertyValues.map(Common.propertyValuesToMapTuple))
           ))).asJson
-    Injection.produceRun(config)(getCollections)
+    Injection.produceRun(Some(config))(getCollections)

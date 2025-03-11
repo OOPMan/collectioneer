@@ -12,21 +12,24 @@ object Injection:
   protected val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
   protected val injector: Injector[Identity] = Injector()
   private object emptyModule extends ModuleDef
+  private object dummyConfig extends Config:
+    val datasourceUri: Option[String] = None
 
-  def getInjectorAndModule[F[_], A](config: Config, inputModule: ModuleDef = emptyModule): (Injector[Identity], ModuleDef) =
+  def getInjectorAndModule[F[_], A](configOption: Option[Config] = None, inputModule: ModuleDef = emptyModule): (Injector[Identity], ModuleDef) =
+    val config = configOption.getOrElse(dummyConfig)
     val baseModule = new ModuleDef:
       make[Config].from(config)
       include(pluginModules)
-    val databaseBackendPlugin: DatabaseBackendPlugin = injector.produceRun(baseModule) {
-      (databaseBackendPlugins: Set[DatabaseBackendPlugin]) => databaseBackendPlugins.filter(_.compatibleWithDatasourceUri).head
+    val databaseBackendPluginOption: Option[DatabaseBackendPlugin] = injector.produceRun(baseModule) {
+      (databaseBackendPlugins: Set[DatabaseBackendPlugin]) => databaseBackendPlugins.find(_.compatibleWithDatasourceUri)
     }
     val finalModule = new ModuleDef:
-      make[DatabaseBackendPlugin].from(databaseBackendPlugin)
+      for (databaseBackendPlugin <- databaseBackendPluginOption) make[DatabaseBackendPlugin].from(databaseBackendPlugin)
       include(baseModule)
+      for (databaseBackendPlugin <- databaseBackendPluginOption) include(databaseBackendPlugin.getDatabaseBackendModule)
       include(inputModule)
-      include(databaseBackendPlugin.getDatabaseBackendModule)
     (injector, finalModule)
 
-  def produceRun[F[_], A](config: Config, inputModule: ModuleDef = emptyModule): Functoid[Identity[A]] => Identity[A] =
-    val (injector, module) = getInjectorAndModule(config, inputModule)
+  def produceRun[F[_], A](configOption: Option[Config] = None, inputModule: ModuleDef = emptyModule): Functoid[Identity[A]] => Identity[A] =
+    val (injector, module) = getInjectorAndModule(configOption, inputModule)
     injector.produceRun(module)

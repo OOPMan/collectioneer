@@ -21,14 +21,14 @@ object Properties:
 
   case class ListPropertiesResult
   (
-    datasourceUri: String,
+    datasourceUri: Option[String],
     count: Int,
     propertyNamesAndUUIDs: List[String]
   )
 
   case class ListPropertiesVerboseResult
   (
-    datasourceUri: String,
+    datasourceUri: Option[String],
     count: Int,
     properties: List[traits.entity.raw.Property]
   )
@@ -41,8 +41,8 @@ object Properties:
   def listPropertiesAction(config: Config): Json =
     // TODO: Use Projected PropertyDAO for verbose results
     val properties = config.propertyValueQueries match
-      case Some(_) => Injection.produceRun(config)(listPropertiesByPropertyValueQueries(config))
-      case None => Injection.produceRun(config)(listProperties(config))
+      case Some(_) => Injection.produceRun(Some(config))(listPropertiesByPropertyValueQueries(config))
+      case None => Injection.produceRun(Some(config))(listProperties(config))
     if config.verbose then
       ListPropertiesVerboseResult(
         datasourceUri = config.datasourceUri,
