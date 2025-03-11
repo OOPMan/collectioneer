@@ -25,32 +25,6 @@ object CollectioneerGUI extends JFXApp3 :
   // TODO: Create lazy vals for menu items
   // TODO: Implement handlers for menu items
   // TODO: Tie menu-bar width to stage width somehow
-  lazy val okayButton: Button = new Button:
-    text = "Okay"
-    onAction = { e =>
-      // TODO: Handle config.datasourceUri being None
-      okayButton.disable = true
-      progressIndicator.visible = true
-      val config = DatabaseBackendPicker.getConfig()
-      val worker = Task {
-        Injection.produceRun(Some(config)) {
-          (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp()
-        }
-      }
-      worker.onSucceeded = { e =>
-        progressIndicator.visible = false
-      }
-      worker.onFailed = { e =>
-        progressIndicator.visible = false
-        okayButton.disable = false
-      }
-      val thread = new Thread(worker)
-      thread.setDaemon(true)
-      thread.start()
-    }
-
-  lazy val progressIndicator = new ProgressIndicator:
-    visible = false
 
   lazy val borderPane = new BorderPane:
     top = new MenuBar:
@@ -69,8 +43,6 @@ object CollectioneerGUI extends JFXApp3 :
           )
         }
       )
-    bottom = new HBox:
-      children = Seq(okayButton, progressIndicator)
     
   lazy val primaryStage = new JFXApp3.PrimaryStage:
     title = "Collectioneer"
@@ -84,4 +56,7 @@ object CollectioneerGUI extends JFXApp3 :
 
   override def start(): Unit =
     stage = primaryStage
-    borderPane.center = DatabaseBackendPicker.getNode
+    showDatabaseBackendPicker(false)
+
+  def showDatabaseBackendPicker(backButtonVisible: Boolean): Unit =
+    borderPane.center = DatabaseBackendPicker.getNode(backButtonVisible)
