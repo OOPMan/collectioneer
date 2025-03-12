@@ -45,7 +45,7 @@ object DatabaseBackendPicker:
       }
       worker.onSucceeded = { e =>
         progressIndicator.visible = false
-        // TODO: Navigate to Main view
+        CollectioneerGUI.showMainView(DatabaseBackendPicker.getConfig())
       }
       worker.onFailed = { e =>
         // TODO: Display an error message

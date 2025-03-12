@@ -60,3 +60,6 @@ object CollectioneerGUI extends JFXApp3 :
 
   def showDatabaseBackendPicker(backButtonVisible: Boolean): Unit =
     borderPane.center = DatabaseBackendPicker.getNode(backButtonVisible)
+
+  def showMainView(config: GUIConfig): Unit =
+    borderPane.center = MainView.getNode(config)
