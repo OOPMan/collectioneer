@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.gui
 
+import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
-import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.encodePercentString
 import distage.Id
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label, TextField}
@@ -11,15 +11,14 @@ import scalafx.Includes.*
 
 class EmbeddedPostgresDatabaseBackendUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
-  // TODO: Normalize variable names
-
   private lazy val directoryChooser = new DirectoryChooser:
     initialDirectory = os.home.toIO
 
   private lazy val locationLabel = new Label:
     text = "Location"
 
-  private lazy val locationTextField = new TextField
+  private lazy val locationTextField = new TextField:
+    text = EmbeddedPostgresDatabaseBackendPlugin.defaultPath
 
   private lazy val locationPickerButton = new Button:
     text = "Pick"
@@ -53,6 +52,6 @@ extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
   def getNode: Node = gridPane
 
   def getDatasourceURI: String =
-    val location = encodePercentString(locationTextField.getText)
-    val database = encodePercentString(databasebaseTextField.getText)
+    val location = EmbeddedPostgresDatabaseBackendPlugin.encodePercentString(locationTextField.getText)
+    val database = EmbeddedPostgresDatabaseBackendPlugin.encodePercentString(databasebaseTextField.getText)
     s"jdbc:embeddedpostgresql://$location/$database"
