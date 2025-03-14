@@ -80,7 +80,8 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
         propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil)
       )
     }
-    results
+    val resultsMap = results.map(collection => collection.pk -> collection).toMap
+    collectionPKs.collect(resultsMap).toList
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] = ???
   def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
