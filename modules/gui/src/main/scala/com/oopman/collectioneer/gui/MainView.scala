@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.gui
 
+import com.oopman.collectioneer.CoreCollections
 import com.oopman.collectioneer.db.Injection
 import com.oopman.collectioneer.db.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.dao.raw.CollectionDAO
@@ -9,7 +10,7 @@ import scalafx.Includes.*
 
 class MainView(val config: GUIConfig):
 
-  private lazy val rootCollection = Collection()
+  private lazy val rootCollection = CoreCollections.root.collection
 
   private lazy val rootTreeViewItem = TreeItem(rootCollection)
 
@@ -35,14 +36,12 @@ class MainView(val config: GUIConfig):
 
   def refreshChildren(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
     Injection.produceRun(Some(config)) { (collectionDAO: CollectionDAO) =>
-      val parentCollectionPKs =
-        if treeItem.equals(rootTreeViewItem)
-        then Nil
-        else Seq(treeItem.value.value.pk)
-      val collections = collectionDAO.getAllMatchingConstraints(parentCollectionPKs = Some(parentCollectionPKs))
+      val collections = collectionDAO.getAllMatchingConstraints(
+        parentCollectionPKs = Some(Seq(treeItem.value.value.pk))
+      )
+      // TODO: TreeItems need to call refreshChildren on themselves when they are selected
       val treeItems = collections.map(c => TreeItem(Collection(pk = c.pk)))  // Temporary hack for quick testing
       treeItem.children = treeItems
-      println(s"Collections length: ${collections.size}")
     }
     // If treeItem is rootTreeViewItem we load all top-level collections
     // Otherwise we load all children of the input item
