@@ -5,8 +5,7 @@ import java.util.UUID
 
 given stringToUUID: Conversion[String, UUID] = (s: String) => UUID.fromString(s)
 
-// TODO: Shouldn't this be db.traits.entity.raw.Collection?
-given coreCollectionsToCollection: Conversion[CoreCollections, db.entity.projected.Collection] =
+given coreCollectionsToCollection: Conversion[CoreCollections, db.traits.entity.projected.Collection] =
   (c: CoreCollections) => c.collection
 
 // TODO: Shouldn't this be db.traits.entity.raw.Property?
