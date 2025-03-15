@@ -5,6 +5,7 @@ import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.projected.Property
+import com.oopman.collectioneer.db.traits.entity.raw.{Property => RawProperty}
 
 import java.util.UUID
 
@@ -22,4 +23,7 @@ class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDatab
     dbProvider() readOnly { implicit session => db.dao.projected.PropertyDAO.getAllMatchingPKs(propertyPKs) }
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison]): List[Property] =
-    dbProvider() readOnly { implicit session=> db.dao.projected.PropertyDAO.getAllMatchingPropertyValues(comparisons) }
+    dbProvider() readOnly { implicit session => db.dao.projected.PropertyDAO.getAllMatchingPropertyValues(comparisons) }
+
+  def inflateRawProperties(properties: Seq[RawProperty]): List[Property] =
+    dbProvider() readOnly { implicit session => db.dao.projected.PropertyDAO.inflateRawProperties(properties) }

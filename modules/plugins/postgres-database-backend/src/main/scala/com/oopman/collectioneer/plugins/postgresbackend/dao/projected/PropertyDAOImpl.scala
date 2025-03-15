@@ -24,6 +24,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     val propertyValues = distinctProperties.flatMap(property => property.propertyValues.map {
       case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = property.pk))
     })
+    // TODO: Find a way to link Collections to root? May not be desirable actually?
     val propertyCollectionsA = distinctProperties.map(p => entity.raw.PropertyCollection(
       propertyPK = p.pk,
       collectionPK = p.pk,
@@ -223,3 +224,5 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     for {
       (collection_pk, groupedTuples) <- result.groupBy(_._1)
     } yield (collection_pk, groupedTuples.map(_._2))
+
+  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): List[ProjectedProperty] = ???

@@ -4,6 +4,7 @@ import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
+import com.oopman.collectioneer.db.traits.entity.raw.{Collection => RawCollection}
 
 import java.util.UUID
 
@@ -20,4 +21,5 @@ class CollectionDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDat
   def getAllMatchingPKs(collectionPKs: Seq[UUID], propertyPKs: Seq[UUID] = Nil): List[Collection] =
     dbProvider() readOnly { implicit session => db.dao.projected.CollectionDAO.getAllMatchingPKs(collectionPKs, propertyPKs) }
 
-  
+  def inflateRawCollections(collections: Seq[RawCollection], propertyPKs: Seq[UUID] = Nil): List[Collection] =
+    dbProvider() readOnly { implicit session => db.dao.projected.CollectionDAO.inflateRawCollections(collections, propertyPKs) }
