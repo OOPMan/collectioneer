@@ -148,7 +148,8 @@ lazy val plugins = project
     postgresDatabaseBackend,
     embeddedPostgresDatabaseBackendCLI,
     postgresDatabaseBackendGUI,
-    grandArchiveTCG
+    grandArchiveTCG,
+    grandArchiveTCGGUI
   )
 
 lazy val postgresDatabaseBackend = project
@@ -199,3 +200,13 @@ lazy val grandArchiveTCG = project
     libraryDependencies ++= sttpLibraryDependencies,
   )
   .dependsOn(core, cliCore)
+
+lazy val grandArchiveTCGGUI = project
+  .in(file("modules/plugins/grand-archive-tcg-gui"))
+  .settings(commonSettings)
+  .settings(
+    name := "Grand Archive TCG GUI Plugin",
+    exportJars := true,
+    libraryDependencies ++= scalaFXDependencies
+  )
+  .dependsOn(guiCore, grandArchiveTCG)
