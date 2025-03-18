@@ -54,7 +54,8 @@ class MainView(val config: GUIConfig):
 
   private lazy val collectionsListScrollPane = new ScrollPane:
     content = collectionsListTreeView
-
+    fitToWidth = true
+    fitToHeight = true
 
   private lazy val collectionDetailViewScrollPane = new ScrollPane:
     content = collectionDetailView
