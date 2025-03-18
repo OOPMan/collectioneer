@@ -1,7 +1,8 @@
 package com.oopman.collectioneer.cli.actions.get
 
+import com.oopman.collectioneer.Injection
 import com.oopman.collectioneer.cli.Config
-import com.oopman.collectioneer.db.{Injection, traits}
+import com.oopman.collectioneer.db.traits
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*

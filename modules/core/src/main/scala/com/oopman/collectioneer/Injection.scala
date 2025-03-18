@@ -1,6 +1,7 @@
-package com.oopman.collectioneer.db
+package com.oopman.collectioneer
 
 import com.oopman.collectioneer.Config
+import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import distage.*
 import distage.plugins.PluginConfig
 import izumi.distage.plugins.load.PluginLoader

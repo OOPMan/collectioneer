@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg
 
-import com.oopman.collectioneer.Plugin
+import com.oopman.collectioneer.{Injection, Plugin}
 import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
-import com.oopman.collectioneer.db.{Injection, entity, traits}
+import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef

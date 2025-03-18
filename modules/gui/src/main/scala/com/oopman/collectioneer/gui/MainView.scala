@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.{CoreCollections, CoreProperties}
-import com.oopman.collectioneer.db.{Injection, SortDirection, traits}
+import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection}
+import com.oopman.collectioneer.db.{SortDirection, traits}
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.entity.raw.Collection as RawCollection
 import com.oopman.collectioneer.plugins.MainViewGUIPlugin

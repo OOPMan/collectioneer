@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
+import com.oopman.collectioneer.Injection
+import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
