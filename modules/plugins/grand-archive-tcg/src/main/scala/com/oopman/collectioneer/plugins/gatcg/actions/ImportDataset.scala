@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.plugins.gatcg.actions.ImportDataset
 
+import com.oopman.collectioneer.CoreCollections.root
 import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
@@ -105,23 +106,23 @@ def importDataset(cards: List[Card],
       case ((Some(set), Some(setData), Some(editionData), Some(cardData)), card) => List(
         Relationship(
           pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${set.pk}-${ParentCollection}".getBytes),
-          collectionPK = card.pk,
-          relatedCollectionPK = set.pk,
+          collectionPK = card,
+          relatedCollectionPK = set,
           relationshipType = ParentCollection),
         Relationship(
           pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${setData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
-          collectionPK = card.pk,
-          relatedCollectionPK = setData.pk,
+          collectionPK = card,
+          relatedCollectionPK = setData,
           relationshipType = SourceOfPropertiesAndPropertyValues),
         Relationship(
           pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${editionData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
-          collectionPK = card.pk,
-          relatedCollectionPK = editionData.pk,
+          collectionPK = card,
+          relatedCollectionPK = editionData,
           relationshipType = SourceOfPropertiesAndPropertyValues),
         Relationship(
           pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${card.pk}-${cardData.pk}-${SourceOfPropertiesAndPropertyValues}".getBytes),
-          collectionPK = card.pk,
-          relatedCollectionPK = cardData.pk,
+          collectionPK = card,
+          relatedCollectionPK = cardData,
           relationshipType = SourceOfPropertiesAndPropertyValues)
       )
       case _ =>
@@ -130,10 +131,16 @@ def importDataset(cards: List[Card],
     }
     val distinctRelationships = relationships
       .toList
+      .appended(Relationship(
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${GATCGRootCollection.pk}-${root.pk}-${ParentCollection}".getBytes),
+        collectionPK = GATCGRootCollection,
+        relatedCollectionPK = root,
+        relationshipType = ParentCollection
+      ))
       .appendedAll(setMap.map((key, set) => Relationship(
         pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${set.pk}-${GATCGRootCollection.pk}-${ParentCollection}".getBytes),
-        collectionPK = set.pk,
-        relatedCollectionPK = GATCGRootCollection.pk,
+        collectionPK = set,
+        relatedCollectionPK = GATCGRootCollection,
         relationshipType = ParentCollection
       )))
       .distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))

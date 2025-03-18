@@ -80,7 +80,7 @@ object EmbeddedPostgresDatabaseBackendPlugin:
 
   protected val prefix: String = "jdbc:embeddedpostgresql:"
   private val defaultDatabase = "postgres"
-  private val defaultPath = (os.home / "collectioneer" / "default").toString
+  val defaultPath: String = (os.home / "collectioneer" / "default").toString
   protected val codec: PercentCodec = PercentCodec(":/?#[]@!$&'()*+,;=".getBytes, false) // See https://datatracker.ietf.org/doc/html/rfc3986#section-2.2
 
   def encodePercentString(string: String): String =

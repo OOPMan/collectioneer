@@ -76,7 +76,8 @@ object CollectionQueries:
                WHERE r.related_collection_pk = ANY ('{$parentCollectionPKsSQLSyntax}'::uuid[])
                AND r.relationship_type = 'ParentCollection'
             """
-      else
+      else // TODO: This should query for children of the rootCollection?
+        // TODO: This SQL does not seem to work when there are no items in the relationship table at all...
         sqls"""
                SELECT c.pk
                FROM collection AS c
@@ -150,6 +151,11 @@ object CollectionQueries:
                       /* START cte1BodySQL */
                       $cte1BodySQL
                       /* END cte1BodySQL */
+                      UNION
+                      SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index, cte1.level + 1
+                      FROM cte1
+                      INNER JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
+                      WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
               ),
               cte2(top_level_collection_pk, related_collection_pks) AS (
                   SELECT cte1.top_level_collection_pk, array_agg(cte1.related_collection_pk) as related_collection_pks
