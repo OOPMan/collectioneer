@@ -8,21 +8,21 @@ import scalikejdbc.DBSession
 import java.util.UUID
 
 object RelationshipDAOImpl extends ScalikeRelationshipDAO:
-  def createRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] =
+  def createRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Seq[Int] =
     postgresbackend.queries.raw.RelationshipQueries
       .insert
       .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships)*)
       .apply()
 
-  def createOrUpdateRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] =
+  def createOrUpdateRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Seq[Int] =
     postgresbackend.queries.raw.RelationshipQueries
       .upsert
       .batch(postgresbackend.entity.raw.Relationship.relationshipSeqToBatchUpsertSeq(relationships)*)
       .apply()
 
-  def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Array[Int] = ???
+  def deleteRelationships(relationships: Seq[Relationship])(implicit session: DBSession): Seq[Int] = ???
 
-  def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+  def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
       .selectByCollectionPKsAndRelationshipTypes
       .bind(
@@ -33,7 +33,7 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
       .list
       .apply()
 
-  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
       .selectByRelatedCollectionPKsAndRelationshipTypes
       .bind(
@@ -44,7 +44,7 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
       .list
       .apply()
 
-  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): List[Relationship] =
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship] =
     postgresbackend.queries.raw.RelationshipQueries
       .selectByPKsAndRelationshipTypes
       .bind(

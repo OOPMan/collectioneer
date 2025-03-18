@@ -5,10 +5,10 @@ import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, Relationship
 import java.util.UUID
 
 trait RelationshipDAO:
-  def createRelationships(relationships: Seq[Relationship]): Array[Int]
-  def createOrUpdateRelationships(relationships: Seq[Relationship]): Array[Int]
-  def deleteRelationships(relationships: Seq[Relationship]): Array[Int]
-  def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
-  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
-  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): List[Relationship]
+  def createRelationships(relationships: Seq[Relationship]): Seq[Int]
+  def createOrUpdateRelationships(relationships: Seq[Relationship]): Seq[Int]
+  def deleteRelationships(relationships: Seq[Relationship]): Seq[Int]
+  def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): Seq[Relationship]
+  def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): Seq[Relationship]
+  def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): Seq[Relationship]
 
