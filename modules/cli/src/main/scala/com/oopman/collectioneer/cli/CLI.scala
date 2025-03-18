@@ -1,7 +1,8 @@
 package com.oopman.collectioneer.cli
 
+import com.oopman.collectioneer.Injection
 import com.oopman.collectioneer.cli.actions
-import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
+import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.plugins.PluginConfig
 import distage.{Injector, ModuleBase, ModuleDef}

@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test
 
-import com.oopman.collectioneer.db.{DatabaseBackendPlugin, Injection}
+import com.oopman.collectioneer.Injection
+import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.FixtureAnyFlatSpec
 import scalikejdbc.*
