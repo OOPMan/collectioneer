@@ -8,6 +8,9 @@ import scalafx.scene.control.TreeCell
 import java.util.UUID
 
 trait MainViewGUIPlugin extends GUIPlugin:
-  def getCollectionsListTreeViewCellFactory(collection: Collection): Option[(TreeCell[Collection], Collection) => Unit]
-  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): Option[List[Collection]]
-  def getPropertyPKsForInflation(collection: Collection): Option[Seq[UUID]]
+  def canGetCollectionsListTreeViewCellFactory(collection: Collection): Boolean
+  def getCollectionsListTreeViewCellFactory(collection: Collection): (TreeCell[Collection], Collection) => Unit
+  def canGetRawChildCollections(collection: Collection): Boolean
+  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): List[RawCollection]
+  def canGetPropertyPKsForInflation(collection: Collection): Boolean
+  def getPropertyPKsForInflation(collection: Collection): Seq[UUID]
