@@ -46,10 +46,8 @@ object CollectioneerGUI extends JFXApp3 :
     
   lazy val primaryStage = new JFXApp3.PrimaryStage:
     title = "Collectioneer"
-    width = 1024
-    height = 768
-    scene = new Scene :
-      content = borderPane
+    scene = new Scene(1024, 768):
+      root = borderPane
 
   lazy val collectioneerGUIModule = new ModuleDef:
     make[Stage].named("com.oopman.collectioneer.plugins.GUIPlugin.stage").from(primaryStage)
