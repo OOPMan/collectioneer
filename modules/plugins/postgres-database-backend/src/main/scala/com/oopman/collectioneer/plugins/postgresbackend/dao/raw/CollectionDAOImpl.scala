@@ -11,19 +11,19 @@ import java.util.UUID
 
 
 object CollectionDAOImpl extends ScalikeCollectionDAO:
-  def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Seq[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .insert
       .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections)*)
       .apply()
 
-  def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateCollections(collections: Seq[Collection])(implicit session: DBSession = AutoSession): Seq[Int] =
     postgresbackend.queries.raw.CollectionQueries
       .upsert
       .batch(postgresbackend.entity.raw.Collection.collectionsSeqToBatchInsertSeq(collections)*)
       .apply()
 
-  def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
+  def getAll(implicit session: DBSession = AutoSession): Seq[Collection] =
     postgresbackend.queries.raw.CollectionQueries
       .all
       .map(postgresbackend.entity.raw.Collection(postgresbackend.entity.raw.Collection.c1.resultName))
@@ -35,7 +35,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
                                 parentCollectionPKs: Option[Seq[UUID]] = None,
                                 sortProperties: Seq[(Property, SortDirection)] = Nil,
                                 offset: Option[Int] = None,
-                                limit: Option[Int] = None)(implicit session: DBSession): List[Collection] =
+                                limit: Option[Int] = None)(implicit session: DBSession): Seq[Collection] =
     val (comparisonSQL, parameters) = postgresbackend.PropertyValueQueryDSLSupport.comparisonsToSQL(comparisons).unzip
     postgresbackend.queries.raw.CollectionQueries
       .allMatchingConstraints(comparisonSQL, collectionPKs, parentCollectionPKs, sortProperties, offset, limit)
@@ -44,7 +44,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .list
       .apply()
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[entity.raw.Collection] =
+  def getAllMatchingPKs(collectionPKs: Seq[UUID])(implicit session: DBSession = AutoSession): Seq[Collection] =
     postgresbackend.queries.raw.CollectionQueries
       .allMatchingPKs
       .bind(session.connection.createArrayOf("varchar", collectionPKs.toArray))
@@ -52,7 +52,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       .list
       .apply()
 
-  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] =
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[Collection] =
     postgresbackend.PropertyValueQueryDSLSupport
       .comparisonsToSQL(comparisons)
       .map((comparisonSQL, parameters) => 
@@ -65,7 +65,7 @@ object CollectionDAOImpl extends ScalikeCollectionDAO:
       )
       .getOrElse(getAll)
 
-  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] =
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[Collection] =
     postgresbackend.PropertyValueQueryDSLSupport
       .comparisonsToSQL(comparisons)
       .map((comparisonSQL, parameters) => 

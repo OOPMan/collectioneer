@@ -22,7 +22,7 @@ enum PropertyType:
 trait Property:
   val pk: UUID
   val propertyName: String
-  val propertyTypes: List[PropertyType]
+  val propertyTypes: Seq[PropertyType]
   val deleted: Boolean
   val created: ZonedDateTime
   val modified: ZonedDateTime

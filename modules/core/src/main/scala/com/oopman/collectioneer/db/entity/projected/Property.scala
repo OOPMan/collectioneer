@@ -9,9 +9,9 @@ case class Property
 (
   pk: UUID = UUID.randomUUID(),
   propertyName: String = "",
-  propertyTypes: List[traits.entity.raw.PropertyType] = Nil,
+  propertyTypes: Seq[traits.entity.raw.PropertyType] = Nil,
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValues: List[PropertyValue] = Nil,
+  propertyValues: Seq[PropertyValue] = Nil,
 ) extends traits.entity.projected.Property

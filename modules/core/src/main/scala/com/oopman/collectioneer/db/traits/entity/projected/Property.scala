@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits
 
 trait Property extends traits.entity.raw.Property:
-  val propertyValues: List[PropertyValue]
+  val propertyValues: Seq[PropertyValue]
 
 object Property:
   /**
@@ -33,4 +33,5 @@ object Property:
     val distinctProperties = deduplicateProperties(properties)
     val distinctPropertiesMap = distinctProperties.groupBy(_.pk)
     val distinctNestedProperties = deduplicateProperties(properties.flatMap(_.propertyValues.map(_.property))).filterNot(p => distinctPropertiesMap.contains(p.pk))
+    // TODO: This is potentially flawed as it will not detect property duplication among grand-children
     if distinctNestedProperties.isEmpty then distinctProperties else distinctProperties ++ collectProperties(distinctNestedProperties)

@@ -13,20 +13,20 @@ import java.util.UUID
 object PropertyValue:
   case class PropertyValueData
   (
-    textValues: List[String],
-    byteValues: List[Array[Byte]],
-    smallintValues: List[Short],
-    intValues: List[Int],
-    bigintValues: List[BigInt],
-    numericValues: List[BigDecimal],
-    floatValues: List[Float],
-    doubleValues: List[Double],
-    booleanValues: List[Boolean],
-    dateValues: List[LocalDate],
-    timeValues: List[LocalTime],
-    timestampValues: List[ZonedDateTime],
-    uuidValues: List[UUID],
-    jsonValues: List[Json]
+    textValues: Seq[String],
+    byteValues: Seq[Array[Byte]],
+    smallintValues: Seq[Short],
+    intValues: Seq[Int],
+    bigintValues: Seq[BigInt],
+    numericValues: Seq[BigDecimal],
+    floatValues: Seq[Float],
+    doubleValues: Seq[Double],
+    booleanValues: Seq[Boolean],
+    dateValues: Seq[LocalDate],
+    timeValues: Seq[LocalTime],
+    timestampValues: Seq[ZonedDateTime],
+    uuidValues: Seq[UUID],
+    jsonValues: Seq[Json]
   )
 
   def generatePropertyValueData(rs: WrappedResultSet): PropertyValueData =
@@ -77,7 +77,7 @@ object PropertyValue:
       )
 
   // TODO: Move this?
-  def toRawPropertyValues(propertyValue: traits.entity.projected.PropertyValue): List[traits.entity.raw.PropertyValue[?]] =
+  def toRawPropertyValues(propertyValue: traits.entity.projected.PropertyValue): Seq[traits.entity.raw.PropertyValue[?]] =
     propertyValue.textValues.zipWithIndex.map((stringValue, index) => entity.raw.PropertyValueText(
       collectionPK = propertyValue.collection.pk, propertyPK = propertyValue.property.pk, propertyValue = stringValue, index = index
     )) ++

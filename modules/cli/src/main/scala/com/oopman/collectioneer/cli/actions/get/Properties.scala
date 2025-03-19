@@ -15,17 +15,17 @@ object Properties:
   (
     pk: UUID,
     propertyName: String,
-    propertyTypes: List[String],
+    propertyTypes: Seq[String],
     deleted: Boolean,
     created: ZonedDateTime,
     modified: ZonedDateTime,
-    properties: Map[String, List[String]]
+    properties: Map[String, Seq[String]]
   )
   case class GetPropertiesResult
   (
     dataSourceUri: Option[String],
     count: Int,
-    properties: List[PropertyWithPropertyValues]
+    properties: Seq[PropertyWithPropertyValues]
   )
   
   def propertyToPropertyWithPropertyValues(property: traits.entity.projected.Property): PropertyWithPropertyValues =

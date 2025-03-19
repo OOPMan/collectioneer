@@ -24,14 +24,14 @@ object Properties:
   (
     datasourceUri: Option[String],
     count: Int,
-    propertyNamesAndUUIDs: List[String]
+    propertyNamesAndUUIDs: Seq[String]
   )
 
   case class ListPropertiesVerboseResult
   (
     datasourceUri: Option[String],
     count: Int,
-    properties: List[traits.entity.raw.Property]
+    properties: Seq[traits.entity.raw.Property]
   )
 
   private def listProperties(config: Config)(propertyDAO: traits.dao.raw.PropertyDAO) = propertyDAO.getAll

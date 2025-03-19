@@ -9,19 +9,19 @@ import java.util.UUID
 
 class PropertyDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDatabaseBackend) extends traits.dao.raw.PropertyDAO:
 
-  def createProperties(properties: Seq[Property]): Array[Int] =
+  def createProperties(properties: Seq[Property]): Seq[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.PropertyDAO.createProperties(properties) }
 
-  def createOrUpdateProperties(properties: Seq[Property]): Array[Int] =
+  def createOrUpdateProperties(properties: Seq[Property]): Seq[Int] =
     dbProvider() localTx { implicit session => db.dao.raw.PropertyDAO.createOrUpdateProperties(properties) }
 
-  def getAll: List[Property] =
+  def getAll: Seq[Property] =
     dbProvider() readOnly { implicit session => db.dao.raw.PropertyDAO.getAll }
 
-  def getAllMatchingPKs(propertyPKs: Seq[UUID]): List[Property] =
+  def getAllMatchingPKs(propertyPKs: Seq[UUID]): Seq[Property] =
     dbProvider() readOnly { implicit session => db.dao.raw.PropertyDAO.getAllMatchingPKs(propertyPKs) }
 
-  def getAllMatchingPropertyValues(comparisons: Seq[PropertyValueQueryDSL.Comparison]): List[Property] =
+  def getAllMatchingPropertyValues(comparisons: Seq[PropertyValueQueryDSL.Comparison]): Seq[Property] =
     dbProvider() readOnly { implicit session => db.dao.raw.PropertyDAO.getAllMatchingPropertyValues(comparisons) }
 
 

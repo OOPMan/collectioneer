@@ -15,10 +15,10 @@ import java.util.UUID
 object PropertyDAOImpl extends ScalikePropertyDAO:
   private def performCreateOrUpdatePropertiesOperation
   (properties: Seq[ProjectedProperty],
-   performCreateOrUpdateProperties: Seq[Property] => Array[Int],
-   performCreateOrUpdateCollections: Seq[Collection] => Array[Int],
-   performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Array[Int])
-  (implicit session: DBSession = AutoSession): Array[Int] =
+   performCreateOrUpdateProperties: Seq[Property] => Seq[Int],
+   performCreateOrUpdateCollections: Seq[Collection] => Seq[Int],
+   performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
+  (implicit session: DBSession = AutoSession): Seq[Int] =
     val distinctProperties = ProjectedProperty.collectProperties(properties)
     val collections = distinctProperties.map(p => entity.raw.Collection(pk = p.pk))
     val propertyValues = distinctProperties.flatMap(property => property.propertyValues.map {
@@ -42,9 +42,9 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     performCreateOrUpdateCollections(collections)
     performCreateOrUpdatePropertyCollections(propertyCollectionsA ++ propertyCollectionsB)
     postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
-    Array.empty
+    Nil
 
-  def createProperties(properties: Seq[ProjectedProperty])(implicit session: DBSession = AutoSession) =
+  def createProperties(properties: Seq[ProjectedProperty])(implicit session: DBSession = AutoSession): Seq[Int] =
     performCreateOrUpdatePropertiesOperation(
       properties,
       postgresbackend.dao.raw.PropertyDAOImpl.createProperties,
@@ -65,7 +65,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
    * @param session
    * @return
    */
-  def createOrUpdateProperties(properties: Seq[ProjectedProperty])(implicit session: DBSession = AutoSession) =
+  def createOrUpdateProperties(properties: Seq[ProjectedProperty])(implicit session: DBSession = AutoSession): Seq[Int] =
     performCreateOrUpdatePropertiesOperation(
       properties,
       postgresbackend.dao.raw.PropertyDAOImpl.createOrUpdateProperties,
@@ -73,7 +73,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections,
     )
 
-  def getAll(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
+  def getAll(implicit session: DBSession = AutoSession): Seq[ProjectedProperty] =
     val propertyPKs = postgresbackend.queries.raw.PropertyQueries
       .allPKs
       .map(rs => UUID.fromString(rs.string("pk")))
@@ -81,7 +81,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .apply()
     getAllMatchingPKs(propertyPKs)
 
-  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): List[ProjectedProperty] =
+  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): Seq[ProjectedProperty] =
     val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByParentPropertyPKs()
       .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
@@ -148,7 +148,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     }
     result.toList
 
-  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): List[ProjectedProperty] =
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): Seq[ProjectedProperty] =
     val result = postgresbackend.PropertyValueQueryDSLSupport
       .comparisonsToSQL(comparisons)
       .map { (comparisonSQL, parameters) =>
@@ -165,7 +165,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
   // TODO: This has an issue: It doesn't recursively obtain the Properties for each Collection
   def getAllByPropertyCollection
   (collectionPKs: Seq[UUID], propertyPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
-  (implicit session: DBSession = AutoSession): Map[UUID, List[ProjectedProperty]] =
+  (implicit session: DBSession = AutoSession): Map[UUID, Seq[ProjectedProperty]] =
     val bindings = Seq(
       session.connection.createArrayOf("varchar", collectionPKs.toArray),
       session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
@@ -196,7 +196,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     
   def getAllRelatedByPropertyCollection
   (collectionPKs: Seq[UUID], propertyPKs: Seq[UUID], propertyCollectionRelationshipTypes: Seq[PropertyCollectionRelationshipType])
-  (implicit session: DBSession = AutoSession): Map[UUID, List[(Boolean, ProjectedProperty)]] =
+  (implicit session: DBSession = AutoSession): Map[UUID, Seq[(Boolean, ProjectedProperty)]] =
     val bindings = Seq(
       session.connection.createArrayOf("varchar", collectionPKs.toArray),
       session.connection.createArrayOf("varchar", propertyCollectionRelationshipTypes.map(_.toString).toArray)
@@ -225,4 +225,4 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       (collection_pk, groupedTuples) <- result.groupBy(_._1)
     } yield (collection_pk, groupedTuples.map(_._2))
 
-  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): List[ProjectedProperty] = ???
+  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): Seq[ProjectedProperty] = ???

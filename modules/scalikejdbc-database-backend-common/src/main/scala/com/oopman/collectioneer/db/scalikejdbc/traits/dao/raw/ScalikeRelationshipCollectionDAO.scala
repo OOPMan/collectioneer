@@ -6,8 +6,8 @@ import scalikejdbc.DBSession
 import java.util.UUID
 
 trait ScalikeRelationshipCollectionDAO:
-  def createRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Array[Int]
-  def createOrUpdateRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Array[Int]
-  def deleteRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Array[Int]
-  def getAllMatchingRelationshipPKs(relationshipPKs: Seq[UUID])(implicit session: DBSession): List[RelationshipCollection]
-  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): List[RelationshipCollection]
+  def createRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Seq[Int]
+  def createOrUpdateRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Seq[Int]
+  def deleteRelationshipCollections(relationshipCollections: Seq[RelationshipCollection])(implicit session: DBSession): Seq[Int]
+  def getAllMatchingRelationshipPKs(relationshipPKs: Seq[UUID])(implicit session: DBSession): Seq[RelationshipCollection]
+  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): Seq[RelationshipCollection]

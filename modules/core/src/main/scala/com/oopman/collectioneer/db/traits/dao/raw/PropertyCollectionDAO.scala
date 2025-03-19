@@ -5,8 +5,8 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollection
 import java.util.UUID
 
 trait PropertyCollectionDAO:
-  def createPropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int]
-  def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int]
-  def deletePropertyCollections(propertyCollections: Seq[PropertyCollection]): Array[Int]
-  def getAllMatchingPropertyPKs(propertyPKs: Seq[UUID]): List[PropertyCollection]
-  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID]): List[PropertyCollection]
+  def createPropertyCollections(propertyCollections: Seq[PropertyCollection]): Seq[Int]
+  def createOrUpdatePropertyCollections(propertyCollections: Seq[PropertyCollection]): Seq[Int]
+  def deletePropertyCollections(propertyCollections: Seq[PropertyCollection]): Seq[Int]
+  def getAllMatchingPropertyPKs(propertyPKs: Seq[UUID]): Seq[PropertyCollection]
+  def getAllMatchingCollectionPKs(collectionPKs: Seq[UUID]): Seq[PropertyCollection]

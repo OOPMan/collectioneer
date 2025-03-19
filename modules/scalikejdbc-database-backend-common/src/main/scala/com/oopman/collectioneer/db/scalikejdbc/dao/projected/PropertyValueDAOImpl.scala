@@ -10,7 +10,7 @@ import java.util.UUID
 
 class PropertyValueDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeDatabaseBackend) extends traits.dao.projected.PropertyValueDAO:
 
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil): List[PropertyValue] =
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil): Seq[PropertyValue] =
     dbProvider() readOnly { implicit session => db.dao.projected.PropertyValueDAO.getPropertyValuesByCollectionUUIDs(collectionUUIDs, propertyUUIDs) }
 
   def updatePropertyValues(propertyValues: Seq[PropertyValue]): Seq[Boolean] =

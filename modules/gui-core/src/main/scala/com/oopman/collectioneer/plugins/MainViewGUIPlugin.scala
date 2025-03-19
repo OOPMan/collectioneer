@@ -11,6 +11,6 @@ trait MainViewGUIPlugin extends GUIPlugin:
   def canGetCollectionsListTreeViewCellFactory(collection: Collection): Boolean
   def getCollectionsListTreeViewCellFactory(collection: Collection): (TreeCell[Collection], Collection) => Unit
   def canGetRawChildCollections(collection: Collection): Boolean
-  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): List[RawCollection]
+  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): Seq[RawCollection]
   def canGetPropertyPKsForInflation(collection: Collection): Boolean
   def getPropertyPKsForInflation(collection: Collection): Seq[UUID]

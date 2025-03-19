@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits
 import java.util.HexFormat
 
 object Common:
-  def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValue): (String, List[String]) =
+  def propertyValuesToMapTuple(propertyValue: traits.entity.projected.PropertyValue): (String, Seq[String]) =
     val hexFormat = HexFormat.of()
     propertyValue.property.propertyName -> (
       propertyValue.textValues ++
