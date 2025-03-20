@@ -14,3 +14,10 @@ trait PropertyCollection:
   val propertyCollectionRelationshipType: PropertyCollectionRelationshipType
   val created: ZonedDateTime
   val modified: ZonedDateTime
+  
+  def rawCopyWith(propertyPK: UUID = propertyPK,
+                  collectionPK: UUID = collectionPK,
+                  index: Int = index,
+                  propertyCollectionRelationshipType: PropertyCollectionRelationshipType = propertyCollectionRelationshipType,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified): PropertyCollection

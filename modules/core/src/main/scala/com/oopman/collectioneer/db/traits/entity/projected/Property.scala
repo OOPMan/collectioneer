@@ -1,9 +1,21 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
 import com.oopman.collectioneer.db.traits
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+
+import java.time.ZonedDateTime
+import java.util.UUID
 
 trait Property extends traits.entity.raw.Property:
   val propertyValues: Seq[PropertyValue]
+  
+  def projectedCopyWith(pk: UUID = pk,
+                        propertyName: String = propertyName,
+                        propertyTypes: Seq[PropertyType] = propertyTypes,
+                        deleted: Boolean = deleted,
+                        created: ZonedDateTime = created,
+                        modified: ZonedDateTime = modified,
+                        propertyValues: Seq[PropertyValue] = propertyValues): Property
 
 object Property:
   /**

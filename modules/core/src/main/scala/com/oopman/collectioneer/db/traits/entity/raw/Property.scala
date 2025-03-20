@@ -27,4 +27,11 @@ trait Property:
   val created: ZonedDateTime
   val modified: ZonedDateTime
 
+  def rawCopyWith(pk: UUID = pk,
+                  propertyName: String = propertyName,
+                  propertyTypes: Seq[PropertyType] = propertyTypes,
+                  deleted: Boolean = deleted,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified): Property
+
 

@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.db.entity.projected
 
-import com.oopman.collectioneer.db.traits
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -12,8 +13,25 @@ case class Collection
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  properties: Seq[traits.entity.projected.Property] = Nil,
-  relatedProperties: Seq[traits.entity.projected.Property] = Nil,
-  propertyValues: Seq[traits.entity.projected.PropertyValue] = Nil
-) extends traits.entity.projected.Collection
+  properties: Seq[projected.Property] = Nil,
+  relatedProperties: Seq[projected.Property] = Nil,
+  propertyValues: Seq[projected.PropertyValue] = Nil
+) extends projected.Collection:
 
+  def rawCopyWith(pk: UUID = pk,
+                  virtual: Boolean = virtual,
+                  deleted: Boolean = deleted,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified): raw.Collection =
+    entity.raw.Collection(pk = pk, virtual = virtual, deleted = deleted, created = created, modified = modified)
+  
+  def projectedCopyWith(pk: UUID = pk,
+                        virtual: Boolean = virtual,
+                        deleted: Boolean = deleted,
+                        created: ZonedDateTime = created,
+                        modified: ZonedDateTime = modified,
+                        properties: Seq[projected.Property] = properties,
+                        relatedProperties: Seq[projected.Property] = relatedProperties,
+                        propertyValues: Seq[projected.PropertyValue] = propertyValues): projected.Collection =
+    copy(pk = pk, virtual = virtual, deleted = deleted, created = created, modified = modified,
+         properties = properties, relatedProperties = relatedProperties, propertyValues = propertyValues)
