@@ -20,7 +20,7 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
    performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
   (implicit session: DBSession = AutoSession): Seq[Int] =
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
-      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
+      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.projectedCopyWith(pk = collection.pk))
     })
     val distinctCollections = collections.distinctBy(_.pk)
     val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.map(_.property)))
