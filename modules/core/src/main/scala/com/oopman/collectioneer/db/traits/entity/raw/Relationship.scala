@@ -17,3 +17,10 @@ trait Relationship:
   val created: ZonedDateTime
   val modified: ZonedDateTime
   
+  def rawCopyWith(pk: UUID = pk,
+                  collectionPK: UUID = collectionPK,
+                  relatedCollectionPK: UUID = relatedCollectionPK,
+                  index: Int = index,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified): Relationship
+  

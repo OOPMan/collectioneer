@@ -9,3 +9,9 @@ trait RelationshipCollection:
   val index: Int
   val created: ZonedDateTime
   val modified: ZonedDateTime
+  
+  def rawCopyWith(relationshipPK: UUID = relationshipPK,
+                  collectionPK: UUID = collectionPK,
+                  index: Int = index,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified): RelationshipCollection

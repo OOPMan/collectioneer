@@ -1,7 +1,7 @@
 package com.oopman.collectioneer
 
-import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.entity
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 import com.oopman.collectioneer.given
 
 object CorePropertyUUIDs:
@@ -17,44 +17,44 @@ object CorePropertyUUIDs:
 /**
  * This enumeration contains the UUIDs and PropertyTypes associated with the core properties in the application
  */
-enum CoreProperties(val property: Property):
-  case name extends CoreProperties(Property(
+enum CoreProperties(val property: projected.Property):
+  case name extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.name,
     propertyName = "Name",
-    propertyTypes = List(PropertyType.text),
+    propertyTypes = List(raw.PropertyType.text),
   ))
-  case description extends CoreProperties(Property(
+  case description extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.description,
     propertyName = "Description",
-    propertyTypes = List(PropertyType.text),
+    propertyTypes = List(raw.PropertyType.text),
   ))
-  case defaultValue extends CoreProperties(Property(
+  case defaultValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.defaultValue,
     propertyName = "Default Value",
-    propertyTypes = PropertyType.values.toList,
+    propertyTypes = raw.PropertyType.values.toList,
   ))
-  case minValue extends CoreProperties(Property(
+  case minValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.minValue,
     propertyName = "Minimum Value",
-    propertyTypes = PropertyType.values.toList,
+    propertyTypes = raw.PropertyType.values.toList,
   ))
-  case maxValue extends CoreProperties(Property(
+  case maxValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.maxValue,
     propertyName = "Maximum Value",
-    propertyTypes = PropertyType.values.toList,
+    propertyTypes = raw.PropertyType.values.toList,
   ))
-  case minValues extends CoreProperties(Property(
+  case minValues extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.minValues,
     propertyName = "Minimum Number of Values",
-    propertyTypes = List(PropertyType.int),
+    propertyTypes = List(raw.PropertyType.int),
   ))
-  case maxValues extends CoreProperties(Property(
+  case maxValues extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.maxValues,
     propertyName = "Maximum Number of Values",
-    propertyTypes = List(PropertyType.int),
+    propertyTypes = List(raw.PropertyType.int),
   ))
-  case visible extends CoreProperties(Property(
+  case visible extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.visible,
     propertyName = "Visible",
-    propertyTypes = List(PropertyType.boolean)
+    propertyTypes = List(raw.PropertyType.boolean)
   ))

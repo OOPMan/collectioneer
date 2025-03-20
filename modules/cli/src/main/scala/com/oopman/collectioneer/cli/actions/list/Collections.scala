@@ -26,14 +26,14 @@ object Collections:
   (
     dataSourceUri: Option[String],
     count: Int,
-    uuids: List[UUID]
+    uuids: Seq[UUID]
   )
 
   case class ListCollectionsVerboseResult
   (
     dataSourceUri: Option[String],
     count: Int,
-    collections: List[traits.entity.raw.Collection]
+    collections: Seq[traits.entity.raw.Collection]
   )
 
   private def listCollections(config: Config)(collectionDAO: traits.dao.raw.CollectionDAO) = collectionDAO.getAll

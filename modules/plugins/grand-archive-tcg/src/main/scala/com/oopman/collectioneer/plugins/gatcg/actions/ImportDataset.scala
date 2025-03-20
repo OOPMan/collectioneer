@@ -145,10 +145,8 @@ def importDataset(cards: List[Card],
       )))
       .distinctBy(relationship => (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType))
     // Write data
-    collectionDAO.createOrUpdateCollections(
-      List(GATCGRootCollection) ++ setDataMap.values.toList ++ editionDataMap.values.toList ++
-        cardDataMap.values.toList ++ cardsMap.values.toList ++ setMap.values.toList
-    )
+    collectionDAO.createOrUpdateCollections(List(GATCGRootCollection) ++ setDataMap.values.toList ++ editionDataMap.values.toList ++
+      cardDataMap.values.toList ++ cardsMap.values.toList ++ setMap.values.toList)
     relationshipDAO.createOrUpdateRelationships(distinctRelationships)
     // TODO: Replace with a real response
     "Something"

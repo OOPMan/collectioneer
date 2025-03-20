@@ -12,6 +12,14 @@ sealed trait PropertyValue[T]:
   val created: ZonedDateTime
   val modified: ZonedDateTime
   val propertyValue: T
+  
+  def rawCopyWith(pk: UUID = pk,
+                  collectionPK: UUID = collectionPK,
+                  propertyPK: UUID = propertyPK,
+                  index: Int = index,
+                  created: ZonedDateTime = created,
+                  modified: ZonedDateTime = modified,
+                  propertyValue: T = propertyValue): PropertyValue[T]
 
 trait PropertyValueText extends PropertyValue[String]
 trait PropertyValueBytes extends PropertyValue[Array[Byte]]

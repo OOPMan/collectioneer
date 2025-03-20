@@ -65,7 +65,7 @@ class MainView(val config: GUIConfig):
       val collections = Injection.produceRun(Some(config)) {
         (collectionDAO: traits.dao.raw.CollectionDAO, projectedCollectionDAO: traits.dao.projected.CollectionDAO) =>
           val collection = treeItem.getValue
-          val collections: List[RawCollection] = plugins
+          val collections: Seq[RawCollection] = plugins
             .find(plugin => plugin.canGetRawChildCollections(collection))
             .map(plugin => plugin.getRawChildCollections(collection, collectionDAO))
             .getOrElse(collectionDAO.getAllMatchingConstraints(
@@ -76,10 +76,7 @@ class MainView(val config: GUIConfig):
             .find(plugin => plugin.canGetPropertyPKsForInflation(collection))
             .map(plugin => plugin.getPropertyPKsForInflation(collection))
             .getOrElse(Seq(CoreProperties.name.property.pk))
-          projectedCollectionDAO.inflateRawCollections(
-            collections,
-            propertyPKs = propertyPKs
-          )
+          projectedCollectionDAO.inflateRawCollections(collections, propertyPKs = propertyPKs)
       }
       collections
     }

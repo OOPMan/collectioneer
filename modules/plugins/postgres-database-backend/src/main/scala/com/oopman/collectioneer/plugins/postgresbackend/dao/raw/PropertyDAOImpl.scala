@@ -12,26 +12,26 @@ import java.util.UUID
 
 object PropertyDAOImpl extends ScalikePropertyDAO:
 
-  def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Seq[Int] =
     postgresbackend.queries.raw.PropertyQueries
       .insert
       .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties)*)
       .apply()
 
-  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateProperties(properties: Seq[Property])(implicit session: DBSession = AutoSession): Seq[Int] =
     postgresbackend.queries.raw.PropertyQueries
       .upsert
       .batch(postgresbackend.entity.raw.Property.propertiesSeqToBatchInsertSeq(properties)*)
       .apply()
 
-  def getAll(implicit session: DBSession = AutoSession): List[entity.raw.Property] =
+  def getAll(implicit session: DBSession = AutoSession): Seq[entity.raw.Property] =
     postgresbackend.queries.raw.PropertyQueries
       .all
       .map(postgresbackend.entity.raw.Property(postgresbackend.entity.raw.Property.p1.resultName))
       .list
       .apply()
 
-  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession): List[Property] =
+  def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession): Seq[Property] =
     postgresbackend.queries.raw.PropertyQueries
       .allMatchingPKs
       .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
@@ -39,7 +39,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .list
       .apply()
 
-  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Property] =
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[Property] =
     postgresbackend.PropertyValueQueryDSLSupport
       .comparisonsToSQL(comparisons)
       .map((comparisonSQL, parameters) =>

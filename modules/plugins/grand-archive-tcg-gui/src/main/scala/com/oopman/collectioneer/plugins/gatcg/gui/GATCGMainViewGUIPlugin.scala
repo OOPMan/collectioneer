@@ -55,7 +55,7 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
     then setCollectionCellFactory
     else cardCollectionCellFactory
 
-  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): List[RawCollection] =
+  def getRawChildCollections(collection: Collection, collectionDAO: CollectionDAO): Seq[RawCollection] =
     collectionDAO.getAllMatchingConstraints(
       parentCollectionPKs = Some(Seq(collection.pk)),
       sortProperties = Seq(EditionProperties.collectorNumber.property -> SortDirection.Asc)

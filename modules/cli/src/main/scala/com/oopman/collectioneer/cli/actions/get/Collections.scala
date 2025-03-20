@@ -19,16 +19,16 @@ object Collections:
     deleted: Boolean = false,
     created: ZonedDateTime = ZonedDateTime.now(),
     modified: ZonedDateTime = ZonedDateTime.now(),
-    properties: List[PropertyWithPropertyValues] = Nil,
-    relatedProperties: List[PropertyWithPropertyValues] = Nil,
-    propertyValues: Map[String, List[String]] = Map()
+    properties: Seq[PropertyWithPropertyValues] = Nil,
+    relatedProperties: Seq[PropertyWithPropertyValues] = Nil,
+    propertyValues: Map[String, Seq[String]] = Map()
   )
 
   case class GetCollectionsResult
   (
     dataSourceUri: Option[String],
     count: Int,
-    collections: List[CollectionWithPropertyValues]
+    collections: Seq[CollectionWithPropertyValues]
   )
 
   

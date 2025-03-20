@@ -15,12 +15,12 @@ import java.util.UUID
 object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
   private def performCreateOrUpdateCollectionsOperation
   (collections: Seq[ProjectedCollection],
-   performCreateOrUpdateCollections: Seq[Collection] => Array[Int],
-   performCreateOrUpdateProperties: Seq[ProjectedProperty] => Array[Int],
-   performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Array[Int])
-  (implicit session: DBSession = AutoSession): Array[Int] =
+   performCreateOrUpdateCollections: Seq[Collection] => Seq[Int],
+   performCreateOrUpdateProperties: Seq[ProjectedProperty] => Seq[Int],
+   performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
+  (implicit session: DBSession = AutoSession): Seq[Int] =
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
-      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.copy(pk = collection.pk))
+      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.projectedCopyWith(pk = collection.pk))
     })
     val distinctCollections = collections.distinctBy(_.pk)
     val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.map(_.property)))
@@ -36,9 +36,9 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
     performCreateOrUpdatePropertyCollections(distinctPropertyCollections)
     postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
     // TODO: Return a more useful result?
-    Array.empty
+    Nil
 
-  def createCollections(collections: Seq[ProjectedCollection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createCollections(collections: Seq[ProjectedCollection])(implicit session: DBSession = AutoSession): Seq[Int] =
     performCreateOrUpdateCollectionsOperation(
       collections,
       postgresbackend.dao.raw.CollectionDAOImpl.createCollections,
@@ -46,7 +46,7 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createPropertyCollections,
     )
 
-  def createOrUpdateCollections(collections: Seq[ProjectedCollection])(implicit session: DBSession = AutoSession): Array[Int] =
+  def createOrUpdateCollections(collections: Seq[ProjectedCollection])(implicit session: DBSession = AutoSession): Seq[Int] =
     performCreateOrUpdateCollectionsOperation(
       collections,
       postgresbackend.dao.raw.CollectionDAOImpl.createOrUpdateCollections,
@@ -54,9 +54,9 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections,
     )
 
-  def getAll(properties: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
+  def getAll(properties: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[ProjectedCollection] = ???
 
-  def getAllMatchingPKs(collectionPKs: Seq[UUID], propertyPKs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): List[ProjectedCollection] =
+  def getAllMatchingPKs(collectionPKs: Seq[UUID], propertyPKs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[ProjectedCollection] =
     val collections = postgresbackend.dao.raw.CollectionDAOImpl.getAllMatchingPKs(collectionPKs)
     inflateRawCollections(collections, propertyPKs)
 //    val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllRelatedByPropertyCollection(
@@ -84,10 +84,10 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
 //    val resultsMap = results.map(collection => collection.pk -> collection).toMap
 //    collectionPKs.collect(resultsMap).toList
 
-  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[Collection] = ???
-  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): List[ProjectedCollection] = ???
+  def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[Collection] = ???
+  def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[ProjectedCollection] = ???
 
-  def inflateRawCollections(collections: Seq[Collection], propertyPKs: Seq[UUID] = Nil)(implicit session: DBSession): List[ProjectedCollection] =
+  def inflateRawCollections(collections: Seq[Collection], propertyPKs: Seq[UUID] = Nil)(implicit session: DBSession): Seq[ProjectedCollection] =
     val collectionPKs = collections.map(_.pk)
     val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllRelatedByPropertyCollection(
       collectionPKs = collectionPKs,
