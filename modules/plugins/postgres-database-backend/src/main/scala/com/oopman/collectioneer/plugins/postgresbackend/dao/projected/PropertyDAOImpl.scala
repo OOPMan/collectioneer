@@ -82,71 +82,8 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     getAllMatchingPKs(propertyPKs)
 
   def getAllMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession = AutoSession): Seq[ProjectedProperty] =
-    val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
-      .propertyValuesByParentPropertyPKs()
-      .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
-      .map { rs => (
-        UUID.fromString(rs.string("parent_property_pk")),
-        UUID.fromString(rs.string("child_property_pk")),
-        generatePropertyValueData(rs)
-      )}
-      .list
-      .apply()
-    val propertyUUIDs = propertyValueDataList
-      .map((_, childPropertyPK, _) => childPropertyPK)
-      .appendedAll(propertyPKs)
-      .distinct
-    val propertiesMap = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(propertyUUIDs).map(p => (p.pk, p)).toMap
-    val propertyValueDataMap = propertyValueDataList
-      .groupBy(_._1)
-      .map((parentPropertyPK, propertyValueDataList) => (
-        parentPropertyPK,
-        propertyValueDataList.map((_, childPropertyPK, propertyValueData) => (childPropertyPK, propertyValueData)).toMap
-      ))
-    val result = for {
-      parentPropertyPK <- propertyPKs
-      property <- propertiesMap.get(parentPropertyPK)
-    } yield {
-      val propertyValues = for {
-        (childPropertyPK, propertyValueData) <- propertyValueDataMap.getOrElse(property.pk, Map())
-        childProperty <- propertiesMap.get(childPropertyPK)
-      } yield entity.projected.PropertyValue(
-        property = entity.projected.Property(
-          pk = childProperty.pk,
-          propertyName = childProperty.propertyName,
-          propertyTypes = childProperty.propertyTypes,
-          deleted = childProperty.deleted,
-          created = childProperty.created,
-          modified = childProperty.modified,
-          propertyValues = Nil
-        ),
-        collection = entity.projected.Collection(pk = parentPropertyPK),
-        textValues = propertyValueData.textValues,
-        byteValues = propertyValueData.byteValues,
-        smallintValues = propertyValueData.smallintValues,
-        intValues = propertyValueData.intValues,
-        bigintValues = propertyValueData.bigintValues,
-        numericValues = propertyValueData.numericValues,
-        floatValues = propertyValueData.floatValues,
-        doubleValues = propertyValueData.doubleValues,
-        booleanValues = propertyValueData.booleanValues,
-        dateValues = propertyValueData.dateValues,
-        timeValues = propertyValueData.timeValues,
-        timestampValues = propertyValueData.timestampValues,
-        uuidValues = propertyValueData.uuidValues,
-        jsonValues = propertyValueData.jsonValues
-      )
-      entity.projected.Property(
-        pk = property.pk,
-        propertyName = property.propertyName,
-        propertyTypes = property.propertyTypes,
-        deleted = property.deleted,
-        created = property.created,
-        modified = property.modified,
-        propertyValues = propertyValues.toList
-      )
-    }
-    result.toList
+    val properties = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(propertyPKs)
+    inflateRawProperties(properties)
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession): Seq[ProjectedProperty] =
     val result = postgresbackend.PropertyValueQueryDSLSupport
@@ -225,4 +162,73 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       (collection_pk, groupedTuples) <- result.groupBy(_._1)
     } yield (collection_pk, groupedTuples.map(_._2))
 
-  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): Seq[ProjectedProperty] = ???
+  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): Seq[ProjectedProperty] =
+    val propertyPKs = properties.map(_.pk)
+    val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
+      .propertyValuesByParentPropertyPKs()
+      .bind(session.connection.createArrayOf("varchar", propertyPKs.toArray))
+      .map { rs =>
+        (
+          UUID.fromString(rs.string("parent_property_pk")),
+          UUID.fromString(rs.string("child_property_pk")),
+          generatePropertyValueData(rs)
+        )
+      }
+      .list
+      .apply()
+    val childPropertyUUIDs = propertyValueDataList
+      .map((_, childPropertyPK, _) => childPropertyPK)
+      .diff(propertyPKs)
+      .distinct
+    val childProperties = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(childPropertyUUIDs)
+    val allProperties = properties ++ childProperties
+    val propertiesMap = allProperties.map(p => p.pk -> p).toMap
+    val propertyValueDataMap = propertyValueDataList
+      .groupBy(_._1)
+      .map((parentPropertyPK, propertyValueDataList) => (
+        parentPropertyPK,
+        propertyValueDataList.map((_, childPropertyPK, propertyValueData) => (childPropertyPK, propertyValueData)).toMap
+      ))
+    for {
+      parentPropertyPK <- propertyPKs
+      property <- propertiesMap.get(parentPropertyPK)
+    } yield {
+      val propertyValues = for {
+        (childPropertyPK, propertyValueData) <- propertyValueDataMap.getOrElse(property.pk, Map())
+        childProperty <- propertiesMap.get(childPropertyPK)
+      } yield entity.projected.PropertyValue(
+        property = entity.projected.Property(
+          pk = childProperty.pk,
+          propertyName = childProperty.propertyName,
+          propertyTypes = childProperty.propertyTypes,
+          deleted = childProperty.deleted,
+          created = childProperty.created,
+          modified = childProperty.modified,
+          propertyValues = Nil
+        ),
+        collection = entity.projected.Collection(pk = parentPropertyPK),
+        textValues = propertyValueData.textValues,
+        byteValues = propertyValueData.byteValues,
+        smallintValues = propertyValueData.smallintValues,
+        intValues = propertyValueData.intValues,
+        bigintValues = propertyValueData.bigintValues,
+        numericValues = propertyValueData.numericValues,
+        floatValues = propertyValueData.floatValues,
+        doubleValues = propertyValueData.doubleValues,
+        booleanValues = propertyValueData.booleanValues,
+        dateValues = propertyValueData.dateValues,
+        timeValues = propertyValueData.timeValues,
+        timestampValues = propertyValueData.timestampValues,
+        uuidValues = propertyValueData.uuidValues,
+        jsonValues = propertyValueData.jsonValues
+      )
+      entity.projected.Property(
+        pk = property.pk,
+        propertyName = property.propertyName,
+        propertyTypes = property.propertyTypes,
+        deleted = property.deleted,
+        created = property.created,
+        modified = property.modified,
+        propertyValues = propertyValues.toList
+      )
+    }
