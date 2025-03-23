@@ -138,8 +138,6 @@ object PropertyValueQueries:
     )
     
   def propertyValuesByParentPropertyPKs(includeParentProperty: Boolean = true, includeChildProperty: Boolean = true) =
-//    val (a, b) = if includeParentProperty
-//      then
     val (cte3ColumnsSQLSyntax, cte3InnerSQLSyntax) = generatePropertyValuesByParentPropertyPKsCTE3QueryComponent()
     sql"""WITH
           cte1(collection_pk) AS (
@@ -179,21 +177,7 @@ object PropertyValueQueries:
           )
           SELECT
               cte4.collection_pk AS parent_property_pk,
-              /*
-              parent_property.property_name AS parent_property_name,
-              parent_property.property_types AS parent_property_types,
-              parent_property.deleted AS parent_property_deleted,
-              parent_property.created AS parent_property_created,
-              parent_property.modified AS parent_property_modified,
-              */
               cte4.property_pk AS child_property_pk,
-              /*
-              child_property.property_name AS child_property_name,
-              child_property.property_types AS child_property_types,
-              child_property.deleted AS child_property_deleted,
-              child_property.created AS child_property_created,
-              child_property.modified AS child_property_modified,
-              */
               property_value_bigint,
               property_value_boolean,
               property_value_bytes,
@@ -208,8 +192,5 @@ object PropertyValueQueries:
               property_value_time,
               property_value_timestamp,
               property_value_uuid
-          FROM cte4
-          /*INNER JOIN property AS parent_property ON parent_property.pk = cte4.collection_pk*/
-          /*INNER JOIN property AS child_property ON child_property.pk = cte4.property_pk*/
-          ;
+          FROM cte4;
        """

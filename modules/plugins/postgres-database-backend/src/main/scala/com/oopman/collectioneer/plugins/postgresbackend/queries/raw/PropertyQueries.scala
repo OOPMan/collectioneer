@@ -58,21 +58,26 @@ object PropertyQueries:
     val propertyPKsWhereClause = if includePropertiesFilter then sqls"AND pc.property_pk = ANY (?::uuid[])" else SQLSyntax.empty
     sql"""WITH RECURSIVE
             cte1(top_level_collection_pk, collection_pk, related_collection_pk, index) AS (
-                SELECT c.pk AS top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
+                SELECT
+                  c.pk AS top_level_collection_pk,
+                  c.pk as collection_pk,
+                  c.pk AS related_collection_pk,
+                  0 as index,
+                  0 as level
                 FROM collection AS c
-                LEFT JOIN relationship AS r ON r.collection_pk = c.PK
                 WHERE c.pk = ANY (?::uuid[])
-                AND (r.relationship_type = 'SourceOfPropertiesAndPropertyValues' OR r.relationship_type IS NULL)
                 UNION
-                SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index
+                SELECT cte1.top_level_collection_pk, r.collection_pk, r.related_collection_pk, r.index, cte1.level + 1
                 FROM cte1
-                LEFT JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
-                WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'
-                OR r.relationship_type IS NULL),
+                INNER JOIN relationship AS r ON cte1.related_collection_pk = r.collection_pk
+                WHERE r.relationship_type = 'SourceOfPropertiesAndPropertyValues'),
             cte2(top_level_collection_pk, is_inherited, property_pk) AS (
                 SELECT
                     top_level_collection_pk,
-                    CASE WHEN array_position(array_agg(related_collection_pk), NULL) IS NULL THEN true ELSE false END as is_inherited,
+                    CASE
+                      WHEN array_position(array_agg(related_collection_pk), top_level_collection_pk) IS NULL THEN true
+                      ELSE false
+                    END AS is_inherited,
                     property_pk
                 FROM cte1
                 LEFT JOIN property_collection AS pc ON (

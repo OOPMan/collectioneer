@@ -171,7 +171,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     val collectionsK = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       timeProperty lt LocalTime.parse("04:00:00")
     ))
-    assert(collectionsK.length == 3)
+    assert(collectionsK.length == 2)
     val collectionsL = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       timestampProperty lte ZonedDateTime.parse("2025-04-01T00:00:00+04:00")
     ))
@@ -245,7 +245,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     val collectionsK = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       timeProperty ltAny Seq(LocalTime.parse("04:00:00"))
     ))
-    assert(collectionsK.length == 3)
+    assert(collectionsK.length == 2)
     val collectionsL = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       timestampProperty lteAny Seq(
         ZonedDateTime.parse("2025-04-01T00:00:00+04:00"),
