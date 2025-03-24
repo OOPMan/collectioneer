@@ -18,3 +18,13 @@ trait Collection:
                   created: ZonedDateTime = created,
                   modified: ZonedDateTime = modified): Collection
 
+  override def equals(obj: Any): Boolean = obj match {
+    case collection: Collection => pk.equals(collection.pk)
+    case _ => false
+  }
+  
+  def exactlyEquals(obj: Any): Boolean = super.equals(obj)
+
+  override def hashCode(): Int = pk.hashCode()
+
+  override def toString: String = s"Raw Collection ($pk)"
