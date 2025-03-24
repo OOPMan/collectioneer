@@ -8,7 +8,7 @@ import java.util.UUID
 trait Collection extends traits.entity.raw.Collection:
   val properties: Seq[Property]
   val relatedProperties: Seq[Property]
-  val propertyValues: Seq[PropertyValue]
+  val propertyValues: Map[Property, PropertyValue]
   // TODO: Add fields for relationships
   // val relationships:List[Relationship]
   
@@ -19,4 +19,6 @@ trait Collection extends traits.entity.raw.Collection:
                         modified: ZonedDateTime = modified,
                         properties: Seq[Property] =  properties,
                         relatedProperties: Seq[Property] = relatedProperties,
-                        propertyValues: Seq[PropertyValue] = propertyValues): Collection
+                        propertyValues: Map[Property, PropertyValue] = propertyValues): Collection
+
+  override def toString: String = s"Projected Collection ($pk)"
