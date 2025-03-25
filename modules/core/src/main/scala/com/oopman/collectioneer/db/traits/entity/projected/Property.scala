@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait Property extends traits.entity.raw.Property:
-  val propertyValues: Seq[PropertyValue]
+  def propertyValues: Seq[PropertyValue]
   
   def projectedCopyWith(pk: UUID = pk,
                         propertyName: String = propertyName,

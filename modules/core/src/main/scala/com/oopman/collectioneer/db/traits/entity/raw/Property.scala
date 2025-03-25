@@ -20,12 +20,12 @@ enum PropertyType:
   case json extends PropertyType
 
 trait Property:
-  val pk: UUID
-  val propertyName: String
-  val propertyTypes: Seq[PropertyType]
-  val deleted: Boolean
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
+  def pk: UUID
+  def propertyName: String
+  def propertyTypes: Seq[PropertyType]
+  def deleted: Boolean
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
 
   def rawCopyWith(pk: UUID = pk,
                   propertyName: String = propertyName,

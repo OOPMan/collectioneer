@@ -6,8 +6,8 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait Relationship extends traits.entity.raw.Relationship:
-  val collection: Collection
-  val relatedCollection: Collection
+  def collection: Collection
+  def relatedCollection: Collection
   
   def projectedCopyWith(pk: UUID = pk,
                         collectionPK: UUID = collectionPK,

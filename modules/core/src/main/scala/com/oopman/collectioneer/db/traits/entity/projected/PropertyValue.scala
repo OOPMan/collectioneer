@@ -4,22 +4,22 @@ import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 trait PropertyValue:
-  val property: Property
-  val collection: Collection
-  val textValues: Seq[String]
-  val byteValues: Seq[Array[Byte]]
-  val smallintValues: Seq[Short]
-  val intValues: Seq[Int]
-  val bigintValues: Seq[BigInt]
-  val numericValues: Seq[BigDecimal]
-  val floatValues: Seq[Float]
-  val doubleValues: Seq[Double]
-  val booleanValues: Seq[Boolean]
-  val dateValues: Seq[LocalDate]
-  val timeValues: Seq[LocalTime]
-  val timestampValues: Seq[ZonedDateTime]
-  val uuidValues: Seq[UUID]
-  val jsonValues: Seq[io.circe.Json]
+  def property: Property
+  def collection: Collection
+  def textValues: Seq[String]
+  def byteValues: Seq[Array[Byte]]
+  def smallintValues: Seq[Short]
+  def intValues: Seq[Int]
+  def bigintValues: Seq[BigInt]
+  def numericValues: Seq[BigDecimal]
+  def floatValues: Seq[Float]
+  def doubleValues: Seq[Double]
+  def booleanValues: Seq[Boolean]
+  def dateValues: Seq[LocalDate]
+  def timeValues: Seq[LocalTime]
+  def timestampValues: Seq[ZonedDateTime]
+  def uuidValues: Seq[UUID]
+  def jsonValues: Seq[io.circe.Json]
   
   def projectedCopyWith(property: Property = property,
                         collection: Collection = collection,

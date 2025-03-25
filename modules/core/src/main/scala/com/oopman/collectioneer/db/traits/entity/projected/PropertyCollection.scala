@@ -7,8 +7,8 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait PropertyCollection extends traits.entity.raw.PropertyCollection:
-  val collection: Collection
-  val property: Property
+  def collection: Collection
+  def property: Property
   
   def projectedCopyWith(propertyPK: UUID = propertyPK,
                         collectionPK: UUID = collectionPK,

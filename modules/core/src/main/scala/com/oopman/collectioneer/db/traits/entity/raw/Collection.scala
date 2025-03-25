@@ -6,11 +6,11 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait Collection:
-  val pk: UUID
-  val virtual: Boolean
-  val deleted: Boolean
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
+  def pk: UUID
+  def virtual: Boolean
+  def deleted: Boolean
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
   
   def rawCopyWith(pk: UUID = pk,
                   virtual: Boolean = virtual,

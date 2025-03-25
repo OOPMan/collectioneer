@@ -8,12 +8,12 @@ enum PropertyCollectionRelationshipType:
   case CollectionOfPropertiesOfProperty extends PropertyCollectionRelationshipType
 
 trait PropertyCollection:
-  val propertyPK: UUID
-  val collectionPK: UUID
-  val index: Int
-  val propertyCollectionRelationshipType: PropertyCollectionRelationshipType
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
+  def propertyPK: UUID
+  def collectionPK: UUID
+  def index: Int
+  def propertyCollectionRelationshipType: PropertyCollectionRelationshipType
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
   
   def rawCopyWith(propertyPK: UUID = propertyPK,
                   collectionPK: UUID = collectionPK,

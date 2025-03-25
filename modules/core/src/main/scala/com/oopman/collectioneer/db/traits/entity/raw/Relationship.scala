@@ -9,13 +9,13 @@ enum RelationshipType:
   case SourceOfChildCollections extends RelationshipType
 
 trait Relationship:
-  val pk: UUID
-  val collectionPK: UUID
-  val relatedCollectionPK: UUID
-  val relationshipType: RelationshipType
-  val index: Int
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
+  def pk: UUID
+  def collectionPK: UUID
+  def relatedCollectionPK: UUID
+  def relationshipType: RelationshipType
+  def index: Int
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
   
   def rawCopyWith(pk: UUID = pk,
                   collectionPK: UUID = collectionPK,

@@ -6,11 +6,11 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait Collection extends traits.entity.raw.Collection:
-  val properties: Seq[Property]
-  val relatedProperties: Seq[Property]
-  val propertyValues: Map[Property, PropertyValue]
+  def properties: Seq[Property]
+  def relatedProperties: Seq[Property]
+  def propertyValues: Map[Property, PropertyValue]
   // TODO: Add fields for relationships
-  // val relationships:List[Relationship]
+  // def relationships:List[Relationship]
   
   def projectedCopyWith(pk: UUID = pk,
                         virtual: Boolean = virtual,
