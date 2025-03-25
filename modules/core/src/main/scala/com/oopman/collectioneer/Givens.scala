@@ -24,3 +24,7 @@ given corePropertiesToUUID: Conversion[CoreProperties, UUID] =
 
 given PropertyToUUID: Conversion[raw.Property, UUID] =
   (p: db.traits.entity.raw.Property) => p.pk
+
+given corePropertiesPropertyValueTupleToPropertyPropertyValueTuple
+: Conversion[(CoreProperties, projected.PropertyValue), (projected.Property, projected.PropertyValue)] =
+  (t: (CoreProperties, projected.PropertyValue)) => t._1.property -> t._2
