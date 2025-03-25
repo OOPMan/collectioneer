@@ -18,9 +18,9 @@ enum CoreCollections(val collection: Collection):
   case root extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.root,
     propertyValues = Map(
-      CoreProperties.name.property ->
+      CoreProperties.name ->
         projected.PropertyValue(textValues = List("Root")),
-      CoreProperties.description.property ->
+      CoreProperties.description ->
         projected.PropertyValue(textValues = List("The Root Collection under which all other Collections should reside"))
     )
   ))
@@ -33,9 +33,9 @@ enum CoreCollections(val collection: Collection):
   case commonProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonProperties,
     propertyValues = Map(
-      CoreProperties.name.property ->
+      CoreProperties.name ->
         projected.PropertyValue(textValues = List("Common Properties")),
-      CoreProperties.description.property ->
+      CoreProperties.description ->
         projected.PropertyValue(textValues = List("A Collection of Properties automatically available to all other Collections")
       )
     )
