@@ -116,7 +116,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       object importDatasetModule extends ModuleDef:
         make[List[Card]].from(cards)
 
-      Injection.produceRun(Some(config), importDatasetModule)(actions.ImportDataset.importDataset)
+      Injection.produceRun(Some(config), importDatasetModule)(actions.importDataset)
     })
     // TODO: Replace with a real response
     "Something".asJson
