@@ -36,7 +36,7 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
         case pv: traits.entity.raw.PropertyValueBytes => (pv, postgresbackend.queries.raw.PropertyValueVarbinaryQueries.insert)
         case pv: traits.entity.raw.PropertyValueSmallint => (pv, postgresbackend.queries.raw.PropertyValueSmallintQueries.insert)
         case pv: traits.entity.raw.PropertyValueInt => (pv, postgresbackend.queries.raw.PropertyValueIntQueries.insert)
-        case pv: traits.entity.raw.PropertyValueBigint => (pv, postgresbackend.queries.raw.PropertyValueBigintQueries.insert)
+        case pv: traits.entity.raw.PropertyValueBigInt => (pv, postgresbackend.queries.raw.PropertyValueBigintQueries.insert)
         case pv: traits.entity.raw.PropertyValueBigDecimal => (pv, postgresbackend.queries.raw.PropertyValueNumericQueries.insert)
         case pv: traits.entity.raw.PropertyValueFloat => (pv, postgresbackend.queries.raw.PropertyValueFloatQueries.insert)
         case pv: traits.entity.raw.PropertyValueDouble => (pv, postgresbackend.queries.raw.PropertyValueDoubleQueries.insert)

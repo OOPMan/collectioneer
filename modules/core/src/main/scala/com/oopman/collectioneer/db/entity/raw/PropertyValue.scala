@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.traits.entity.raw
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
 
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
@@ -27,7 +26,7 @@ case class PropertyValueBigDecimal
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 
-case class PropertyValueBigint
+case class PropertyValueBigInt
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
@@ -36,7 +35,7 @@ case class PropertyValueBigint
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: BigInt = BigInt.int2bigInt(Int.MinValue),
-) extends raw.PropertyValueBigint:
+) extends raw.PropertyValueBigInt:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
@@ -44,7 +43,7 @@ case class PropertyValueBigint
                   index: Int,
                   created: ZonedDateTime,
                   modified: ZonedDateTime,
-                  propertyValue: BigInt): raw.PropertyValueBigint =
+                  propertyValue: BigInt): raw.PropertyValueBigInt =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 case class PropertyValueBoolean
