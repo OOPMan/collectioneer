@@ -35,3 +35,5 @@ case class Collection
                         propertyValues: Map[projected.Property, projected.PropertyValue] = propertyValues): projected.Collection =
     copy(pk = pk, virtual = virtual, deleted = deleted, created = created, modified = modified,
          properties = properties, relatedProperties = relatedProperties, propertyValues = propertyValues)
+
+

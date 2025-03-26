@@ -8,8 +8,8 @@ import java.util.UUID
 
 case class PropertyValue
 (
-  property: projected.Property = entity.projected.Property(),
-  collection: projected.Collection = entity.projected.Collection(),
+  property: projected.Property = placeholders.Property,
+  collection: projected.Collection = placeholders.Collection,
   textValues: Seq[String] = Nil,
   byteValues: Seq[Array[Byte]] = Nil,
   smallintValues: Seq[Short] = Nil,
@@ -61,4 +61,3 @@ case class PropertyValue
       uuidValues = uuidValues,
       jsonValues = jsonValues
     )
-

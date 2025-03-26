@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity
-//import com.oopman.collectioneer.db.traits.entity.projected.{Property, PropertyValue}
 import com.oopman.collectioneer.db.traits.entity.{raw, projected}
 
 import java.time.ZonedDateTime
