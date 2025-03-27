@@ -4,7 +4,7 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.db.entity.projected.PropertyValue
 import com.oopman.collectioneer.db.scalikejdbc.traits
-import com.oopman.collectioneer.db.traits.entity.projected.{Collection as ProjectedCollection, Property as ProjectedProperty}
+import com.oopman.collectioneer.db.traits.entity.projected.{Collection as ProjectedCollection, Property as ProjectedProperty, PropertyValue as ProjectedPropertyValue}
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationshipType.PropertyOfCollection
 import com.oopman.collectioneer.db.traits.entity.raw.{Collection, PropertyCollection, PropertyCollectionRelationshipType}
 import com.oopman.collectioneer.plugins.postgresbackend
@@ -20,10 +20,11 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
    performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
   (implicit session: DBSession = AutoSession): Seq[Int] =
     val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
-      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.projectedCopyWith(pk = collection.pk))
+      // TODO: Why not juyst assigned collection = collection here?
+      case (property: ProjectedProperty, propertyValue: ProjectedPropertyValue) => propertyValue.projectedCopyWith(collection = propertyValue.collection.projectedCopyWith(pk = collection.pk))
     })
     val distinctCollections = collections.distinctBy(_.pk)
-    val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.map(_.property)))
+    val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.keys))
     val distinctProperties = collectionPKPropetiesListSeq.flatMap(_._2).distinctBy(_.pk)
     // TODO: Use a for expression here
     val propertyCollections = collectionPKPropetiesListSeq.flatMap((collectionPK, properties) => properties.map(property => entity.raw.PropertyCollection(propertyPK = property.pk, collectionPK = collectionPK)))
@@ -83,6 +84,6 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
         modified = collection.modified,
         properties = properties.map(_._2),
         relatedProperties = relatedProperties.map(_._2),
-        propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil)
+        propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil).map(pv => pv.property -> pv).toMap
       )
     }
