@@ -31,8 +31,8 @@ class MainView(val config: GUIConfig):
         .map(plugin => plugin.getCollectionsListTreeViewCellFactory(collection))
         .getOrElse((cell, collection) => {
           val text = collection.propertyValues
-            .find(pv => pv.property.pk == CoreProperties.name.property.pk)
-            .flatMap(pv => pv.textValues.headOption)
+            .find((property, pv) => property == CoreProperties.name)
+            .flatMap((property, pv) => pv.textValues.headOption)
             .getOrElse(collection.pk.toString)
           cell.text = text
         })
