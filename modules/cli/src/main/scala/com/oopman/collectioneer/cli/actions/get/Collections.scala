@@ -48,6 +48,6 @@ object Collections:
             properties = collection.properties.map(propertyToPropertyWithPropertyValues),
             relatedProperties = collection.relatedProperties.map(propertyToPropertyWithPropertyValues),
             propertyValues = Map
-              .from(collection.propertyValues.map(Common.propertyValuesToMapTuple))
+              .from(collection.propertyValues.values.map(Common.propertyValuesToMapTuple))
           ))).asJson
     Injection.produceRun(Some(config))(getCollections)
