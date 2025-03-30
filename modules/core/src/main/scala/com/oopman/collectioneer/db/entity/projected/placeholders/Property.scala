@@ -14,8 +14,8 @@ object Property extends projected.Property:
   def deleted: Boolean = reject
   def created: ZonedDateTime = reject
   def modified: ZonedDateTime = reject
-  def propertyValues: Seq[projected.PropertyValue] = reject
+  def propertyValues: Map[projected.Property, projected.PropertyValue] = reject
   def rawCopyWith(pk: UUID, propertyName: String, propertyTypes: Seq[PropertyType], deleted: Boolean,
                            created: ZonedDateTime, modified: ZonedDateTime): projected.Property = reject
   def projectedCopyWith(pk: UUID, propertyName: String, propertyTypes: Seq[PropertyType], deleted: Boolean,
-                        created: ZonedDateTime, modified: ZonedDateTime, propertyValues: Seq[projected.PropertyValue]): projected.Property = reject
+                        created: ZonedDateTime, modified: ZonedDateTime, propertyValues: Map[projected.Property, projected.PropertyValue]): projected.Property = reject

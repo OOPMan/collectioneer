@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait Property extends traits.entity.raw.Property:
-  def propertyValues: Seq[PropertyValue]
+  def propertyValues: Map[Property, PropertyValue]
   
   def projectedCopyWith(pk: UUID = pk,
                         propertyName: String = propertyName,
@@ -15,7 +15,7 @@ trait Property extends traits.entity.raw.Property:
                         deleted: Boolean = deleted,
                         created: ZonedDateTime = created,
                         modified: ZonedDateTime = modified,
-                        propertyValues: Seq[PropertyValue] = propertyValues): Property
+                        propertyValues: Map[Property, PropertyValue] = propertyValues): Property
 
 object Property:
   /**
@@ -44,6 +44,6 @@ object Property:
   def collectProperties(properties: Seq[Property]): Seq[Property] =
     val distinctProperties = deduplicateProperties(properties)
     val distinctPropertiesMap = distinctProperties.groupBy(_.pk)
-    val distinctNestedProperties = deduplicateProperties(properties.flatMap(_.propertyValues.map(_.property))).filterNot(p => distinctPropertiesMap.contains(p.pk))
+    val distinctNestedProperties = deduplicateProperties(properties.flatMap(_.propertyValues.values.map(_.property))).filterNot(p => distinctPropertiesMap.contains(p.pk))
     // TODO: This is potentially flawed as it will not detect property duplication among grand-children
     if distinctNestedProperties.isEmpty then distinctProperties else distinctProperties ++ collectProperties(distinctNestedProperties)

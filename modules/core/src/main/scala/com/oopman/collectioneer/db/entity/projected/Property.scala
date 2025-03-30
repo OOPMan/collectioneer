@@ -14,7 +14,7 @@ case class Property
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValues: Seq[projected.PropertyValue] = Nil,
+  propertyValues: Map[projected.Property, projected.PropertyValue] = Map.empty,
 ) extends projected.Property:
 
   def rawCopyWith(pk: UUID = pk,
@@ -38,7 +38,7 @@ case class Property
                         deleted: Boolean = deleted,
                         created: ZonedDateTime = created,
                         modified: ZonedDateTime = modified,
-                        propertyValues: Seq[projected.PropertyValue] = propertyValues): projected.Property =
+                        propertyValues: Map[projected.Property, projected.PropertyValue] = propertyValues): projected.Property =
     copy(
       pk = pk, 
       propertyName = propertyName, 
