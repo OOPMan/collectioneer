@@ -13,9 +13,9 @@ case class Collection
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  properties: Seq[projected.Property] = Nil,
-  relatedProperties: Seq[projected.Property] = Nil,
-  propertyValues: Map[projected.Property, projected.PropertyValue] = Map.empty
+  properties: Seq[raw.Property] = Nil,
+  relatedProperties: Seq[raw.Property] = Nil,
+  propertyValues: Map[raw.Property, projected.PropertyValue] = Map.empty
 ) extends projected.Collection:
 
   def rawCopyWith(pk: UUID = pk,
@@ -30,9 +30,9 @@ case class Collection
                         deleted: Boolean = deleted,
                         created: ZonedDateTime = created,
                         modified: ZonedDateTime = modified,
-                        properties: Seq[projected.Property] = properties,
-                        relatedProperties: Seq[projected.Property] = relatedProperties,
-                        propertyValues: Map[projected.Property, projected.PropertyValue] = propertyValues): projected.Collection =
+                        properties: Seq[raw.Property] = properties,
+                        relatedProperties: Seq[raw.Property] = relatedProperties,
+                        propertyValues: Map[raw.Property, projected.PropertyValue] = propertyValues): projected.Collection =
     copy(pk = pk, virtual = virtual, deleted = deleted, created = created, modified = modified,
          properties = properties, relatedProperties = relatedProperties, propertyValues = propertyValues)
 
