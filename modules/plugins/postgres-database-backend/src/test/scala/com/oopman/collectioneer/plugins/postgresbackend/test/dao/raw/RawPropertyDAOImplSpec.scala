@@ -82,6 +82,7 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
     val propertyA = ProjectedProperty(propertyName = "propertyA", propertyTypes = List(PropertyType.text))
     val propertyB = ProjectedProperty(propertyName = "propertyB", propertyTypes = List(PropertyType.int))
     val collection = ProjectedCollection( properties = List(propertyA, propertyB))
+    ProjectedPropertyDAOImpl.createProperties(Seq(propertyA, propertyB))
     ProjectedCollectionDAOImpl.createCollections(Seq(collection))
     val propertiesByCollection = PropertyDAOImpl.getAllByPropertyCollection(Seq(collection.pk), Seq(PropertyCollectionRelationshipType.PropertyOfCollection))
     assert(propertiesByCollection.size == 1)
