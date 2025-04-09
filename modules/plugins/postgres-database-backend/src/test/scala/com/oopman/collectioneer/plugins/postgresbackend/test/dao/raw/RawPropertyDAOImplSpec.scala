@@ -57,12 +57,12 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
 
   it should "return a list of Properties matching the PropertyValueComparisons supplied" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
-    import com.oopman.collectioneer.db.entity.projected.{Property as ProjectedProperty, PropertyValue as ProjecetedPropertyValue}
+    import com.oopman.collectioneer.db.entity.projected.{Property as ProjectedProperty, PropertyValue as ProjectedPropertyValue}
     import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.PropertyDAOImpl as ProjectedPropertyDAOImpl
     val property = ProjectedProperty(
-      propertyValues = List(
-        ProjecetedPropertyValue(property = CoreProperties.visible, booleanValues = List(true)),
-        ProjecetedPropertyValue(property = CoreProperties.minValues, intValues = List(1))
+      propertyValues = Map(
+        CoreProperties.visible -> ProjectedPropertyValue(booleanValues = List(true)),
+        CoreProperties.minValues -> ProjectedPropertyValue(intValues = List(1))
       )
     )
     ProjectedPropertyDAOImpl.createOrUpdateProperties(Seq(property))
