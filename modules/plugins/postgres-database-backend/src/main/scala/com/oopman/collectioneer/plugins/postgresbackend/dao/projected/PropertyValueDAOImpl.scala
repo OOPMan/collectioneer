@@ -8,7 +8,7 @@ import com.oopman.collectioneer.plugins.postgresbackend
 import java.util.UUID
 
 object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[(UUID, UUID, UUID, PropertyValue)] =
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[(UUID, UUID, Seq[UUID], PropertyValue)] =
     val bindings =
       Seq(session.connection.createArrayOf("varchar", collectionUUIDs.toArray)) ++
         (if propertyUUIDs.nonEmpty then Seq(session.connection.createArrayOf("varchar", propertyUUIDs.toArray)) else Nil)

@@ -30,12 +30,11 @@ object PropertyValue:
       Utils.resultSetArrayToListOf[String](rs, "property_value_json").map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
     )
 
-  def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet): (UUID, UUID, UUID, traits.entity.projected.PropertyValue) =
-//    val propertyValueData = generatePropertyValueData(rs)
+  def generatePropertyValuesFromWrappedResultSet(rs: WrappedResultSet): (UUID, UUID, Seq[UUID], traits.entity.projected.PropertyValue) =
     (
       UUID.fromString(rs.string("property_pk")),
       UUID.fromString(rs.string("top_level_collection_pk")),
-      UUID.fromString(rs.string("related_collection_pk")),
+      rs.array("related_collection_pk").getArray.asInstanceOf[Array[UUID]],
       generatePropertyValueData(rs)
     )
 
