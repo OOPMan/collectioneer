@@ -2,10 +2,8 @@ package com.oopman.collectioneer.plugins.postgresbackend.dao.projected
 
 import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.entity
-import com.oopman.collectioneer.db.entity.projected.PropertyValue
 import com.oopman.collectioneer.db.scalikejdbc.traits
-import com.oopman.collectioneer.db.traits.entity.projected.{Collection as ProjectedCollection, Property as ProjectedProperty, PropertyValue as ProjectedPropertyValue}
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationshipType.PropertyOfCollection
+import com.oopman.collectioneer.db.traits.entity.projected.Collection as ProjectedCollection
 import com.oopman.collectioneer.db.traits.entity.raw.{Collection, PropertyCollection, PropertyCollectionRelationshipType}
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.*
@@ -16,24 +14,27 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
   private def performCreateOrUpdateCollectionsOperation
   (collections: Seq[ProjectedCollection],
    performCreateOrUpdateCollections: Seq[Collection] => Seq[Int],
-   performCreateOrUpdateProperties: Seq[ProjectedProperty] => Seq[Int],
    performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
   (implicit session: DBSession = AutoSession): Seq[Int] =
-    val propertyValues = collections.flatMap(collection => collection.propertyValues.map {
-      case (property: ProjectedProperty, propertyValue: ProjectedPropertyValue) => propertyValue.projectedCopyWith(property=property, collection = collection)
-    })
-    val distinctCollections = collections.distinctBy(_.pk)
-    val collectionPKPropetiesListSeq = collections.map(collection => (collection.pk, collection.properties ++ collection.propertyValues.keys))
-    val distinctProperties = collectionPKPropetiesListSeq.flatMap(_._2).distinctBy(_.pk)
-    // TODO: Use a for expression here
-    val propertyCollections = collectionPKPropetiesListSeq.flatMap((collectionPK, properties) => properties.map(property => entity.raw.PropertyCollection(propertyPK = property.pk, collectionPK = collectionPK)))
-    val distinctPropertyCollections = propertyCollections
-      .distinctBy(propertyCollection => (propertyCollection.propertyPK, propertyCollection.collectionPK))
-      .zipWithIndex
-      .map((propertyCollection, index) => propertyCollection.copy(index=index))
-    performCreateOrUpdateCollections(distinctCollections)
-    performCreateOrUpdateProperties(distinctProperties)
-    performCreateOrUpdatePropertyCollections(distinctPropertyCollections)
+    val propertyValues =
+      for
+        collection <- collections
+        (property, propertyValue) <- collection.propertyValues
+      yield (property.pk, collection.pk, propertyValue)
+    val indexedPropertiesByCollection =
+      for collection <- collections
+      yield collection -> (collection.properties ++ collection.propertyValues.keys).distinct.zipWithIndex
+    val propertyCollections =
+      for
+       (collection, indexedProperties) <- indexedPropertiesByCollection
+       (property, index) <- indexedProperties
+      yield entity.raw.PropertyCollection(
+        propertyPK = property.pk,
+        collectionPK = collection.pk,
+        index = index
+      )
+    performCreateOrUpdateCollections(collections.distinct)
+    performCreateOrUpdatePropertyCollections(propertyCollections)
     postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
     // TODO: Return a more useful result?
     Nil
@@ -42,7 +43,6 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
     performCreateOrUpdateCollectionsOperation(
       collections,
       postgresbackend.dao.raw.CollectionDAOImpl.createCollections,
-      postgresbackend.dao.projected.PropertyDAOImpl.createProperties,
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createPropertyCollections,
     )
 
@@ -50,7 +50,6 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
     performCreateOrUpdateCollectionsOperation(
       collections,
       postgresbackend.dao.raw.CollectionDAOImpl.createOrUpdateCollections,
-      postgresbackend.dao.projected.PropertyDAOImpl.createOrUpdateProperties,
       postgresbackend.dao.raw.PropertyCollectionDAOImpl.createOrUpdatePropertyCollections,
     )
 
@@ -64,17 +63,28 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
   def getAllRelatedMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[ProjectedCollection] = ???
 
   def inflateRawCollections(collections: Seq[Collection], propertyPKs: Seq[UUID] = Nil)(implicit session: DBSession): Seq[ProjectedCollection] =
-    // TODO: This is not retrieving the Properties correctly :-(
     val collectionPKs = collections.map(_.pk)
+    // TODO: These properties are Projected rather than Raw. We should implement this method on the Raw PropertyDAOImpl
     val propertiesByCollection = postgresbackend.dao.projected.PropertyDAOImpl.getAllRelatedByPropertyCollection(
       collectionPKs = collectionPKs,
       propertyPKs = propertyPKs,
       propertyCollectionRelationshipTypes = PropertyCollectionRelationshipType.PropertyOfCollection :: Nil
     )
     val propertyValues = postgresbackend.dao.projected.PropertyValueDAOImpl.getPropertyValuesByCollectionUUIDs(collectionPKs, propertyPKs)
-    val propertyValuesMap = propertyValues.groupBy(_.collection.pk)
+    val propertiesMap =
+      for
+        (collectionPK, properties) <- propertiesByCollection
+        (relatedProperty, property) <- properties.distinct
+      yield property.pk -> property
+
+    val propertyValuesMap = propertyValues.groupBy(_._2)
     for(collection <- collections) yield {
       val (relatedProperties, properties) = propertiesByCollection.getOrElse(collection.pk, Nil).partition(_._1)
+      val propertyValues =
+        for
+          (propertyPK, _, _, propertyValue) <- propertyValuesMap.getOrElse(collection.pk, Nil)
+          property <- propertiesMap.get(propertyPK)
+        yield property -> propertyValue
       entity.projected.Collection(
         pk = collection.pk,
         virtual = collection.virtual,
@@ -83,6 +93,6 @@ object CollectionDAOImpl extends traits.dao.projected.ScalikeCollectionDAO:
         modified = collection.modified,
         properties = properties.map(_._2),
         relatedProperties = relatedProperties.map(_._2),
-        propertyValues = propertyValuesMap.getOrElse(collection.pk, Nil).map(pv => pv.property -> pv).toMap
+        propertyValues = propertyValues.toMap
       )
     }

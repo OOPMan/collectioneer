@@ -98,7 +98,7 @@ object PropertyValueQueries:
               GROUP BY cte6.top_level_collection_pk, cte6.related_collection_pk, cte6.property_pk
           )
           SELECT
-              p.*,
+              cte8.property_pk,
               cte8.property_value_bigint,
               cte8.property_value_boolean,
               cte8.property_value_bytes,
@@ -116,7 +116,6 @@ object PropertyValueQueries:
               cte8.top_level_collection_pk,
               cte8.related_collection_pk
           FROM cte8
-          INNER JOIN property AS p ON cte8.property_pk = p.pk
         """
 
   def generatePropertyValuesByParentPropertyPKsCTE3SelectComponent(inputPropertyType: PropertyType): String =
