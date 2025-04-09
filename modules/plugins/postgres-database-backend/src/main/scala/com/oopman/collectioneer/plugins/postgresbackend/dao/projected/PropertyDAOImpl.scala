@@ -205,7 +205,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     val allProperties = properties ++ childProperties
     val propertiesMap = allProperties.map(p => p.pk -> p).toMap
 
-    val propertyPKtoProjectedPropertyMap =
+    val propertyPKtoPropertyValuesMap =
       for
         (parentPropertyPK, propertyValueDataList) <- propertyValueDataList.groupBy(_._1)
         parentProperty <- propertiesMap.get(parentPropertyPK)
@@ -215,16 +215,15 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
             (_, childPropertyPK, propertyValue) <- propertyValueDataList
             childProperty <- propertiesMap.get(childPropertyPK)
           yield childProperty -> propertyValue
-        parentPropertyPK -> entity.projected.Property(
-          pk = parentProperty.pk,
-          propertyName = parentProperty.propertyName,
-          propertyTypes = parentProperty.propertyTypes,
-          deleted = parentProperty.deleted,
-          created = parentProperty.created,
-          modified = parentProperty.modified,
-          propertyValues = propertyValues.toMap
-        )
+        parentPropertyPK -> propertyValues.toMap
     for
-      propertyPK <- propertyPKs
-      property <- propertyPKtoProjectedPropertyMap.get(propertyPK)
-    yield property
+      property <- properties
+    yield entity.projected.Property(
+      pk = property.pk,
+      propertyName = property.propertyName,
+      propertyTypes = property.propertyTypes,
+      deleted = property.deleted,
+      created = property.created,
+      modified = property.modified,
+      propertyValues = propertyPKtoPropertyValuesMap.getOrElse(property.pk, Map.empty)
+    )
