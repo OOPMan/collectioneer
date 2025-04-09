@@ -16,15 +16,10 @@ private val isGATCGProperty = Property(
   pk = CommonPropertiesUUIDs.isGATCGProperty,
   propertyName = "Is GATCG Property",
   propertyTypes = List(PropertyType.boolean),
-  propertyValues = List(
-    PropertyValue(
-      property = CoreProperties.minValues,
-      smallintValues = List(1)
-    ),
-    PropertyValue(
-      property = CoreProperties.maxValues,
-      smallintValues = List(1)
-    ))
+  propertyValues = Map(
+    CoreProperties.minValues -> PropertyValue(smallintValues = List(1)),
+    CoreProperties.maxValues -> PropertyValue(smallintValues = List(1))
+  )
 )
 
 enum CommonProperties(val property: Property) :
