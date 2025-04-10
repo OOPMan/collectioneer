@@ -3,6 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg.properties
 import com.oopman.collectioneer.db.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
+import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
 import com.oopman.collectioneer.given
 
 private object SetPropertiesUUIDs:

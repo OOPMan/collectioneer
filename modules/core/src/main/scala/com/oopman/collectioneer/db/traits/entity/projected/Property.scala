@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
 import com.oopman.collectioneer.db.traits.entity.raw
-//import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -16,6 +15,7 @@ trait Property extends raw.Property:
                         created: ZonedDateTime = created,
                         modified: ZonedDateTime = modified,
                         propertyValues: Map[raw.Property, PropertyValue] = propertyValues): Property
+
 
 object Property:
  
@@ -35,3 +35,8 @@ object Property:
           (propertyA, propertyB) => if propertyA.modified.isAfter(propertyB.modified) then propertyA else propertyB)
       )
       .toSeq
+
+
+trait HasProperty extends raw.HasProperty:
+  override def property: Property
+

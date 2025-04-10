@@ -19,6 +19,7 @@ enum PropertyType:
   case uuid extends PropertyType
   case json extends PropertyType
 
+
 trait Property:
   def pk: UUID
   def propertyName: String
@@ -43,3 +44,6 @@ trait Property:
 
   override def hashCode(): Int = pk.hashCode()
 
+
+trait HasProperty:
+  def property: Property

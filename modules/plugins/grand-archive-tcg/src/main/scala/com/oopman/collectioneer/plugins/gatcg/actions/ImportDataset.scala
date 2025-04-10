@@ -7,8 +7,9 @@ import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CardProperties, CommonProperties, EditionProperties, SetProperties}
-import com.oopman.collectioneer.plugins.gatcg.{Card, GATCGRootCollection, given}
+import com.oopman.collectioneer.plugins.gatcg.{Card, GATCGRootCollection}
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 
 import java.util.UUID
 
@@ -75,7 +76,7 @@ def importDataset(cards: List[Card],
     val editionDataMap = Map.from(editions.map(edition => (edition.uuid, Collection(
       pk = editionUUIDs.getOrElse(edition.uuid, UUID.randomUUID),
       virtual = true,
-      propertyValues = Map(
+      propertyValues = Map[traits.entity.raw.Property, traits.entity.projected.PropertyValue](
         EditionProperties.editionUID -> PropertyValue(textValues = List(edition.uuid)),
         EditionProperties.cardUID -> PropertyValue(textValues = List(edition.card_id)),
         EditionProperties.collectorNumber -> PropertyValue(textValues = List(edition.collector_number)),

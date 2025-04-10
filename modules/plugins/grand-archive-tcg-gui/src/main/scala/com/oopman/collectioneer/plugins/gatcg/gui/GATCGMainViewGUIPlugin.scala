@@ -4,10 +4,11 @@ import com.oopman.collectioneer.{CoreProperties, given}
 import com.oopman.collectioneer.db.SortDirection
 import com.oopman.collectioneer.db.traits.dao.raw.CollectionDAO
 import com.oopman.collectioneer.db.traits.entity.projected.{Collection, Property}
-import com.oopman.collectioneer.db.traits.entity.raw.Collection as RawCollection
-import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, given}
+import com.oopman.collectioneer.db.traits.entity.raw.{Collection as RawCollection, Property as RawProperty}
+import com.oopman.collectioneer.plugins.gatcg.GATCGRootCollection
 import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties, SetProperties}
 import com.oopman.collectioneer.plugins.{GUIPlugin, MainViewGUIPlugin}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 import distage.Id
 import scalafx.scene.control.TreeCell
 import scalafx.stage.Stage
@@ -16,7 +17,7 @@ import java.util.UUID
 
 class GATCGMainViewGUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), MainViewGUIPlugin:
-  private val whitelistedPropertyPKs: Seq[Property] = Seq(SetProperties.setPrefix, EditionProperties.collectorNumber)
+  private val whitelistedProperties: Seq[RawProperty] = Seq(SetProperties.setPrefix, EditionProperties.collectorNumber)
 
   private def setCollectionCellFactory(cell: TreeCell[Collection], collection: Collection): Unit =
     val setName = collection.propertyValues
@@ -41,7 +42,7 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
     cell.text = s"$cardName ($collectorNumber)"
 
   def canGetCollectionsListTreeViewCellFactory(collection: Collection): Boolean =
-    collection.propertyValues.keySet.intersect(whitelistedPropertyPKs.toSet).nonEmpty
+    collection.propertyValues.keySet.intersect(whitelistedProperties.toSet).nonEmpty
 
   def canGetRawChildCollections(collection: Collection): Boolean =
     collection.propertyValues.contains(SetProperties.setPrefix)
