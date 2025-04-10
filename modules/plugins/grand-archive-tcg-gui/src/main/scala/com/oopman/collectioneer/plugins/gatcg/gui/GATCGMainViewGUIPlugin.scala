@@ -20,22 +20,22 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
 
   private def setCollectionCellFactory(cell: TreeCell[Collection], collection: Collection): Unit =
     val setName = collection.propertyValues
-      .find((property, pv) => property == CoreProperties.name)
+      .find((property, pv) => property == CoreProperties.name.property)
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse(collection.pk.toString)
     val setPrefix = collection.propertyValues
-      .find((property, pv) => property == SetProperties.setPrefix)
+      .find((property, pv) => property == SetProperties.setPrefix.property)
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse("?")
     cell.text = s"$setName ($setPrefix)"
 
   private def cardCollectionCellFactory(cell: TreeCell[Collection], collection: Collection): Unit =
     val cardName = collection.propertyValues
-      .find((property, pv) => property == CoreProperties.name)
+      .find((property, pv) => property == CoreProperties.name.property)
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse(collection.pk.toString)
     val collectorNumber = collection.propertyValues
-      .find((property, pv) => property == EditionProperties.collectorNumber)
+      .find((property, pv) => property == EditionProperties.collectorNumber.property)
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse("?")
     cell.text = s"$cardName ($collectorNumber)"

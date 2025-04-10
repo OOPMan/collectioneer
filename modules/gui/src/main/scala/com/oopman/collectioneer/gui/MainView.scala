@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection}
+import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection, given}
 import com.oopman.collectioneer.db.{SortDirection, traits}
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.entity.raw.Collection as RawCollection
@@ -31,7 +31,7 @@ class MainView(val config: GUIConfig):
         .map(plugin => plugin.getCollectionsListTreeViewCellFactory(collection))
         .getOrElse((cell, collection) => {
           val text = collection.propertyValues
-            .find((property, pv) => property == CoreProperties.name)
+            .find((property, pv) => property == CoreProperties.name.property)
             .flatMap((property, pv) => pv.textValues.headOption)
             .getOrElse(collection.pk.toString)
           cell.text = text
