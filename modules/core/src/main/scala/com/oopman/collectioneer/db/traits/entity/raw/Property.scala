@@ -34,4 +34,12 @@ trait Property:
                   created: ZonedDateTime = created,
                   modified: ZonedDateTime = modified): Property
 
+  override def equals(obj: Any): Boolean = obj match {
+    case property: Property => pk.equals(property.pk)
+    case _ => false
+  }
+
+  def exactlyEquals(obj: Any): Boolean = super.equals(obj)
+
+  override def hashCode(): Int = pk.hashCode()
 
