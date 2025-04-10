@@ -6,7 +6,7 @@ import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.{entity, traits}
-import com.oopman.collectioneer.plugins.gatcg.properties.{CardProperties, CommonProperties, EditionProperties, SetProperties}
+import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CardProperties, CommonProperties, EditionProperties, SetProperties}
 import com.oopman.collectioneer.plugins.gatcg.{Card, GATCGRootCollection, given}
 import com.oopman.collectioneer.{CoreProperties, given}
 
@@ -16,8 +16,11 @@ import java.util.UUID
 def importDataset(cards: List[Card],
                   collectionDAO: traits.dao.projected.CollectionDAO,
                   rawCollectionDAO: traits.dao.raw.CollectionDAO,
+                  propertyDAO: traits.dao.projected.PropertyDAO,
                   propertyValueDAO: traits.dao.projected.PropertyValueDAO,
                   relationshipDAO: traits.dao.raw.RelationshipDAO) =
+    // Create/Update properties
+    propertyDAO.createOrUpdateProperties(AllProperties)
     // Generate Sets
     val sets = cards.flatMap(_.editions.map(_.set)).distinctBy(set => (set.prefix, set.language))
     val setUUIDS: Map[(String, String), UUID] = Map.from(sets.map(set => ((set.prefix, set.language), UUID.nameUUIDFromBytes(s"GATCG-set-${set.prefix}-${set.language}".getBytes))))
