@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 
 val name = "Grand Archive TCG"
 val description = "An anime TCG with western game design"

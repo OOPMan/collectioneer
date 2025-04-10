@@ -3,6 +3,7 @@ package com.oopman.collectioneer
 import com.oopman.collectioneer.db.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.given
+import com.oopman.collectioneer.db.traits.entity.raw.given 
 
 import java.util.UUID
 

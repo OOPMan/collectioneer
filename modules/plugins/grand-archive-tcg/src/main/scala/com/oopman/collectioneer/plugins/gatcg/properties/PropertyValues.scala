@@ -3,6 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg.properties
 import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 import com.oopman.collectioneer.db.entity.projected.PropertyValue
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given 
 
 object PropertyValues:
   val singleValue: Map[raw.Property, projected.PropertyValue] = Map(

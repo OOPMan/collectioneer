@@ -5,6 +5,7 @@ import izumi.distage.model.definition.ModuleDef
 
 trait DatabaseBackendPlugin extends Plugin:
   val config: Config
+  // TODO: Return Try for startUp and shutDown
   def startUp(): Unit
   def shutDown(): Unit
   def compatibleWithDatasourceUri: Boolean

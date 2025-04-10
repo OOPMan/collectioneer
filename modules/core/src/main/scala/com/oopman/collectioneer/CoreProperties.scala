@@ -22,39 +22,39 @@ enum CoreProperties(val property: projected.Property):
     pk = CorePropertyUUIDs.name,
     propertyName = "Name",
     propertyTypes = List(raw.PropertyType.text),
-  ))
+  )) with projected.HasProperty
   case description extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.description,
     propertyName = "Description",
     propertyTypes = List(raw.PropertyType.text),
-  ))
+  )) with projected.HasProperty
   case defaultValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.defaultValue,
     propertyName = "Default Value",
     propertyTypes = raw.PropertyType.values.toList,
-  ))
+  )) with projected.HasProperty
   case minValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.minValue,
     propertyName = "Minimum Value",
     propertyTypes = raw.PropertyType.values.toList,
-  ))
+  )) with projected.HasProperty
   case maxValue extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.maxValue,
     propertyName = "Maximum Value",
     propertyTypes = raw.PropertyType.values.toList,
-  ))
+  )) with projected.HasProperty
   case minValues extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.minValues,
     propertyName = "Minimum Number of Values",
     propertyTypes = List(raw.PropertyType.int),
-  ))
+  )) with projected.HasProperty
   case maxValues extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.maxValues,
     propertyName = "Maximum Number of Values",
     propertyTypes = List(raw.PropertyType.int),
-  ))
+  )) with projected.HasProperty
   case visible extends CoreProperties(entity.projected.Property(
     pk = CorePropertyUUIDs.visible,
     propertyName = "Visible",
     propertyTypes = List(raw.PropertyType.boolean)
-  ))
+  )) with projected.HasProperty

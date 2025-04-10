@@ -37,6 +37,7 @@ trait Property:
 
   override def equals(obj: Any): Boolean = obj match {
     case property: Property => pk.equals(property.pk)
+    case hasProperty: HasProperty => pk.equals(hasProperty.property.pk)
     case _ => false
   }
 

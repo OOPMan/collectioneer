@@ -5,6 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 
 private object CommonPropertiesUUIDs:
   val isGATCGSet = "84ab0f47-a357-4376-a3a9-e38845f2f87c"
