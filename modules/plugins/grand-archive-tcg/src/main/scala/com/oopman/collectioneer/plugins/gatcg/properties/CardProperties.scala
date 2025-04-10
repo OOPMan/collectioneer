@@ -1,7 +1,8 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
-import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValue}
+import com.oopman.collectioneer.db.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.given
 
 private object CardPropertiesUUIDs:
@@ -21,7 +22,10 @@ private object CardPropertiesUUIDs:
   val durability = "44a3605f-125a-44ce-961b-30b9c89b3976"
   val flavourText = "6edcb854-eab6-4f38-9544-a31ba6e5c448"
 
-enum CardProperties(val property: Property):
+object CardProperties:
+  def properties: Array[projected.Property] = values.map(_.property)
+
+enum CardProperties(val property: projected.Property):
   case cardUID extends CardProperties(Property(
     pk = CardPropertiesUUIDs.cardUID,
     propertyName = "Card UID",

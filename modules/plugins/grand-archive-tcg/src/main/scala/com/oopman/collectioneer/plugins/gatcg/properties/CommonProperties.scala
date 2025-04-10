@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.{Property, PropertyValue}
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.{CoreProperties, given}
 
 private object CommonPropertiesUUIDs:
@@ -22,7 +23,10 @@ private val isGATCGProperty = Property(
   )
 )
 
-enum CommonProperties(val property: Property) :
+object CommonProperties:
+  def properties: Array[projected.Property] = values.map(_.property)
+
+enum CommonProperties(val property: projected.Property) :
   case isGATCGProperty extends CommonProperties(com.oopman.collectioneer.plugins.gatcg.properties.isGATCGProperty) with HasProperty
   case isGATCGSet extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGSet,
