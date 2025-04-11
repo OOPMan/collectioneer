@@ -4,11 +4,11 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 trait RelationshipCollection:
-  val relationshipPK: UUID
-  val collectionPK: UUID
-  val index: Int
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
+  def relationshipPK: UUID
+  def collectionPK: UUID
+  def index: Int
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
   
   def rawCopyWith(relationshipPK: UUID = relationshipPK,
                   collectionPK: UUID = collectionPK,

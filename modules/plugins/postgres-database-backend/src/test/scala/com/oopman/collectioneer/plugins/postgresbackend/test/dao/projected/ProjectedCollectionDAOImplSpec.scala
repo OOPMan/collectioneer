@@ -14,7 +14,7 @@ class ProjectedCollectionDAOImplSpec extends BaseFunSuite:
     assert(collection.properties.length == 2)
     assert(collection.properties.exists(_.pk.equals(CoreProperties.name.property.pk)))
     assert(collection.properties.exists(_.pk.equals(CoreProperties.description.property.pk)))
-    assert(collection.propertyValues.length == 2)
+    assert(collection.propertyValues.size == 2)
   }
 
   it should "return a List of projected Collections constrained by the given Collection. Properties and PropertyValues retrieved should be constrained by given PropertyPKs" in { implicit session =>

@@ -8,7 +8,7 @@ import com.oopman.collectioneer.plugins.postgresbackend
 import java.util.UUID
 
 object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikePropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[PropertyValue] =
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil)(implicit session: DBSession = AutoSession): Seq[(UUID, UUID, Seq[UUID], PropertyValue)] =
     val bindings =
       Seq(session.connection.createArrayOf("varchar", collectionUUIDs.toArray)) ++
         (if propertyUUIDs.nonEmpty then Seq(session.connection.createArrayOf("varchar", propertyUUIDs.toArray)) else Nil)
@@ -19,10 +19,11 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
       .list
       .apply()
 
-  def updatePropertyValues(propertyValues: Seq[PropertyValue])(implicit session: DBSession = AutoSession): Seq[Boolean] =
-    val propertyPKs = propertyValues.map(_.property.pk).distinct
-    val collectionPKs = propertyValues.map(_.collection.pk).distinct
+  def updatePropertyValues(propertyValues: Seq[(UUID, UUID, PropertyValue)])(implicit session: DBSession = AutoSession): Seq[Boolean] =
+    val propertyPKs = propertyValues.map(_._1).distinct
+    val collectionPKs = propertyValues.map(_._2).distinct
     // Delete existing PropertyValues in all property value tables by property and propertyValueSet
+    // TODO: This might unintentionally delete more PVs than it should...
     postgresbackend.queries.raw.PropertyValueQueries.propertyValueQueryObjects
       .map(_.deleteByCollectionPksAndPropertyPKs.bind(
         session.connection.createArrayOf("varchar", collectionPKs.toArray),
@@ -30,13 +31,13 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
       ).update.apply())
     // Insert new PropertyValues into relevant property value tables by property and properyValueSet
     propertyValues
-      .flatMap(postgresbackend.entity.projected.PropertyValue.toRawPropertyValues)
+      .flatMap((propertyPK, collectionPK, propertyValue) => postgresbackend.entity.projected.PropertyValue.toRawPropertyValues(propertyPK, collectionPK, propertyValue))
       .map {
         case pv: traits.entity.raw.PropertyValueText => (pv, postgresbackend.queries.raw.PropertyValueVarcharQueries.insert)
         case pv: traits.entity.raw.PropertyValueBytes => (pv, postgresbackend.queries.raw.PropertyValueVarbinaryQueries.insert)
         case pv: traits.entity.raw.PropertyValueSmallint => (pv, postgresbackend.queries.raw.PropertyValueSmallintQueries.insert)
         case pv: traits.entity.raw.PropertyValueInt => (pv, postgresbackend.queries.raw.PropertyValueIntQueries.insert)
-        case pv: traits.entity.raw.PropertyValueBigint => (pv, postgresbackend.queries.raw.PropertyValueBigintQueries.insert)
+        case pv: traits.entity.raw.PropertyValueBigInt => (pv, postgresbackend.queries.raw.PropertyValueBigintQueries.insert)
         case pv: traits.entity.raw.PropertyValueBigDecimal => (pv, postgresbackend.queries.raw.PropertyValueNumericQueries.insert)
         case pv: traits.entity.raw.PropertyValueFloat => (pv, postgresbackend.queries.raw.PropertyValueFloatQueries.insert)
         case pv: traits.entity.raw.PropertyValueDouble => (pv, postgresbackend.queries.raw.PropertyValueDoubleQueries.insert)

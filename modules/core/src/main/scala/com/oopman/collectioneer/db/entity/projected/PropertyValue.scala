@@ -1,15 +1,13 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity
-import com.oopman.collectioneer.db.traits.entity.projected
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 case class PropertyValue
 (
-  property: projected.Property = entity.projected.Property(),
-  collection: projected.Collection = entity.projected.Collection(),
   textValues: Seq[String] = Nil,
   byteValues: Seq[Array[Byte]] = Nil,
   smallintValues: Seq[Short] = Nil,
@@ -26,9 +24,7 @@ case class PropertyValue
   jsonValues: Seq[io.circe.Json] = Nil
 ) extends projected.PropertyValue:
 
-  def projectedCopyWith(property: projected.Property = property,
-                        collection: projected.Collection = collection,
-                        textValues: Seq[String] = textValues,
+  def projectedCopyWith(textValues: Seq[String] = textValues,
                         byteValues: Seq[Array[Byte]] = byteValues,
                         smallintValues: Seq[Short] = smallintValues,
                         intValues: Seq[Int] = intValues,
@@ -44,8 +40,6 @@ case class PropertyValue
                         jsonValues: Seq[io.circe.Json] = jsonValues
                        ): projected.PropertyValue =
     copy(
-      property = property,
-      collection = collection,
       textValues = textValues,
       byteValues = byteValues,
       smallintValues = smallintValues,
@@ -61,4 +55,3 @@ case class PropertyValue
       uuidValues = uuidValues,
       jsonValues = jsonValues
     )
-

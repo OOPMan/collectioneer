@@ -4,10 +4,10 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.Comparison
 import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.projected.ScalikePropertyDAO
 import com.oopman.collectioneer.db.traits.entity.projected.Property as ProjectedProperty
-import com.oopman.collectioneer.db.traits.entity.raw.{Collection, Property, PropertyCollection, PropertyCollectionRelationshipType}
-import com.oopman.collectioneer.db.{entity, traits}
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyCollectionRelationshipType
+import com.oopman.collectioneer.db.traits.entity.{raw, projected}
+import com.oopman.collectioneer.db.entity
 import com.oopman.collectioneer.plugins.postgresbackend
-import com.oopman.collectioneer.plugins.postgresbackend.entity.projected.PropertyValue.generatePropertyValueData
 import scalikejdbc.*
 
 import java.util.UUID
@@ -15,30 +15,43 @@ import java.util.UUID
 object PropertyDAOImpl extends ScalikePropertyDAO:
   private def performCreateOrUpdatePropertiesOperation
   (properties: Seq[ProjectedProperty],
-   performCreateOrUpdateProperties: Seq[Property] => Seq[Int],
-   performCreateOrUpdateCollections: Seq[Collection] => Seq[Int],
-   performCreateOrUpdatePropertyCollections: Seq[PropertyCollection] => Seq[Int])
+   performCreateOrUpdateProperties: Seq[raw.Property] => Seq[Int],
+   performCreateOrUpdateCollections: Seq[raw.Collection] => Seq[Int],
+   performCreateOrUpdatePropertyCollections: Seq[raw.PropertyCollection] => Seq[Int])
   (implicit session: DBSession = AutoSession): Seq[Int] =
-    val distinctProperties = ProjectedProperty.collectProperties(properties)
-    val collections = distinctProperties.map(p => entity.raw.Collection(pk = p.pk))
-    val propertyValues = distinctProperties.flatMap(property => property.propertyValues.map {
-      case propertyValue: entity.projected.PropertyValue => propertyValue.copy(collection = propertyValue.collection.projectedCopyWith(pk = property.pk))
-    })
-    // TODO: Find a way to link Collections to root? May not be desirable actually?
-    val propertyCollectionsA = distinctProperties.map(p => entity.raw.PropertyCollection(
-      propertyPK = p.pk,
-      collectionPK = p.pk,
-      propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
-    ))
-    val propertyCollectionsB = propertyValues
-      .groupBy(_.collection.pk)
-      .flatMap((_, propertyValues) => propertyValues.zipWithIndex.map((propertyValue, index) => entity.raw.PropertyCollection(
-        propertyPK = propertyValue.property.pk,
-        collectionPK = propertyValue.collection.pk,
+    val relatedProperties = ProjectedProperty.deduplicateProperties(properties.flatMap(_.propertyValues.keys))
+    val existingRelatedProperties = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(relatedProperties.map(_.pk))
+    val relatedPropertiesToCreate = relatedProperties.diff(existingRelatedProperties)
+    val distinctProperties = properties.distinct
+    val collectionsAndPropertyCollections = for (property <- distinctProperties) yield (
+      entity.raw.Collection(
+        pk = property.pk,
+        virtual = true,
+        deleted = property.deleted,
+        created = property.created,
+        modified = property.modified
+      ),
+      entity.raw.PropertyCollection(
+        propertyPK = property.pk,
+        collectionPK = property.pk,
+        propertyCollectionRelationshipType = PropertyCollectionRelationshipType.CollectionOfPropertiesOfProperty
+      )
+    )
+    val (collections, propertyCollectionsA) = collectionsAndPropertyCollections.unzip
+    val propertyValuesAndPropertyCollections = for {
+      parentProperty <- properties
+      ((property, propertyValue), index) <- parentProperty.propertyValues.zipWithIndex
+    } yield (
+      (property.pk, parentProperty.pk, propertyValue),
+      entity.raw.PropertyCollection(
+        propertyPK = property.pk,
+        collectionPK = parentProperty.pk,
         index = index
-      )))
-      .toSeq
-    performCreateOrUpdateProperties(distinctProperties)
+      )
+    )
+    val (propertyValues, propertyCollectionsB) = propertyValuesAndPropertyCollections.unzip
+    performCreateOrUpdateProperties(relatedPropertiesToCreate)
+    performCreateOrUpdateProperties(properties)
     performCreateOrUpdateCollections(collections)
     performCreateOrUpdatePropertyCollections(propertyCollectionsA ++ propertyCollectionsB)
     postgresbackend.dao.projected.PropertyValueDAOImpl.updatePropertyValues(propertyValues)
@@ -162,7 +175,15 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       (collection_pk, groupedTuples) <- result.groupBy(_._1)
     } yield (collection_pk, groupedTuples.map(_._2))
 
-  def inflateRawProperties(properties: Seq[Property])(implicit session: DBSession): Seq[ProjectedProperty] =
+  /**
+   * Inflates a Sequence of raw Property objects. This is done by retrieving all PropertyValue data for the provided
+   * Property objects and then executing an additional load of raw Property objects included in the PropertyValue data
+   *
+   * @param properties
+   * @param session
+   * @return
+   */
+  def inflateRawProperties(properties: Seq[raw.Property])(implicit session: DBSession): Seq[ProjectedProperty] =
     val propertyPKs = properties.map(_.pk)
     val propertyValueDataList = postgresbackend.queries.projected.PropertyValueQueries
       .propertyValuesByParentPropertyPKs()
@@ -171,7 +192,7 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
         (
           UUID.fromString(rs.string("parent_property_pk")),
           UUID.fromString(rs.string("child_property_pk")),
-          generatePropertyValueData(rs)
+          postgresbackend.entity.projected.PropertyValue.generatePropertyValueData(rs)
         )
       }
       .list
@@ -183,52 +204,26 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
     val childProperties = postgresbackend.dao.raw.PropertyDAOImpl.getAllMatchingPKs(childPropertyUUIDs)
     val allProperties = properties ++ childProperties
     val propertiesMap = allProperties.map(p => p.pk -> p).toMap
-    val propertyValueDataMap = propertyValueDataList
-      .groupBy(_._1)
-      .map((parentPropertyPK, propertyValueDataList) => (
-        parentPropertyPK,
-        propertyValueDataList.map((_, childPropertyPK, propertyValueData) => (childPropertyPK, propertyValueData)).toMap
-      ))
-    for {
-      parentPropertyPK <- propertyPKs
-      property <- propertiesMap.get(parentPropertyPK)
-    } yield {
-      val propertyValues = for {
-        (childPropertyPK, propertyValueData) <- propertyValueDataMap.getOrElse(property.pk, Map())
-        childProperty <- propertiesMap.get(childPropertyPK)
-      } yield entity.projected.PropertyValue(
-        property = entity.projected.Property(
-          pk = childProperty.pk,
-          propertyName = childProperty.propertyName,
-          propertyTypes = childProperty.propertyTypes,
-          deleted = childProperty.deleted,
-          created = childProperty.created,
-          modified = childProperty.modified,
-          propertyValues = Nil
-        ),
-        collection = entity.projected.Collection(pk = parentPropertyPK),
-        textValues = propertyValueData.textValues,
-        byteValues = propertyValueData.byteValues,
-        smallintValues = propertyValueData.smallintValues,
-        intValues = propertyValueData.intValues,
-        bigintValues = propertyValueData.bigintValues,
-        numericValues = propertyValueData.numericValues,
-        floatValues = propertyValueData.floatValues,
-        doubleValues = propertyValueData.doubleValues,
-        booleanValues = propertyValueData.booleanValues,
-        dateValues = propertyValueData.dateValues,
-        timeValues = propertyValueData.timeValues,
-        timestampValues = propertyValueData.timestampValues,
-        uuidValues = propertyValueData.uuidValues,
-        jsonValues = propertyValueData.jsonValues
-      )
-      entity.projected.Property(
-        pk = property.pk,
-        propertyName = property.propertyName,
-        propertyTypes = property.propertyTypes,
-        deleted = property.deleted,
-        created = property.created,
-        modified = property.modified,
-        propertyValues = propertyValues.toList
-      )
-    }
+
+    val propertyPKtoPropertyValuesMap =
+      for
+        (parentPropertyPK, propertyValueDataList) <- propertyValueDataList.groupBy(_._1)
+        parentProperty <- propertiesMap.get(parentPropertyPK)
+      yield
+        val propertyValues =
+          for
+            (_, childPropertyPK, propertyValue) <- propertyValueDataList
+            childProperty <- propertiesMap.get(childPropertyPK)
+          yield childProperty -> propertyValue
+        parentPropertyPK -> propertyValues.toMap
+    for
+      property <- properties
+    yield entity.projected.Property(
+      pk = property.pk,
+      propertyName = property.propertyName,
+      propertyTypes = property.propertyTypes,
+      deleted = property.deleted,
+      created = property.created,
+      modified = property.modified,
+      propertyValues = propertyPKtoPropertyValuesMap.getOrElse(property.pk, Map.empty)
+    )

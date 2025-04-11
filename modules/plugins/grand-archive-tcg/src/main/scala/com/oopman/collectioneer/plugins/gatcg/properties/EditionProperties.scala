@@ -2,6 +2,8 @@ package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.traits.entity.projected
+import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
 import com.oopman.collectioneer.given
 
 /**
@@ -18,7 +20,10 @@ private object EditionPropertiesUUIDs:
   val effect = "40513d4c-2fae-4d23-9c85-cb0df15dbb4c"
   val flavourText = "49aa3c45-2a44-4e52-9e9b-b4ef7513498f"
 
-enum EditionProperties(val property: Property):
+object EditionProperties:
+  def properties: Array[projected.Property] = values.map(_.property)
+
+enum EditionProperties(val property: projected.Property):
   case editionUID extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.editionUID,
     propertyName = "Edition UID",

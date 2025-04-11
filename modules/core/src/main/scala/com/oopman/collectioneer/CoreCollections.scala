@@ -3,6 +3,7 @@ package com.oopman.collectioneer
 import com.oopman.collectioneer.db.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.given
+import com.oopman.collectioneer.db.traits.entity.raw.given 
 
 import java.util.UUID
 
@@ -17,15 +18,11 @@ enum CoreCollections(val collection: Collection):
    */
   case root extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.root,
-    propertyValues = List(
-      projected.PropertyValue(
-        property = CoreProperties.name.property,
-        textValues = List("Root")
-      ),
-      projected.PropertyValue(
-        property = CoreProperties.description.property,
-        textValues = List("The Root Collection under which all other Collections should reside")
-      )
+    propertyValues = Map(
+      CoreProperties.name ->
+        projected.PropertyValue(textValues = List("Root")),
+      CoreProperties.description ->
+        projected.PropertyValue(textValues = List("The Root Collection under which all other Collections should reside"))
     )
   ))
   /**
@@ -36,14 +33,11 @@ enum CoreCollections(val collection: Collection):
    */
   case commonProperties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.commonProperties,
-    propertyValues = List(
-      projected.PropertyValue(
-        property = CoreProperties.name.property,
-        textValues = List("Common Properties")
-      ),
-      projected.PropertyValue(
-        property = CoreProperties.description.property,
-        textValues = List("A Collection of Properties automatically available to all other Collections")
+    propertyValues = Map(
+      CoreProperties.name ->
+        projected.PropertyValue(textValues = List("Common Properties")),
+      CoreProperties.description ->
+        projected.PropertyValue(textValues = List("A Collection of Properties automatically available to all other Collections")
       )
     )
   ))

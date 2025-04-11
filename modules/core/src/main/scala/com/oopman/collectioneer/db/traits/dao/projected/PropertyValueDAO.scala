@@ -5,5 +5,5 @@ import com.oopman.collectioneer.db.traits.entity.projected.PropertyValue
 import java.util.UUID
 
 trait PropertyValueDAO:
-  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil): Seq[PropertyValue]
-  def updatePropertyValues(propertyValues: Seq[PropertyValue]): Seq[Boolean]
+  def getPropertyValuesByCollectionUUIDs(collectionUUIDs: Seq[UUID], propertyUUIDs: Seq[UUID] = Nil): Seq[(UUID, UUID, Seq[UUID], PropertyValue)]
+  def updatePropertyValues(propertyValues: Seq[(UUID, UUID, PropertyValue)]): Seq[Boolean]

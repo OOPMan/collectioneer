@@ -27,6 +27,10 @@ object Properties:
     count: Int,
     properties: Seq[PropertyWithPropertyValues]
   )
+
+  def propertyValuesToPropertiesMap(propertyValues: Map[traits.entity.raw.Property, traits.entity.projected.PropertyValue]): Map[String, Seq[String]] =
+    for (property, propertyValue) <- propertyValues
+    yield property.propertyName -> Common.propertyValueToSeqOfStrings(propertyValue)
   
   def propertyToPropertyWithPropertyValues(property: traits.entity.projected.Property): PropertyWithPropertyValues =
     PropertyWithPropertyValues(
@@ -36,7 +40,7 @@ object Properties:
       deleted = property.deleted,
       created = property.created,
       modified = property.modified,
-      properties = Map.from(property.propertyValues.map(Common.propertyValuesToMapTuple))
+      properties = propertyValuesToPropertiesMap(property.propertyValues)
     )
     
   def getProperties(config: Config): Json =

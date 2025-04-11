@@ -5,13 +5,13 @@ import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 sealed trait PropertyValue[T]:
-  val pk: UUID
-  val collectionPK: UUID
-  val propertyPK: UUID
-  val index: Int
-  val created: ZonedDateTime
-  val modified: ZonedDateTime
-  val propertyValue: T
+  def pk: UUID
+  def collectionPK: UUID
+  def propertyPK: UUID
+  def index: Int
+  def created: ZonedDateTime
+  def modified: ZonedDateTime
+  def propertyValue: T
   
   def rawCopyWith(pk: UUID = pk,
                   collectionPK: UUID = collectionPK,
@@ -25,7 +25,7 @@ trait PropertyValueText extends PropertyValue[String]
 trait PropertyValueBytes extends PropertyValue[Array[Byte]]
 trait PropertyValueSmallint extends PropertyValue[Short]
 trait PropertyValueInt extends PropertyValue[Int]
-trait PropertyValueBigint extends PropertyValue[BigInt]
+trait PropertyValueBigInt extends PropertyValue[BigInt]
 trait PropertyValueBigDecimal extends PropertyValue[BigDecimal]
 trait PropertyValueFloat extends PropertyValue[Float]
 trait PropertyValueDouble extends PropertyValue[Double]

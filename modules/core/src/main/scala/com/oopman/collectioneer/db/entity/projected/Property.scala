@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity
-//import com.oopman.collectioneer.db.traits.entity.projected.{Property, PropertyValue}
 import com.oopman.collectioneer.db.traits.entity.{raw, projected}
 
 import java.time.ZonedDateTime
@@ -15,7 +14,7 @@ case class Property
   deleted: Boolean = false,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValues: Seq[projected.PropertyValue] = Nil,
+  propertyValues: Map[raw.Property, projected.PropertyValue] = Map.empty,
 ) extends projected.Property:
 
   def rawCopyWith(pk: UUID = pk,
@@ -39,7 +38,7 @@ case class Property
                         deleted: Boolean = deleted,
                         created: ZonedDateTime = created,
                         modified: ZonedDateTime = modified,
-                        propertyValues: Seq[projected.PropertyValue] = propertyValues): projected.Property =
+                        propertyValues: Map[raw.Property, projected.PropertyValue] = propertyValues): projected.Property =
     copy(
       pk = pk, 
       propertyName = propertyName, 

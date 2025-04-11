@@ -57,12 +57,12 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
 
   it should "return a list of Properties matching the PropertyValueComparisons supplied" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
-    import com.oopman.collectioneer.db.entity.projected.{Property as ProjectedProperty, PropertyValue as ProjecetedPropertyValue}
+    import com.oopman.collectioneer.db.entity.projected.{Property as ProjectedProperty, PropertyValue as ProjectedPropertyValue}
     import com.oopman.collectioneer.plugins.postgresbackend.dao.projected.PropertyDAOImpl as ProjectedPropertyDAOImpl
     val property = ProjectedProperty(
-      propertyValues = List(
-        ProjecetedPropertyValue(property = CoreProperties.visible, booleanValues = List(true)),
-        ProjecetedPropertyValue(property = CoreProperties.minValues, intValues = List(1))
+      propertyValues = Map(
+        CoreProperties.visible -> ProjectedPropertyValue(booleanValues = List(true)),
+        CoreProperties.minValues -> ProjectedPropertyValue(intValues = List(1))
       )
     )
     ProjectedPropertyDAOImpl.createOrUpdateProperties(Seq(property))
@@ -82,6 +82,7 @@ class RawPropertyDAOImplSpec extends BaseFunSuite:
     val propertyA = ProjectedProperty(propertyName = "propertyA", propertyTypes = List(PropertyType.text))
     val propertyB = ProjectedProperty(propertyName = "propertyB", propertyTypes = List(PropertyType.int))
     val collection = ProjectedCollection( properties = List(propertyA, propertyB))
+    ProjectedPropertyDAOImpl.createProperties(Seq(propertyA, propertyB))
     ProjectedCollectionDAOImpl.createCollections(Seq(collection))
     val propertiesByCollection = PropertyDAOImpl.getAllByPropertyCollection(Seq(collection.pk), Seq(PropertyCollectionRelationshipType.PropertyOfCollection))
     assert(propertiesByCollection.size == 1)
