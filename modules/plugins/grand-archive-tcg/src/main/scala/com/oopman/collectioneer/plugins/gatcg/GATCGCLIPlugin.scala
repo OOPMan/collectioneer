@@ -13,11 +13,13 @@ import io.circe.optics.JsonPath.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import izumi.distage.plugins.PluginDef
+import os.Path
 import scopt.{OParser, OParserBuilder}
 import sttp.client3.*
 import sttp.client3.circe.*
+import sttp.model.Uri
 
-import java.io.File
+import java.io.{ByteArrayInputStream, File}
 import java.util.UUID
 import scala.language.postfixOps
 import scala.util.*
@@ -31,7 +33,11 @@ case class DownloadDatasetResult
 )
 
 class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
-  val defaultDatasetPath = os.pwd / "gatcg.json"
+  private val defaultRootPath = os.pwd / "gatcg"
+
+  private val defaultDatasetPath = defaultRootPath / "gatcg.json"
+
+  private val defaultImagesPath = defaultRootPath / "images"
 
   def getName: String = "Grand Archive TCG"
 
@@ -48,10 +54,16 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val datasetPathOpt = builder.opt[File]("gatcg-json-dataset-path")
       .optional()
       .action((f, config) => config.copy(subconfigs = config.subconfigs.updated(getShortName, getSubconfigFromConfig(config).copy(grandArchiveTCGJSON = Some(f)))))
-      .text("Something")
+      .text("Grand Archive TCG JSON Dataset file path")
+    val imagesPathOpt = builder.opt[File]("gatcg-images-path")
+      .optional()
+      .action((f, config) => config.copy(subconfigs = config.subconfigs.updated(getShortName, getSubconfigFromConfig(config).copy(grandArchiveTCGImages = Some(f)))))
+      .text("Grand Archive TCG Images folder path")
     List(
-      (Verb.imprt, Subject.dataset, importDataset, List(datasetPathOpt)),
-      (Verb.download, Subject.dataset, downloadDataset, List(datasetPathOpt))
+      (Verb.imprt, Subject.dataset, importDataset, List(datasetPathOpt, imagesPathOpt)),
+      (Verb.download, Subject.dataset, downloadDataset, List(datasetPathOpt, imagesPathOpt)),
+      (Verb("validate", ""), Subject.dataset, validateDataset, List(datasetPathOpt)),
+      (Verb.download, Subject("images", Map.empty), downloadImages, List(datasetPathOpt, imagesPathOpt))
     )
 
   def getData
@@ -81,14 +93,61 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           this.synchronized { wait(delayBetweenRequests) }
           getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
 
-  def importDataset(config: Config) =
-    val pathOption = getSubconfigFromConfig(config).grandArchiveTCGJSON.map(f => os.FilePath(f))
+  def getAndSaveImages
+  (
+    data: Json,
+    imagesPath: Path,
+    client: SimpleHttpClient = SimpleHttpClient(),
+    baseUri: String = "https://api.gatcg.com",
+    delayBetweenRequests: Long = 500
+  ): Int =
+    import Models.*
+    val cards = data.as[List[Card]].getOrElse(Nil)
+    val images =
+      for
+        card <- cards
+        edition <- card.editions
+      yield
+        val images =
+          for
+            innerCard <- edition.other_orientations.getOrElse(Nil)
+          yield
+            innerCard.edition.image
+        images.prepended(edition.image)
+    val uniqueImages = images.flatten.toSet
+    var downloaded = 0
+    for
+      image <- uniqueImages
+      imageHash = UUID.nameUUIDFromBytes(image.getBytes)
+      imagePath = imagesPath / s"$imageHash.jpg"
+      if !os.exists(imagePath)
+    do Uri.parse(s"$baseUri$image") match
+      case Left(value) =>
+        logger.error(s"Failed to parse $baseUri$image to a Uri")
+      case Right(uri) =>
+        logger.info(s"Downloading $uri")
+        val request = basicRequest
+          .get(uri)
+          .response(asByteArray)
+        val response = client.send(request)
+        response.body match
+          case Left(value) =>
+            logger.error(s"Failed to retrieve $baseUri$image")
+          case Right(value) =>
+            val inputStream = new ByteArrayInputStream(value)
+            os.write(imagePath, inputStream)
+            downloaded += 1
+        this.synchronized {
+          this.wait(delayBetweenRequests)
+        }
+    logger.info(s"Download $downloaded images out of ${uniqueImages.size}")
+    downloaded
+
+  def importDataset(config: Config): Json =
+    val subConfig = getSubconfigFromConfig(config)
+    val pathOption = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath))
     val dataOption: Option[Vector[Json]] = pathOption
-      .map {
-        case p: os.Path     => parse(os.read(p))
-        case p: os.RelPath  => parse(os.read(os.pwd / p))
-        case p: os.SubPath  => parse(os.read(os.pwd / p))
-      }
+      .map(path => parse(os.read(path)))
       .map {
         case Left(parsingException) =>
           logger.error("Failed to parse GATCG JSON Dataset", parsingException)
@@ -121,19 +180,48 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     // TODO: Replace with a real response
     "Something".asJson
 
-  def downloadDataset(config: Config) =
+  def downloadDataset(config: Config): Json =
     logger.info("Downloading GATCG dataaset")
     val result = getData() match
       case Failure(e) => DownloadDatasetResult(downloadSucceeded = false, errorMessage = Some(e.getMessage))
       case Success(data) =>
         logger.info(s"Downloaded ${data.length} GATCG cards")
-        val path = getSubconfigFromConfig(config).grandArchiveTCGJSON.map(f => os.FilePath(f)).getOrElse(defaultDatasetPath)
+        val path = getSubconfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
         val dataAsString = data.asJson.spaces2
-        path match
-          case p: os.Path => os.write(p, dataAsString)
-          case p: os.RelPath => os.write(os.pwd / p, dataAsString)
-          case p: os.SubPath => os.write(os.pwd / p, dataAsString)
+        os.write(path, dataAsString)
         DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
+    result.asJson
+
+  def downloadImages(config: Config): Json =
+    logger.info("Downloading GATCG Images")
+    val subConfig = getSubconfigFromConfig(config)
+    val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
+    val imagesPath = subConfig.grandArchiveTCGImages.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultImagesPath)
+    if !os.exists(datasetPath) then return Json.Null
+    if !os.exists(imagesPath) then os.makeDir.all(imagesPath)
+    val json = parse(os.read(datasetPath)).getOrElse(Nil.asJson)
+    val downloaded = getAndSaveImages(json, imagesPath)
+    downloaded.asJson
+
+  def validateDataset(config: Config): Json =
+    logger.info("Validating GATCG Dataset")
+    val subConfig = getSubconfigFromConfig(config)
+    val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
+    val result =
+      if !os.exists(datasetPath)
+      then false
+      else
+        parse(os.read(datasetPath)) match
+          case Left(failure) =>
+            logger.error("Failed to read dataset", failure)
+            false
+          case Right(json) =>
+            import Models.*
+            json.as[List[Card]] match
+              case Left(failure) =>
+                logger.error("Failed to coerce dataset", failure)
+                false
+              case _ => true
     result.asJson
 
 object GATCGCLIPluginDef extends PluginDef:
