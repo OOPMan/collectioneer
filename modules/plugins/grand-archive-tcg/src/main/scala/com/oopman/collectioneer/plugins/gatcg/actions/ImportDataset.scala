@@ -80,7 +80,7 @@ def importDataset(cards: List[Card],
         EditionProperties.editionUID -> PropertyValue(textValues = List(edition.uuid)),
         EditionProperties.cardUID -> PropertyValue(textValues = List(edition.card_id)),
         EditionProperties.collectorNumber -> PropertyValue(textValues = List(edition.collector_number)),
-        EditionProperties.illustrator -> PropertyValue(textValues = List(edition.illustrator)),
+        EditionProperties.illustrator -> PropertyValue(textValues = edition.illustrator.map(List(_)).getOrElse(Nil)),
         EditionProperties.slug -> PropertyValue(textValues = List(edition.slug)),
         EditionProperties.rarity -> PropertyValue(smallintValues = List(edition.rarity.toShort)), // TODO: Covert to String
         EditionProperties.effect -> PropertyValue(textValues = edition.effect.map(List(_)).getOrElse(Nil)),
