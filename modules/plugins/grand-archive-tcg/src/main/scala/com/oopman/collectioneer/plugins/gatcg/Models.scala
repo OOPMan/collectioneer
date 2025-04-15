@@ -23,7 +23,9 @@ case class Card
   durability: Option[Int],
   speed: Option[Boolean],
   legality: Option[io.circe.Json],
-  editions: List[Edition]
+  editions: List[Edition],
+  references: List[Reference],
+  referenced_by: List[Reference]
 ) extends GATCG
 
 case class InnerCard
@@ -46,7 +48,10 @@ case class InnerCard
   durability: Option[Int],
   speed: Option[Boolean],
   legality: Option[io.circe.Json],
-  editions: List[InnerEdition]
+  edition_id: String,
+  edition: InnerEdition,
+  references: Option[List[Reference]],
+  referenced_by: Option[List[Reference]]
 )
 
 case class Edition
@@ -56,7 +61,7 @@ case class Edition
   collector_number: String,
   configuration: Option[String],
   slug: String,
-  illustrator: String,
+  illustrator: Option[String],
   image: String,
   rarity: Int,
   effect: Option[String],
@@ -76,23 +81,23 @@ case class InnerEdition
   collector_number: String,
   configuration: Option[String],
   slug: String,
-  illustrator: String,
+  illustrator: Option[String],
   image: String,
   rarity: Int,
   effect: Option[String],
   effect_raw: Option[String],
   flavor: Option[String],
-  circulations: List[Circulation],
-  circulationTemplates: List[Circulation],
   orientation: Option[String],
   set: Set
 )
 
 case class Circulation
 (
+  edition_id: String,
   uuid: String,
   name: Option[String],
   foil: Option[Boolean],
+  kind: String,
   population: Int
 ) extends GATCG
 
@@ -100,7 +105,9 @@ case class Set
 (
   name: String,
   prefix: String,
-  language: String
+  language: String,
+  id: String,
+  release_date: String
 ) extends GATCG
 
 case class Rule
@@ -108,6 +115,14 @@ case class Rule
   title: String,
   date_added: String,
   description: String
+)
+
+case class Reference
+(
+  kind: String,
+  name: String,
+  slug: String,
+  direction: String
 )
 
 object Models:
@@ -120,3 +135,4 @@ object Models:
   implicit val cardDecoder: Decoder[Card] = deriveDecoder[Card]
   implicit val innerCardDecoder: Decoder[InnerCard] = deriveDecoder[InnerCard]
   implicit val ruleDecoer: Decoder[Rule] = deriveDecoder[Rule]
+  implicit val referenceDecoder: Decoder[Reference] = deriveDecoder[Reference]
