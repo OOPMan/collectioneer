@@ -6,6 +6,7 @@ import com.oopman.collectioneer.db.entity.raw.{Collection, Relationship}
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.{BaseFunSuite, Fixtures}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 
 import io.circe.*
 import io.circe.parser.*

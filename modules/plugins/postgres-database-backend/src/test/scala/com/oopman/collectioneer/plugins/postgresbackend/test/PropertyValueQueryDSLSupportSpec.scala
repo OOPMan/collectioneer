@@ -4,6 +4,7 @@ import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given 
 
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
