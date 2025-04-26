@@ -173,7 +173,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     })
     val result = modelsTry.map(cards => {
       object importDatasetModule extends ModuleDef:
-        make[List[Card]].from(cards)
+        make[List[Models.Card]].from(cards)
 
       Injection.produceRun(Some(config), importDatasetModule)(actions.importDataset)
     })
