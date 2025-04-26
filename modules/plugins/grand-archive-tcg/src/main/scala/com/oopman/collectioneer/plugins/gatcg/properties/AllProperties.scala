@@ -7,4 +7,6 @@ val AllProperties: Seq[projected.Property] =
   CirculationProperties.properties ++
   CommonProperties.properties ++
   EditionProperties.properties ++
+  ReferenceProperties.properties ++
+  RuleProperties.properties ++
   SetProperties.properties
