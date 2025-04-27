@@ -84,7 +84,7 @@ enum CardProperties(val property: projected.Property):
   case speed extends CardProperties(Property(
     pk = CardPropertiesUUIDs.speed,
     propertyName = "Speed",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.boolean :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case legality extends CardProperties(Property(

@@ -22,7 +22,7 @@ object Edition:
         EditionProperties.illustrator -> PropertyValue(textValues = edition.illustrator.map(_ :: Nil).getOrElse(Nil)),
         EditionProperties.image -> PropertyValue(textValues = edition.image :: Nil),
         EditionProperties.slug -> PropertyValue(textValues = edition.slug :: Nil),
-        EditionProperties.rarity -> PropertyValue(smallintValues = edition.rarity.toShort :: Nil), // TODO: Covert to String
+        EditionProperties.rarity -> PropertyValue(smallintValues = edition.rarity.toShort :: Nil),
         EditionProperties.effect -> PropertyValue(textValues = edition.effect.map(_ :: Nil).getOrElse(Nil)),
         EditionProperties.flavourText -> PropertyValue(textValues = edition.flavor.map(_ :: Nil).getOrElse(Nil)),
         EditionProperties.configuration -> PropertyValue(textValues = edition.configuration.map(_ :: Nil).getOrElse(Nil)),

@@ -25,7 +25,7 @@ def importDataset(cards: List[Models.Card],
   val setMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
   val setDataMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
   val circulationMap: collection.mutable.Map[Models.Circulation, Collection] = collection.mutable.Map()
-  //
+  // Function to process Cards
   def processCard(card: Models.Card): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Card.*
     val cardDataCollection: Collection = card.asCollection
@@ -40,7 +40,7 @@ def importDataset(cards: List[Models.Card],
     val collections = listOfCollectionSeqs.flatten
     val relationships = listOfRelationshipSeqs.flatten
     (collections :+ cardDataCollection, relationships)
-
+  // Function to process Editions-by-Set
   def processSetEditions(cardDataCollection: Collection)(set: Models.Set, editions: Seq[Models.Edition]): (Models.Set, (Seq[Collection], Seq[Relationship])) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Set.*
     val setDataCollection = setDataMap.getOrElseUpdate(set, set.asCollection)
@@ -83,7 +83,7 @@ def importDataset(cards: List[Models.Card],
       ),
     )
     set -> (collections :+ setCardCollection, relationships ++ additionalRelationships)
-
+  // Function to process Editions
   def processEdition(cardData: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Edition.*
     val editionCollection: Collection = edition.asCollection
@@ -109,7 +109,7 @@ def importDataset(cards: List[Models.Card],
       )
     )
     (collections :+ editionCollection, relationships ++ additionalRelationships)
-
+  // Function to process InnerEditions nested within InnerCards
   def processInnerEdition(cardCollection: Collection, setDataCollection: Collection)(innerEdition: Models.InnerEdition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerEdition.*
     val innerEditionCollection: Collection = innerEdition.asCollection
@@ -129,7 +129,7 @@ def importDataset(cards: List[Models.Card],
       )
     )
     (innerEditionCollection :: Nil, relationships)
-
+  // Function to process InnerCards nested within Editions
   def processInnerCard(editionCollection: Collection, setDataCollection: Collection)(innerCard: Models.InnerCard): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerCard.*
     val innerCardCollection: Collection = innerCard.asCollection
@@ -149,8 +149,7 @@ def importDataset(cards: List[Models.Card],
     val collections = listOfCollectionSeqs.flatten
     val relationships = listOfRelationshipSeqs.flatten
     (collections :+ innerCardCollection, relationships :+ relationship)
-
-
+  // Function to process Circulations
   def processCirculation(editionCollection: Collection)(circulation: Models.Circulation): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Circulation.*
     val circulationCollection = circulationMap.getOrElseUpdate(circulation, circulation.asCollection)
@@ -161,7 +160,7 @@ def importDataset(cards: List[Models.Card],
       relationshipType = ParentCollection
     )
     (circulationCollection :: Nil, relationship :: Nil)
-
+  // Function to process Rules
   def processRule(cardCollection: Collection)(rule: Models.Rule): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Rule.*
     val ruleCollection: Collection = rule.asCollection
@@ -172,7 +171,7 @@ def importDataset(cards: List[Models.Card],
       relationshipType = ParentCollection
     )
     (ruleCollection :: Nil, relationship :: Nil)
-
+  // Function to process References
   def processReference(cardCollection: Collection)(reference: Models.Reference): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Reference.*
     val referenceCollection: Collection = reference.asCollection
@@ -183,8 +182,7 @@ def importDataset(cards: List[Models.Card],
       relationshipType = ParentCollection
     )
     (referenceCollection :: Nil, relationship :: Nil)
-
-  //
+  // Process and import data
   val (listOfCollectionSeqs, listOfRelationshipSeqs) = cards.map(processCard).unzip
   val collections = listOfCollectionSeqs.flatten
   val relationships = listOfRelationshipSeqs.flatten
