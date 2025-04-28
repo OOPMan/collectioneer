@@ -5,6 +5,7 @@ import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.ParentCollection
 import com.oopman.collectioneer.{CoreCollections, CoreProperties, given}
 import com.oopman.collectioneer.db.traits.entity.raw.given
+import com.oopman.collectioneer.plugins.gatcg.properties.CommonProperties
 
 import java.util.UUID
 
@@ -17,6 +18,7 @@ val GATCGRootCollection = Collection(
   propertyValues = Map(
     CoreProperties.name -> PropertyValue(textValues = name :: Nil),
     CoreProperties.description -> PropertyValue(textValues = description :: Nil),
+    CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
     // TODO: Add properties for links
   )
 )

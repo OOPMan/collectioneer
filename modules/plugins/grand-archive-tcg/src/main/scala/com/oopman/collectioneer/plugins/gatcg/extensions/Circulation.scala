@@ -16,6 +16,7 @@ object Circulation:
       virtual = true,
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = circulation.name.map(_ :: Nil).getOrElse(Nil)),
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCirculation -> PropertyValue(booleanValues = List(true)),
         CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil.map(_ :: Nil).getOrElse(Nil)),
         CirculationProperties.population -> PropertyValue(intValues = circulation.population :: Nil),

@@ -1,14 +1,14 @@
 package com.oopman.collectioneer.plugins.gatcg.actions
 
-import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
+import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.{entity, traits}
-import com.oopman.collectioneer.{CoreCollections, CoreProperties, given}
+import com.oopman.collectioneer.given
 import com.oopman.collectioneer.db.traits.entity.raw.given
-import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CardProperties, CommonProperties, EditionProperties, SetProperties}
-import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models, given}
+import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties}
+import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models}
 
 import java.util.UUID
 
@@ -48,6 +48,7 @@ def importDataset(cards: List[Models.Card],
       pk = UUID.nameUUIDFromBytes(s"GATCG-set-collection-${set.id}-${set.prefix}-${set.name}-${set.language}".getBytes),
       virtual = true,
       propertyValues = Map(
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGSetCollection -> PropertyValue(booleanValues = true :: Nil),
       )
     ))
@@ -55,6 +56,7 @@ def importDataset(cards: List[Models.Card],
       pk = UUID.nameUUIDFromBytes(s"GATCG-set-card-collection-${cardDataCollection.pk}-${set.id}-${set.prefix}-${set.name}-${set.language}".getBytes),
       virtual = true,
       propertyValues = Map(
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCardCollection -> PropertyValue(booleanValues = true :: Nil),
         EditionProperties.collectorNumber -> PropertyValue(textValues = editions.map(_.collector_number))
       )
@@ -86,7 +88,7 @@ def importDataset(cards: List[Models.Card],
   // Function to process Editions
   def processEdition(cardData: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Edition.*
-    val editionCollection: Collection = edition.asCollection
+    val editionCollection: Collection = edition.asCollection(cardData)
     val circulations = (edition.circulations ++ edition.circulationTemplates).distinct
     val processCirculationResults = circulations.map(processCirculation(editionCollection))
     val otherOrientations = edition.other_orientations.getOrElse(Nil)

@@ -11,21 +11,29 @@ import java.util.UUID
 object Edition:
   extension (edition: Models.Edition)
 
-    def asCollection: Collection = Collection(
-      pk = UUID.nameUUIDFromBytes(s"GATCG-edition-${edition.uuid}".getBytes),
-      virtual = true,
-      propertyValues = Map(
-        CommonProperties.isGATCGEdition -> PropertyValue(booleanValues = true :: Nil),
-        EditionProperties.editionUID -> PropertyValue(textValues = edition.uuid :: Nil),
-        EditionProperties.cardUID -> PropertyValue(textValues = edition.card_id :: Nil),
-        EditionProperties.collectorNumber -> PropertyValue(textValues = edition.collector_number :: Nil),
-        EditionProperties.illustrator -> PropertyValue(textValues = edition.illustrator.map(_ :: Nil).getOrElse(Nil)),
-        EditionProperties.image -> PropertyValue(textValues = edition.image :: Nil),
-        EditionProperties.slug -> PropertyValue(textValues = edition.slug :: Nil),
-        EditionProperties.rarity -> PropertyValue(smallintValues = edition.rarity.toShort :: Nil),
-        EditionProperties.effect -> PropertyValue(textValues = edition.effect.map(_ :: Nil).getOrElse(Nil)),
-        EditionProperties.flavourText -> PropertyValue(textValues = edition.flavor.map(_ :: Nil).getOrElse(Nil)),
-        EditionProperties.configuration -> PropertyValue(textValues = edition.configuration.map(_ :: Nil).getOrElse(Nil)),
-        EditionProperties.orientation -> PropertyValue(textValues = edition.orientation.map(_ :: Nil).getOrElse(Nil)),
+    def asCollection(cardData: Collection): Collection = {
+      val name = cardData.propertyValues.get(CoreProperties.name).map(_.textValues).getOrElse(Nil)
+      val circulationNames = edition.circulationTemplates.map(_.name).mkString(", ")
+      val editionName = s"(${edition.set.prefix} - ${edition.collector_number} - ${circulationNames}" :: Nil
+      Collection(
+        pk = UUID.nameUUIDFromBytes(s"GATCG-edition-${edition.uuid}".getBytes),
+        virtual = true,
+        propertyValues = Map(
+          // TODO: Generate a name
+          CoreProperties.name -> PropertyValue(textValues = name ++ editionName),
+          CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
+          CommonProperties.isGATCGEdition -> PropertyValue(booleanValues = true :: Nil),
+          EditionProperties.editionUID -> PropertyValue(textValues = edition.uuid :: Nil),
+          EditionProperties.cardUID -> PropertyValue(textValues = edition.card_id :: Nil),
+          EditionProperties.collectorNumber -> PropertyValue(textValues = edition.collector_number :: Nil),
+          EditionProperties.illustrator -> PropertyValue(textValues = edition.illustrator.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.image -> PropertyValue(textValues = edition.image :: Nil),
+          EditionProperties.slug -> PropertyValue(textValues = edition.slug :: Nil),
+          EditionProperties.rarity -> PropertyValue(smallintValues = edition.rarity.toShort :: Nil),
+          EditionProperties.effect -> PropertyValue(textValues = edition.effect.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.flavourText -> PropertyValue(textValues = edition.flavor.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.configuration -> PropertyValue(textValues = edition.configuration.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.orientation -> PropertyValue(textValues = edition.orientation.map(_ :: Nil).getOrElse(Nil)),
+        )
       )
-    )
+    }

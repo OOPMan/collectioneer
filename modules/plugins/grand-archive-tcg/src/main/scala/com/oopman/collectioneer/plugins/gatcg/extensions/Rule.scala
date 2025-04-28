@@ -17,6 +17,7 @@ object Rule:
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = rule.title :: Nil),
         CoreProperties.description -> PropertyValue(textValues = rule.description :: Nil),
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGRule -> PropertyValue(booleanValues = true :: Nil),
         RuleProperties.dateAdded -> PropertyValue(textValues = rule.date_added :: Nil)
       )

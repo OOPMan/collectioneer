@@ -15,6 +15,7 @@ object Reference:
       virtual = true,
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = reference.name :: Nil),
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGReference -> PropertyValue(booleanValues = true :: Nil),
         ReferenceProperties.slug -> PropertyValue(textValues = reference.slug :: Nil),
         ReferenceProperties.kind -> PropertyValue(textValues = reference.kind :: Nil),

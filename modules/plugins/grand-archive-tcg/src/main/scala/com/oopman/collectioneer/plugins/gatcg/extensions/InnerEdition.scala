@@ -14,6 +14,8 @@ object InnerEdition:
       pk = UUID.nameUUIDFromBytes(s"GATCG-inner-edition-${innerEdition.uuid}".getBytes),
       virtual = true,
       propertyValues = Map(
+        // TODO: Generate a name
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGEdition -> PropertyValue(booleanValues = true :: Nil),
         EditionProperties.editionUID -> PropertyValue(textValues = innerEdition.uuid :: Nil),
         EditionProperties.cardUID -> PropertyValue(textValues = innerEdition.card_id :: Nil),

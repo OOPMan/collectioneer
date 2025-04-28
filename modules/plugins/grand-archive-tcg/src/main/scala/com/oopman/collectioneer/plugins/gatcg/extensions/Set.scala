@@ -15,6 +15,7 @@ object Set:
       virtual = true,
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = set.name :: Nil),
+        CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGSet -> PropertyValue(booleanValues = true :: Nil),
         SetProperties.prefix -> PropertyValue(textValues = set.prefix :: Nil),
         SetProperties.language -> PropertyValue(textValues = set.language :: Nil),
