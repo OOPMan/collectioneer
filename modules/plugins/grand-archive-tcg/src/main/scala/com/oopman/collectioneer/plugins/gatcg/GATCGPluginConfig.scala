@@ -6,5 +6,6 @@ import java.io.File
 
 case class GATCGPluginConfig
 (
-  grandArchiveTCGJSON: Option[File] = None
+  grandArchiveTCGJSON: Option[File] = None,
+  grandArchiveTCGImages: Option[File] = None
 ) extends Subconfig

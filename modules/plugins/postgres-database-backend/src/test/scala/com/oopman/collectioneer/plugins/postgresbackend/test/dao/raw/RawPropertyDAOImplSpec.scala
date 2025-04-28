@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test.dao.raw
 
 import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.db.entity.raw.Property
 import com.oopman.collectioneer.db.traits.entity.raw.{PropertyCollectionRelationshipType, PropertyType}
 import com.oopman.collectioneer.plugins.postgresbackend.test.BaseFunSuite
