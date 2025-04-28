@@ -14,12 +14,11 @@ object Edition:
     def asCollection(cardData: Collection): Collection = {
       val name = cardData.propertyValues.get(CoreProperties.name).map(_.textValues).getOrElse(Nil)
       val circulationNames = edition.circulationTemplates.map(_.name).mkString(", ")
-      val editionName = s"(${edition.set.prefix} - ${edition.collector_number} - ${circulationNames}" :: Nil
+      val editionName = s"(${edition.set.prefix} - ${edition.collector_number} - $circulationNames)" :: Nil
       Collection(
         pk = UUID.nameUUIDFromBytes(s"GATCG-edition-${edition.uuid}".getBytes),
         virtual = true,
         propertyValues = Map(
-          // TODO: Generate a name
           CoreProperties.name -> PropertyValue(textValues = name ++ editionName),
           CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
           CommonProperties.isGATCGEdition -> PropertyValue(booleanValues = true :: Nil),

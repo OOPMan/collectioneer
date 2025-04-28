@@ -114,7 +114,7 @@ def importDataset(cards: List[Models.Card],
   // Function to process InnerEditions nested within InnerCards
   def processInnerEdition(cardCollection: Collection, setDataCollection: Collection)(innerEdition: Models.InnerEdition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerEdition.*
-    val innerEditionCollection: Collection = innerEdition.asCollection
+    val innerEditionCollection: Collection = innerEdition.asCollection(cardCollection)
     val relationships = List(
       Relationship(
         pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${innerEditionCollection.pk}-${cardCollection.pk}-$ParentCollection".getBytes),
