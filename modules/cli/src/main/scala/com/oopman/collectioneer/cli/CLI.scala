@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.cli
 
-import com.oopman.collectioneer.Injection
+import com.oopman.collectioneer.{Injection, SubConfig}
 import com.oopman.collectioneer.cli.actions
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.CLIPlugin
@@ -73,18 +73,13 @@ object CLI:
     make[com.oopman.collectioneer.Config].from(Config())
   val plugins: List[CLIPlugin] = Injector[Identity]()
     .produceRun(fakeModule)((cliPlugins: Set[CLIPlugin]) => cliPlugins).toList
-//  val plugins: List[CLIPlugin] =
-//    try Injector()
-//      .produceGet[Set[CLIPlugin]](pluginModules)
-//      .unsafeGet()
-//      .toList
-//    catch case e: ProvisioningException => Nil
   val pluginActions: List[ActionListItem] = plugins
     .flatMap(plugin => plugin
       .getActions(builder)
       .map((verb, subject, action, oparserItems) => (verb, subject, Some(cliSafeName(plugin.getShortName)), action, oparserItems))
     )
-  val pluginSubconfigs: Map[String, Subconfig] = plugins.map(p => p.getShortName -> p.getDefaultSubconfig).toMap
+  val pluginSubconfigs: Map[String, CLISubConfig] =
+    plugins.map(plugin => plugin.getShortName -> plugin.getDefaultSubConfig).toMap
   val uuidArgs: OParser[String, Config] = builder.arg[String]("<UUID>...")
     .unbounded()
     .required()
@@ -147,7 +142,6 @@ object CLI:
         .text("Enable debugging output"),
       opt[String]("datasourceUri")
         .text("JDBC URI")
-        // TODO: Add validator
         .action((datasourceUri, config) => config.copy(datasourceUri = Some(datasourceUri))),
       opt[String]("datasourceUsername")
         .text("Datasource username")
@@ -162,7 +156,7 @@ object CLI:
     )
 
   def main(args: Array[String]): Unit =
-    OParser.parse(parser, args, Config(subconfigs = pluginSubconfigs)) match
+    OParser.parse(parser, args, Config(subConfigs = pluginSubconfigs)) match
       case Some(config) =>
         // Configure ScalikeJDBC
         GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(

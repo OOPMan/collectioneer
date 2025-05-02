@@ -1,12 +1,12 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.cli.{CLISubConfig, Config, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import io.circe.Json
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
 
-case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends Subconfig()
+case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends CLISubConfig
 
 object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
   def getName: String = "Embedded PostgreSQL Database Backend CLI"
@@ -15,7 +15,7 @@ object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
 
   def getVersion: String = "master"
 
-  def getDefaultSubconfig: Subconfig = EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig()
+  def getDefaultSubConfig: CLISubConfig = EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig()
 
   def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])] =
     List(
