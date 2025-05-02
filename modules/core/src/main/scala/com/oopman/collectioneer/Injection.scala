@@ -15,6 +15,7 @@ object Injection:
   private object emptyModule extends ModuleDef
   private object dummyConfig extends Config:
     val datasourceUri: Option[String] = None
+    val subConfigs: Map[String, SubConfig] = Map.empty
 
   def getInjectorAndModule[F[_], A](configOption: Option[Config] = None, inputModule: ModuleDef = emptyModule): (Injector[Identity], ModuleDef) =
     val config = configOption.getOrElse(dummyConfig)
