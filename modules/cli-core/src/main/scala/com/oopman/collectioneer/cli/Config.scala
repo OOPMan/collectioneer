@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.cli
 
+import com.oopman.collectioneer.SubConfig
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
@@ -48,8 +49,7 @@ enum OutputFormat:
   case json extends OutputFormat
   case yaml extends OutputFormat
 
-// TODO: Add sub-config classes for verbs
-trait Subconfig
+trait CLISubConfig extends SubConfig
 
 case class Config
 (
@@ -68,5 +68,5 @@ case class Config
   virtual: Option[Boolean] = None,
   propertyValueQueries: Option[List[String]] = None,
   usePlugin: Option[String] = None,
-  subconfigs: Map[String, Subconfig] = Map(),
+  subConfigs: Map[String, CLISubConfig] = Map(),
 ) extends com.oopman.collectioneer.Config

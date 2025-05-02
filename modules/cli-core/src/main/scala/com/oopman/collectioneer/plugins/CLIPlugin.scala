@@ -6,5 +6,5 @@ import scopt.{OParser, OParserBuilder}
 import io.circe.Json
 
 trait CLIPlugin extends Plugin:
-  def getDefaultSubconfig: Subconfig
+  def getDefaultSubConfig: CLISubConfig
   def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])]
