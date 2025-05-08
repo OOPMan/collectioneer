@@ -12,6 +12,7 @@ import javax.sql.DataSource
 type DBConnectionProvider = () => DBConnection
 
 trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
+  // TODO: Return Try
   override def startUp(): Unit =
     val dataSource = getDatasource
     if !ConnectionPool.isInitialized(config.datasourceUri)
@@ -25,9 +26,13 @@ trait ScalikeJDBCDatabaseBackendPlugin extends DatabaseBackendPlugin:
       .locations(getMigrationLocations*)
       .load()
       .migrate()
+
+  // TODO: Return Try
   override def shutDown(): Unit =
     ConnectionPool.close(config.datasourceUri)
+  // TODO: Return Try[DataSource]
   def getDatasource: DataSource
+  // TODO: Retrun Try[Connection]
   def getConnection: Connection
   def getMigrationLocations: Seq[String]
 
