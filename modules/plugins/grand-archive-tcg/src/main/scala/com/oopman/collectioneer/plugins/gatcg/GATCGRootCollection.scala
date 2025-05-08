@@ -2,7 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
-import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.ParentCollection
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.ChildOf
 import com.oopman.collectioneer.{CoreCollections, CoreProperties, given}
 import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.plugins.gatcg.properties.CommonProperties
@@ -24,8 +24,8 @@ val GATCGRootCollection = Collection(
 )
 
 val GATCGRootCollectionRelationship = Relationship(        
-  pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${GATCGRootCollection.pk}-${CoreCollections.root.pk}-${ParentCollection}".getBytes),
-  collectionPK = GATCGRootCollection,
-  relatedCollectionPK = CoreCollections.root,
-  relationshipType = ParentCollection
+  pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${GATCGRootCollection.pk}-${CoreCollections.root.pk}-${ChildOf}".getBytes),
+  relatedCollectionPK = GATCGRootCollection,
+  relationshipType = ChildOf,
+  collectionPK = CoreCollections.root,
 )
