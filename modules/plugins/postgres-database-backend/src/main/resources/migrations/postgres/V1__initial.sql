@@ -36,7 +36,7 @@ create table collection
   The relationship column defines the relationship between the Collection and the Related Collection. The possible
   values for this column function as follows:
 
-  * `ParentCollection` is the simplest value and simply indicates that the Related Collection functions as a parent
+  * `ChildOf` is the simplest value and simply indicates that the Related Collection functions as a Child
     of the Collection. For example, Collection A might represent a users Collection of MTG cards. Each child
     Collection of this would represent a specific MTG card. Another Collection X might represent a specific set of
     MTG cards (E.g. Tempest) and yet another Collection Y  might represent a users boardgame Collection with each child
@@ -57,13 +57,13 @@ create table collection
     to indicate that the parent Collection, Collection A, is a `source_of_child_collection` for the child Collection,
     Collection B. This in turn allows Collection B to associate itself with child Collections of Collection A
  */
-create type relationship_type as enum('ParentCollection', 'SourceOfPropertiesAndPropertyValues', 'SourceOfChildCollections');
+create type relationship_type as enum('ChildOf', 'SourceOfPropertiesAndPropertyValues', 'SourceOfChildCollections');
 create table relationship
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     related_collection_pk uuid not null,
-    relationship_type relationship_type not null default 'ParentCollection',
+    relationship_type relationship_type not null default 'ChildOf',
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
