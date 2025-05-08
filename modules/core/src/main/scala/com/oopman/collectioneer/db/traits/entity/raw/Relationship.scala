@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 enum RelationshipType:
-  case ParentCollection extends RelationshipType
+  case ChildOf extends RelationshipType
   case SourceOfPropertiesAndPropertyValues extends RelationshipType
   case SourceOfChildCollections extends RelationshipType
 

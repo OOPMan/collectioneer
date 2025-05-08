@@ -11,7 +11,7 @@ case class Relationship
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
   relatedCollectionPK: UUID,
-  relationshipType: traits.entity.raw.RelationshipType = traits.entity.raw.RelationshipType.ParentCollection,
+  relationshipType: traits.entity.raw.RelationshipType = traits.entity.raw.RelationshipType.ChildOf,
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now()
