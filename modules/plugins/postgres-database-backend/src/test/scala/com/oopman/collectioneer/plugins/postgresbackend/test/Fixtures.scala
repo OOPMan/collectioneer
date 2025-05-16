@@ -2,7 +2,7 @@ package com.oopman.collectioneer.plugins.postgresbackend.test
 
 import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyType.*
-import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, SourceOfPropertiesAndPropertyValues}
 import scalikejdbc.DBSession
 
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
@@ -147,11 +147,11 @@ class Fixtures()(implicit session: DBSession):
   ProjectedCollectionDAOImpl.createOrUpdateCollections(allCollections)
   // Relationship fixtures
   val relationships = Seq(
-    Relationship(collectionPK = childAofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
-    Relationship(collectionPK = childBofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
-    Relationship(collectionPK = childCofRootA.pk, relatedCollectionPK = rootA.pk, relationshipType = ParentCollection),
-    Relationship(collectionPK = childAofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection),
-    Relationship(collectionPK = childBofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection),
-    Relationship(collectionPK = childCofRootB.pk, relatedCollectionPK = rootB.pk, relationshipType = ParentCollection)
+    Relationship(relatedCollectionPK = childAofRootA.pk, relationshipType = ChildOf, collectionPK = rootA.pk),
+    Relationship(relatedCollectionPK = childBofRootA.pk, relationshipType = ChildOf, collectionPK = rootA.pk),
+    Relationship(relatedCollectionPK = childCofRootA.pk, relationshipType = ChildOf, collectionPK = rootA.pk),
+    Relationship(relatedCollectionPK = childAofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk),
+    Relationship(relatedCollectionPK = childBofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk),
+    Relationship(relatedCollectionPK = childCofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk)
   )
   RelationshipDAOImpl.createOrUpdateRelationships(relationships)

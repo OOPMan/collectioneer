@@ -10,6 +10,7 @@ import scalikejdbc.scalatest.AutoRollback
 object DatabaseBackendPluginSupport:
   protected object Config extends com.oopman.collectioneer.Config:
     val datasourceUri: Option[String] = Some("jdbc:testpostgresql:")
+    val subConfigs: Map[String, com.oopman.collectioneer.SubConfig] = Map.empty
 
   lazy val initialized: Boolean = Injection.produceRun(Some(Config)) { (databaseBackendPlugin: DatabaseBackendPlugin) =>
     databaseBackendPlugin.startUp()
