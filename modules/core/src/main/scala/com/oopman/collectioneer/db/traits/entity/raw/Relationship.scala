@@ -23,4 +23,5 @@ trait Relationship:
                   index: Int = index,
                   created: ZonedDateTime = created,
                   modified: ZonedDateTime = modified): Relationship
-  
+
+trait HasTopLevelCollectionPKAndLevel(val topLevelCollectionPK: UUID, val level: Int)
