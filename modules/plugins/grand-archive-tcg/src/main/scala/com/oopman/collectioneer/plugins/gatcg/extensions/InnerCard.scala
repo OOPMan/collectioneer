@@ -11,7 +11,7 @@ import java.util.UUID
 object InnerCard:
   extension (innerCard: Models.InnerCard)
     def asCollection: Collection = Collection(
-      pk = UUID.nameUUIDFromBytes (s"GATCG-inner-card-${innerCard.uuid}".getBytes),
+      pk = UUID.nameUUIDFromBytes (s"GATCG-inner-card-${innerCard.uuid}-${innerCard.edition_id}".getBytes),
       virtual = true,
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = innerCard.name :: Nil),
