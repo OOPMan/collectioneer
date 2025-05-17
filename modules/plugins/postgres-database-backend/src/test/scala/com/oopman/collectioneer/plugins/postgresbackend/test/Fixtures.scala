@@ -36,7 +36,7 @@ class Fixtures()(implicit session: DBSession):
     compositeProperty
   )
   ProjectedPropertyDAOImpl.createOrUpdateProperties(allProperties)
-  // Collection fiuxtures
+  // Collection fixtures
   val rootA = ProjectedCollection()
   val childAofRootA = ProjectedCollection(propertyValues = Map(
     textProperty -> ProjectedPropertyValue(textValues = List("1")),
@@ -141,8 +141,17 @@ class Fixtures()(implicit session: DBSession):
     jsonProperty -> ProjectedPropertyValue(jsonValues = List(parse("""{"6":true}""").getOrElse(Json.Null))),
     compositeProperty -> ProjectedPropertyValue(textValues = List("6"), intValues = List(6))
   ))
+  val rootC = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "rootC":: Nil)))
+  val childAofRootC = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "childAofRootC":: Nil)))
+  val child1OfChildA = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "child1OfChildA":: Nil)))
+  val child2OfChildA = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "child2OfChildA":: Nil)))
+  val childXofChild1 = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "childXofChild1":: Nil)))
+  val childYofChild1 = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "childYofChild1":: Nil)))
+  val childXofChild2 = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "childXofChild2":: Nil)))
+  val childYofChild2 = ProjectedCollection(propertyValues = Map(textProperty -> ProjectedPropertyValue(textValues = "childYofChild2":: Nil)))
   val allCollections = Seq(
-    rootA, childAofRootA, childBofRootA, childCofRootA, rootB, childAofRootB, childBofRootB, childCofRootB
+    rootA, childAofRootA, childBofRootA, childCofRootA, rootB, childAofRootB, childBofRootB, childCofRootB, rootC,
+    childAofRootC, child1OfChildA, child2OfChildA, childXofChild1, childYofChild1, childXofChild2, childYofChild2
   )
   ProjectedCollectionDAOImpl.createOrUpdateCollections(allCollections)
   // Relationship fixtures
@@ -152,6 +161,13 @@ class Fixtures()(implicit session: DBSession):
     Relationship(relatedCollectionPK = childCofRootA.pk, relationshipType = ChildOf, collectionPK = rootA.pk),
     Relationship(relatedCollectionPK = childAofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk),
     Relationship(relatedCollectionPK = childBofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk),
-    Relationship(relatedCollectionPK = childCofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk)
+    Relationship(relatedCollectionPK = childCofRootB.pk, relationshipType = ChildOf, collectionPK = rootB.pk),
+    Relationship(relatedCollectionPK = childAofRootC.pk, relationshipType = SourceOfPropertiesAndPropertyValues, collectionPK = rootC.pk),
+    Relationship(relatedCollectionPK = child1OfChildA.pk, relationshipType = ChildOf, collectionPK = childAofRootC.pk),
+    Relationship(relatedCollectionPK = child2OfChildA.pk, relationshipType = ChildOf, collectionPK = childAofRootC.pk),
+    Relationship(relatedCollectionPK = childXofChild1.pk, relationshipType = ChildOf, collectionPK = child1OfChildA.pk),
+    Relationship(relatedCollectionPK = childYofChild1.pk, relationshipType = SourceOfPropertiesAndPropertyValues, collectionPK = child1OfChildA.pk),
+    Relationship(relatedCollectionPK = childXofChild2.pk, relationshipType = ChildOf, collectionPK = child2OfChildA.pk),
+    Relationship(relatedCollectionPK = childYofChild2.pk, relationshipType = SourceOfPropertiesAndPropertyValues, collectionPK = child2OfChildA.pk)
   )
   RelationshipDAOImpl.createOrUpdateRelationships(relationships)
