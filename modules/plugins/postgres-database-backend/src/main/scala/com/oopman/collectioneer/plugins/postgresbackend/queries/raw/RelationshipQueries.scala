@@ -71,5 +71,6 @@ object RelationshipQueries:
               )
           SELECT *
           FROM cte1
+          ORDER BY cte1.top_level_collection_pk, cte1.level
        """
 
