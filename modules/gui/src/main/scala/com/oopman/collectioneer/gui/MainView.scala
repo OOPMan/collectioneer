@@ -4,12 +4,12 @@ import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection, giv
 import com.oopman.collectioneer.db.{SortDirection, traits}
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.entity.raw.Collection as RawCollection
-import com.oopman.collectioneer.plugins.MainViewGUIPlugin
-import scalafx.scene.control.{ProgressIndicator, ScrollPane, SelectionMode, SplitPane, TreeCell, TreeItem, TreeView}
-import scalafx.scene.layout.Region
+import com.oopman.collectioneer.plugins.{DetailViewGUIPlugin, MainViewGUIPlugin}
+import scalafx.scene.control.{ScrollPane, SelectionMode, SplitPane, TabPane, TreeCell, TreeItem, TreeView}
 import scalafx.Includes.*
 import scalafx.concurrent.Task
 import scalafx.scene.Node
+import scalafx.scene.control.TabPane.TabClosingPolicy
 
 
 class MainView(val config: GUIConfig):
@@ -43,11 +43,12 @@ class MainView(val config: GUIConfig):
     selectionModel().selectedItem.onChange {
       (observableValue, oldItem, newItem) =>
         if newItem.getChildren.size() == 0 then refreshChildren(newItem)
+        refreshDetailView(newItem)
         // TODO: Render Collection detail into Collection detail pane in https://github.com/OOPMan/collectioneer/issues/34
     }
 
-  // TODO: Implement this in https://github.com/OOPMan/collectioneer/issues/34
-  private lazy val collectionDetailView = new Region
+  private lazy val collectionDetailView = new TabPane:
+    tabClosingPolicy = TabClosingPolicy.Unavailable
 
   private lazy val splitPane = new SplitPane:
     items.addAll(collectionsListScrollPane, collectionDetailViewScrollPane)
@@ -84,6 +85,32 @@ class MainView(val config: GUIConfig):
       val collections = worker.getValue
       val treeItems = collections.map(projectedCollection => TreeItem(projectedCollection))
       treeItem.children = treeItems
+    }
+    // TODO: Handle failure
+    val thread = new Thread(worker)
+    thread.setDaemon(true)
+    thread.start()
+
+  def refreshDetailView(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
+    val worker = Task {
+      Injection.produceRun(Some(config)) {
+        (projectedCollectionDAO: traits.dao.projected.CollectionDAO, plugins: Set[DetailViewGUIPlugin]) =>
+          val collectionToInflate = treeItem.getValue
+          val collection = projectedCollectionDAO
+            .inflateRawCollections(collectionToInflate :: Nil)
+            .headOption
+            .getOrElse(collectionToInflate)
+          val renderers = plugins
+            .filter(_.canRenderCollection(collection))
+            .map(_.generateCollectionRenderer(collection))
+          // TODO: In the event that renderers is empty, we should return a default renderer that simply renders the propertyValue data in a tetual form
+          collection -> renderers
+      }
+    }
+    worker.onSucceeded = { e =>
+      val (collection, renderers) = worker.getValue
+      val tabs = renderers.map(renderer => renderer(collection))
+      collectionDetailView.tabs = tabs.toSeq
     }
     // TODO: Handle failure
     val thread = new Thread(worker)
