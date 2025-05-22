@@ -42,9 +42,23 @@ class MainView(val config: GUIConfig):
     selectionModel().selectionMode = SelectionMode.Single
     selectionModel().selectedItem.onChange {
       (observableValue, oldItem, newItem) =>
-        if newItem.getChildren.size() == 0 then refreshChildren(newItem)
-        refreshDetailView(newItem)
-        // TODO: Render Collection detail into Collection detail pane in https://github.com/OOPMan/collectioneer/issues/34
+        val worker = Task {
+          Injection.produceRun(Some(config)) {
+            (collectionDAO: traits.dao.projected.CollectionDAO) =>
+              val collection = newItem.getValue
+              val collections = collectionDAO.inflateRawCollections(collection :: Nil)
+              collections.headOption.getOrElse(collection)
+          }
+        }
+        worker.onSucceeded = {e =>
+          newItem.value = worker.getValue
+          if newItem.getChildren.size() == 0 then refreshChildren(newItem)
+          refreshDetailView(newItem)
+        }
+        // TODO: Handle failure
+        val thread = new Thread(worker)
+        thread.setDaemon(true)
+        thread.start()
     }
 
   private lazy val collectionDetailView = new TabPane:
@@ -62,10 +76,10 @@ class MainView(val config: GUIConfig):
     content = collectionDetailView
 
   def refreshChildren(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
+    val collection = treeItem.getValue
     val worker = Task {
       val collections = Injection.produceRun(Some(config)) {
         (collectionDAO: traits.dao.raw.CollectionDAO, projectedCollectionDAO: traits.dao.projected.CollectionDAO) =>
-          val collection = treeItem.getValue
           val collections: Seq[RawCollection] = plugins
             .find(plugin => plugin.canGetRawChildCollections(collection))
             .map(plugin => plugin.getRawChildCollections(collection, collectionDAO))
@@ -92,25 +106,26 @@ class MainView(val config: GUIConfig):
     thread.start()
 
   def refreshDetailView(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
+    val collection = treeItem.getValue
     val worker = Task {
-      Injection.produceRun(Some(config)) {
-        (projectedCollectionDAO: traits.dao.projected.CollectionDAO, plugins: Set[DetailViewGUIPlugin]) =>
-          val collectionToInflate = treeItem.getValue
-          val collection = projectedCollectionDAO
-            .inflateRawCollections(collectionToInflate :: Nil)
-            .headOption
-            .getOrElse(collectionToInflate)
+      // TODO: Module is missing stage for detailviewguiplugin
+      Injection.produceRun(Some(config), CollectioneerGUI.collectioneerGUIModule) {
+        (plugins: Set[DetailViewGUIPlugin]) =>
           val renderers = plugins
             .filter(_.canRenderCollection(collection))
             .map(_.generateCollectionRenderer(collection))
           // TODO: In the event that renderers is empty, we should return a default renderer that simply renders the propertyValue data in a tetual form
-          collection -> renderers
+          renderers
       }
     }
     worker.onSucceeded = { e =>
-      val (collection, renderers) = worker.getValue
+      val renderers = worker.getValue
       val tabs = renderers.map(renderer => renderer(collection))
       collectionDetailView.tabs = tabs.toSeq
+    }
+    worker.onFailed = { e =>
+      // TODO: Log exceptions
+      worker.getException.printStackTrace()
     }
     // TODO: Handle failure
     val thread = new Thread(worker)
