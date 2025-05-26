@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.get
 
 import com.oopman.collectioneer.Injection
-import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.cli.CLIConfig
 import com.oopman.collectioneer.db.traits
 import io.circe.*
 import io.circe.generic.auto.*
@@ -43,7 +43,7 @@ object Properties:
       properties = propertyValuesToPropertiesMap(property.propertyValues)
     )
     
-  def getProperties(config: Config): Json =
+  def getProperties(config: CLIConfig): Json =
     def getProperties(propertyDAO: traits.dao.projected.PropertyDAO) =
       val properties = propertyDAO.getAllMatchingPKs(config.uuids)
       GetPropertiesResult(
@@ -51,7 +51,7 @@ object Properties:
         count = properties.size,
         properties = properties.map(propertyToPropertyWithPropertyValues)
       ).asJson
-    Injection.produceRun(Some(config))(getProperties)
+    Injection.produceRun()(getProperties)
 
 
 

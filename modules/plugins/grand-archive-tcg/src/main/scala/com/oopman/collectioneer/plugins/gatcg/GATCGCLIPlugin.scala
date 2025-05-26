@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.{Injection, Plugin}
-import com.oopman.collectioneer.cli.{CLISubConfig, Config, Subject, Verb}
+import com.oopman.collectioneer.cli.{CLISubConfig, CLIConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
@@ -45,10 +45,10 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
 
   def getDefaultSubConfig: CLISubConfig = GATCGPluginConfig()
 
-  def getSubConfigFromConfig(config: Config): GATCGPluginConfig =
+  def getSubConfigFromConfig(config: CLIConfig): GATCGPluginConfig =
     config.subConfigs.getOrElse(getShortName, getDefaultSubConfig).asInstanceOf[GATCGPluginConfig]
 
-  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])] =
+  def getActions(builder: OParserBuilder[CLIConfig]): List[(Verb, Subject, CLIConfig => Json, List[OParser[?, CLIConfig]])] =
     val datasetPathOpt = builder.opt[File]("gatcg-json-dataset-path")
       .optional()
       .action((f, config) => config.copy(subConfigs = config.subConfigs.updated(getShortName, getSubConfigFromConfig(config).copy(grandArchiveTCGJSON = Some(f)))))
@@ -141,7 +141,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     logger.info(s"Download $downloaded images out of ${uniqueImages.size}")
     downloaded
 
-  def importDataset(config: Config): Json =
+  def importDataset(config: CLIConfig): Json =
     val subConfig = getSubConfigFromConfig(config)
     val pathOption = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath))
     val dataOption: Option[Vector[Json]] = pathOption
@@ -173,12 +173,12 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       object importDatasetModule extends ModuleDef:
         make[List[Models.Card]].from(cards)
 
-      Injection.produceRun(Some(config), importDatasetModule)(actions.importDataset)
+      Injection.produceRun(importDatasetModule)(actions.importDataset)
     })
     // TODO: Replace with a real response
     "Something".asJson
 
-  def downloadDataset(config: Config): Json =
+  def downloadDataset(config: CLIConfig): Json =
     logger.info("Downloading GATCG dataaset")
     val result = getData() match
       case Failure(e) => DownloadDatasetResult(downloadSucceeded = false, errorMessage = Some(e.getMessage))
@@ -190,7 +190,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
     result.asJson
 
-  def downloadImages(config: Config): Json =
+  def downloadImages(config: CLIConfig): Json =
     logger.info("Downloading GATCG Images")
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
@@ -201,7 +201,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val downloaded = getAndSaveImages(json, imagesPath)
     downloaded.asJson
 
-  def validateDataset(config: Config): Json =
+  def validateDataset(config: CLIConfig): Json =
     logger.info("Validating GATCG Dataset")
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)

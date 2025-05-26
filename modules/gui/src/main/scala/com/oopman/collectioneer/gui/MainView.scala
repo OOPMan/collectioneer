@@ -14,7 +14,7 @@ import scalafx.scene.control.TabPane.TabClosingPolicy
 
 class MainView(val config: GUIConfig):
   private lazy val plugins: Set[MainViewGUIPlugin] =
-    Injection.produceRun(Some(config), CollectioneerGUI.collectioneerGUIModule) {
+    Injection.produceRun() {
       (mainViewGUIPlugins: Set[MainViewGUIPlugin]) => mainViewGUIPlugins
     }
 
@@ -43,7 +43,7 @@ class MainView(val config: GUIConfig):
     selectionModel().selectedItem.onChange {
       (observableValue, oldItem, newItem) =>
         val worker = Task {
-          Injection.produceRun(Some(config)) {
+          Injection.produceRun() {
             (collectionDAO: traits.dao.projected.CollectionDAO) =>
               val collection = newItem.getValue
               val collections = collectionDAO.inflateRawCollections(collection :: Nil)
@@ -78,7 +78,7 @@ class MainView(val config: GUIConfig):
   def refreshChildren(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
     val collection = treeItem.getValue
     val worker = Task {
-      val collections = Injection.produceRun(Some(config)) {
+      val collections = Injection.produceRun() {
         (collectionDAO: traits.dao.raw.CollectionDAO, projectedCollectionDAO: traits.dao.projected.CollectionDAO) =>
           val collections: Seq[RawCollection] = plugins
             .find(plugin => plugin.canGetRawChildCollections(collection))
@@ -109,7 +109,7 @@ class MainView(val config: GUIConfig):
     val collection = treeItem.getValue
     val worker = Task {
       // TODO: Module is missing stage for detailviewguiplugin
-      Injection.produceRun(Some(config), CollectioneerGUI.collectioneerGUIModule) {
+      Injection.produceRun() {
         (plugins: Set[DetailViewGUIPlugin]) =>
           val renderers = plugins
             .filter(_.canRenderCollection(collection))

@@ -13,7 +13,7 @@ import scalafx.util.StringConverter
 
 object DatabaseBackendPicker:
   private lazy val plugins: Set[DatabaseBackendGUIPlugin] =
-    Injection.produceRun(inputModule = CollectioneerGUI.collectioneerGUIModule) {
+    Injection.produceRun() {
       (databaseBackendGUIPlugins: Set[DatabaseBackendGUIPlugin]) => databaseBackendGUIPlugins
     }
   private lazy val pluginMap: Map[String, DatabaseBackendGUIPlugin] = plugins.map(plugin => (plugin.getUIName, plugin)).toMap
@@ -40,7 +40,7 @@ object DatabaseBackendPicker:
       progressIndicator.visible = true
       val config = DatabaseBackendPicker.getConfig()
       val worker = Task {
-        Injection.produceRun(Some(config)) {
+        Injection.produceRun() {
           (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp()
         }
       }
