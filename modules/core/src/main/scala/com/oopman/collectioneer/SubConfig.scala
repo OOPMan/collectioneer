@@ -1,3 +1,6 @@
 package com.oopman.collectioneer
 
-trait SubConfig
+import distage.ModuleDef
+
+trait SubConfig:
+  def getModuleDefForSubConfig: ModuleDef
