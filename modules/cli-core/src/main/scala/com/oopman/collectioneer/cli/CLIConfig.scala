@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.cli
 
-import com.oopman.collectioneer.SubConfig
+import com.oopman.collectioneer.{Config, SubConfig}
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
@@ -51,9 +51,9 @@ enum OutputFormat:
 
 trait CLISubConfig extends SubConfig
 
-case class Config
+case class CLIConfig
 (
-  action: Config => Json = config => "".asJson,
+  action: CLIConfig => Json = config => "".asJson,
   verb: Option[Verb] = None,
   subject: Option[Subject] = None,
   datasourceUri: Option[String] = Some("jdbc:embeddedpostgresql://./collection"),
@@ -69,4 +69,4 @@ case class Config
   propertyValueQueries: Option[List[String]] = None,
   usePlugin: Option[String] = None,
   subConfigs: Map[String, CLISubConfig] = Map(),
-) extends com.oopman.collectioneer.Config
+) extends Config
