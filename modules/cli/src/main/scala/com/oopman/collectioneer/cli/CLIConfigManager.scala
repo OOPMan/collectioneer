@@ -1,14 +1,11 @@
 package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer
-import com.oopman.collectioneer.{Config, ConfigManager}
+import com.oopman.collectioneer.{Config, ConfigManager, Injection}
 import com.oopman.collectioneer.plugins.CLIPlugin
-import distage.plugins.PluginConfig
-import distage.{Injector, ModuleBase, ModuleDef}
+import distage.ModuleDef
 import io.circe.Json
 import io.circe.syntax.*
-import izumi.distage.plugins.load.PluginLoader
-import izumi.fundamentals.platform.functional.Identity
 import scopt.{OParser, OParserBuilder}
 
 import java.util.UUID
@@ -64,16 +61,11 @@ class CLIConfigManager(val args: Seq[String]) extends ConfigManager:
       .children(oParserItems *)
     
   private val builder: OParserBuilder[CLIConfig] = OParser.builder[CLIConfig]
-  
-  // TODO: Replace this with usage of Injection without Config?
-  private val pluginConfig: PluginConfig = PluginConfig.cached("com.oopman.collectioneer.plugins")
-  private val pluginModules: ModuleBase = PluginLoader().load(pluginConfig).result.merge
-  private object fakeModule extends ModuleDef:
-    include(pluginModules)
-    make[com.oopman.collectioneer.Config].from(CLIConfig())
-  private val plugins: List[CLIPlugin] = Injector[Identity]()
-    .produceRun(fakeModule)((cliPlugins: Set[CLIPlugin]) => cliPlugins).toList
-  
+
+  private val plugins: List[CLIPlugin] = Injection.produceRun(withConfig = false) {
+    (cliPlugins: Set[CLIPlugin]) => cliPlugins.toList
+  }
+
   private val pluginActions: List[ActionListItem] = plugins
     .flatMap(plugin => plugin
       .getActions(builder)
@@ -158,11 +150,22 @@ class CLIConfigManager(val args: Seq[String]) extends ConfigManager:
     )
 
   private val initialConfig = CLIConfig(subConfigs = pluginSubconfigs)
+  private val config: CLIConfig = OParser.parse(parser, args, initialConfig).getOrElse(initialConfig)
   
-  val getConfig: CLIConfig = OParser.parse(parser, args, initialConfig).getOrElse(initialConfig)
+  inline def getConfig: CLIConfig = config
   
-  def getModuleDefForConfig: ModuleDef = new ModuleDef:
-    make[Config].from(getConfig)
-    make[CLIConfig].from(getConfig)
-    for (subConfig <- getConfig.subConfigs.values) do include(subConfig.getModuleDefForSubConfig)
+  def getModuleDefForConfig: ModuleDef =
+    new ModuleDef:
+      make[Config].from(getConfig)
+      make[CLIConfig].from(getConfig)
+      for (subConfig <- getConfig.subConfigs.values) do include(subConfig.getModuleDefForSubConfig)
+
+  def getActionOption: Option[Action] =
+    for {
+      verb <- config.verb
+      subject <- config.subject
+      subjectMap <- actionsMap.get(verb)
+      pluginNameActionListItemMap <- subjectMap.get(subject)
+      (_, _, _, action, _) <- pluginNameActionListItemMap.get(config.usePlugin)
+    } yield action
 
