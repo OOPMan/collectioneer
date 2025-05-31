@@ -12,6 +12,7 @@ object CLI:
     val cliConfigManager = new CLIConfigManager(args)
     Injection.baseModuleDef = new ModuleDef:
       make[ConfigManager].from(cliConfigManager)
+      make[CLIConfigManager].from(cliConfigManager)
 
     Injection.produceRun() { (config: CLIConfig, databaseBackendPlugin: DatabaseBackendPlugin) =>
       GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
