@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.SubConfig
+import com.oopman.collectioneer.{SubConfig, WithTag}
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.ModuleDef
@@ -8,7 +8,7 @@ import io.circe.Json
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
 
-case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends CLISubConfig:
+case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends CLISubConfig, WithTag[EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig]:
   def getModuleDefForSubConfig: ModuleDef = 
     val subConfig = this
     new ModuleDef:
