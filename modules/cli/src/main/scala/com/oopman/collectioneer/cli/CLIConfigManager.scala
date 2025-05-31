@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli
 
 import com.oopman.collectioneer
-import com.oopman.collectioneer.{Config, ConfigManager, Injection}
+import com.oopman.collectioneer.{Config, ConfigManager, Injection, SubConfig}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import distage.ModuleDef
 import io.circe.Json
@@ -71,7 +71,6 @@ class CLIConfigManager(val args: Seq[String]) extends ConfigManager:
       .getActions(builder)
       .map((verb, subject, action, oparserItems) => (verb, subject, Some(cliSafeName(plugin.getShortName)), action, oparserItems))
     )
-  // TODO: Populate default sub-configs differently
   private val pluginSubconfigs: Map[String, CLISubConfig] =
     plugins.map(plugin => plugin.getShortName -> plugin.getDefaultSubConfig).toMap
   private val uuidArgs: OParser[String, CLIConfig] = builder.arg[String]("<UUID>...")
@@ -152,13 +151,19 @@ class CLIConfigManager(val args: Seq[String]) extends ConfigManager:
   private val initialConfig = CLIConfig(subConfigs = pluginSubconfigs)
   private val config: CLIConfig = OParser.parse(parser, args, initialConfig).getOrElse(initialConfig)
   
-  inline def getConfig: CLIConfig = config
-  
+  def getConfig: CLIConfig = config
+
+  def updateConfig(config: Config): Config =
+    throw UnsupportedOperationException("updateConfig is not supported")
+
   def getModuleDefForConfig: ModuleDef =
     new ModuleDef:
       make[Config].from(getConfig)
       make[CLIConfig].from(getConfig)
       for (subConfig <- getConfig.subConfigs.values) do include(subConfig.getModuleDefForSubConfig)
+
+  def updateSubConfig[T <: SubConfig](subConfig: T): T =
+    throw UnsupportedOperationException("updateSubConfig is not supported")
 
   def getActionOption: Option[Action] =
     for {
