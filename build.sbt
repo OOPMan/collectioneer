@@ -38,13 +38,15 @@ lazy val commonSettings = Seq(
     "io.7mind.izumi"                  %% "distage-core"               % "1.2.16",
     "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.16",
     "dev.zio"                         %% "zio"                        % "2.1.16",
+    "dev.zio"                         %% "izumi-reflect"              % "3.0.3",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
     "org.scalatest"                   %% "scalatest"                  % "3.2.18"            % "test",
     "org.typelevel"                   %% "shapeless3-deriving"        % "3.4.3",
     "org.typelevel"                   %% "shapeless3-typeable"        % "3.4.3",
     "ch.qos.logback"                  %  "logback-classic"            % "1.5.6",
     "com.novocode"                    %  "junit-interface"            % "0.11"              % "test",
-    "commons-codec"                   %  "commons-codec"              % "1.18.0"
+    "commons-codec"                   %  "commons-codec"              % "1.18.0",
+    "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
@@ -162,7 +164,6 @@ lazy val postgresDatabaseBackend = project
     libraryDependencies ++= Seq(
       "de.softwareforge.testing"        % "pg-embedded"                 % "5.1.0",
       "org.postgresql"                  % "postgresql"                  % "42.7.3",
-      "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
       "org.flywaydb"                    % "flyway-database-postgresql"  % flywayVersion,
     )
   )
@@ -194,9 +195,6 @@ lazy val grandArchiveTCG = project
   .settings(
     name := "Grand Archive TCG Plugin",
     exportJars := true,
-    libraryDependencies ++= Seq(
-      "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
-    ),
     libraryDependencies ++= sttpLibraryDependencies,
   )
   .dependsOn(core, cliCore)
