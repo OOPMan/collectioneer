@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.{Config, ConfigManager}
 import com.oopman.collectioneer.plugins.GUISubConfigCodecPlugin
+import com.oopman.collectioneer.{Config, ConfigManager, SubConfig}
 import distage.ModuleDef
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
@@ -10,7 +10,7 @@ import io.circe.generic.semiauto.deriveDecoder
 // TODO: This probably needs to be moved to GUI Core?
 // TODO: Thread safety
 // TODO: Provide a Distage Module exposing the GUIConfig along with all sub-configs
-object GUIConfigManager extends ConfigManager:
+class GUIConfigManager extends ConfigManager:
   private val defaultRootPath = os.pwd
   private val defaultConfigFilePath = defaultRootPath / "collectioneer.yaml"
   private val defaultGUIConfig = GUIConfig(subConfigs = GUISubConfigCodecPlugin.getDefaultGUISubConfigs)
@@ -39,9 +39,10 @@ object GUIConfigManager extends ConfigManager:
         configOption = Some(guiConfig)
         guiConfig
 
-  def getConfig_=(newConfig: GUIConfig): GUIConfig =
-    configOption = Some(newConfig)
-    newConfig
+  def updateConfig(newConfig: Config): GUIConfig =
+    val guiConfig = newConfig.asInstanceOf[GUIConfig]
+    configOption = Some(guiConfig)
+    guiConfig
 
   def loadConfig(path: os.Path = defaultConfigFilePath): GUIConfig =
     val guiConfig = loadAndParseConfiguration(path)
@@ -49,7 +50,7 @@ object GUIConfigManager extends ConfigManager:
     guiConfig
 
   def saveConfig(path: os.Path): Boolean =
-    // TODO: Implement
+    // TODO: Implement. datasourceUri should not be saved
     ???
 
   def getModuleDefForConfig: ModuleDef = 
@@ -58,3 +59,10 @@ object GUIConfigManager extends ConfigManager:
       make[Config].from(config)
       make[GUIConfig].from(config)
       for (subConfig <- config.subConfigs.values) do include(subConfig.getModuleDefForSubConfig)
+
+  def updateSubConfig[T <: SubConfig](subConfig: T): T =
+    val config = getConfig
+    val subConfigs = config.subConfigs
+    val updatedSubConfigs = subConfigs.updated(subConfig.getKeyForSubConfig, subConfig.asInstanceOf[GUISubConfig])
+    updateConfig(config.copy(subConfigs = updatedSubConfigs))
+    subConfig
