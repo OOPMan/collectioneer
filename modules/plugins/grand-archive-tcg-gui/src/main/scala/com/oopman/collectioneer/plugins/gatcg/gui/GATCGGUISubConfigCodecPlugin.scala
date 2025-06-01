@@ -5,7 +5,8 @@ import com.oopman.collectioneer.plugins.GUISubConfigCodecPlugin
 import io.circe.{Decoder, Json}
 
 class GATCGGUISubConfigCodecPlugin extends GUISubConfigCodecPlugin:
-  val subConfigKey: String = "gatcg"
+  private val defaultSubConfig = GATCGSubConfig()
+  val subConfigKey: String = defaultSubConfig.getKeyForSubConfig
 
   def canEncode(subConfig: GUISubConfig): Boolean =
     subConfig.isInstanceOf[GATCGSubConfig]
@@ -20,11 +21,10 @@ class GATCGGUISubConfigCodecPlugin extends GUISubConfigCodecPlugin:
     import cats.syntax.functor._
     deriveDecoder[GATCGSubConfig].widen
 
-  def getDefaultGUISubConfig: GUISubConfig = GATCGSubConfig()
+  def getDefaultGUISubConfig: GUISubConfig = defaultSubConfig
 
   def getName: String = "GATCG SubConfig Codec Plugin"
 
   def getShortName: String = "GATCGSubConfigCodec"
 
   def getVersion: String = "master"
-
