@@ -12,7 +12,7 @@ import scalafx.scene.Node
 import scalafx.scene.control.TabPane.TabClosingPolicy
 
 
-class MainView(val config: GUIConfig):
+class MainView:
   private lazy val plugins: Set[MainViewGUIPlugin] =
     Injection.produceRun() {
       (mainViewGUIPlugins: Set[MainViewGUIPlugin]) => mainViewGUIPlugins
