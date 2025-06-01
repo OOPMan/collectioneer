@@ -13,8 +13,8 @@ trait GUISubConfigCodecPlugin extends Plugin:
   def decoder: Decoder[GUISubConfig]
 
 object GUISubConfigCodecPlugin:
-  // TODO: This will fail if there are no subconfig plugins
-  private val guiSubConfigCodecPluginMap: Map[String, GUISubConfigCodecPlugin] = Injection.produceRun() {
+  // TODO: This will fail if there are no subconfig plugins, make it a method that returns an empty map if it fails
+  private val guiSubConfigCodecPluginMap: Map[String, GUISubConfigCodecPlugin] = Injection.produceRun(withConfig = false) {
     (plugins: Set[GUISubConfigCodecPlugin]) => plugins.map(plugin => plugin.subConfigKey -> plugin).toMap
   }
 
