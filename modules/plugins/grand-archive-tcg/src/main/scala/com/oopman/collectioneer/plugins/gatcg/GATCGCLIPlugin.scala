@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.{Injection, Plugin}
-import com.oopman.collectioneer.cli.{CLISubConfig, CLIConfig, Subject, Verb}
+import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
@@ -45,6 +45,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
 
   def getDefaultSubConfig: CLISubConfig = GATCGPluginConfig()
 
+  // TODO: We should no longer need this
   def getSubConfigFromConfig(config: CLIConfig): GATCGPluginConfig =
     config.subConfigs.getOrElse(getShortName, getDefaultSubConfig).asInstanceOf[GATCGPluginConfig]
 
