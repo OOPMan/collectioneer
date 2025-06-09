@@ -22,3 +22,7 @@ trait Collection extends raw.Collection:
                         propertyValues: Map[raw.Property, projected.PropertyValue] = propertyValues): Collection
 
   override def toString: String = s"Projected Collection ($pk)"
+
+
+trait HasCollection extends raw.HasCollection:
+  override def collection: Collection
