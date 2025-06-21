@@ -14,7 +14,9 @@ private object CommonPropertiesUUIDs:
   val isGATCGSetCollection = "c8d11a78-4ea0-435b-b9ea-30590e08c5a5"
   val isGATCGCardCollection = "90f467f1-12ea-4c12-b37d-7ed5573790e3"
   val isGATCGCard = "015d940f-05d6-4f23-9a2b-fe5b8c1fe654"
+  val isGATCGInnerCard = "67c2809a-ed9b-4175-877a-9c326109e057"
   val isGATCGEdition = "96a544e7-0580-436c-8429-ccea416a488c"
+  val isGATCGInnerEdition = "ca7b9c11-a097-46b3-9eac-bbdd39487682"
   val isGATCGCirculation = "e62a5a99-d946-476d-8b37-1374238e0132"
   val isGATCGRule = "e246bb8f-9fb3-498b-ba3f-d4f109d507ba"
   val isGATCGReference = "73bb716a-a9bc-47ae-b418-4f8732c5f5e9"
@@ -64,9 +66,21 @@ enum CommonProperties(val property: projected.Property) :
     propertyTypes = List(PropertyType.boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
+  case isGATCGInnerCard extends CommonProperties(Property(
+    pk = CommonPropertiesUUIDs.isGATCGInnerCard,
+    propertyName = "Is GATCG Inner Card",
+    propertyTypes = List(PropertyType.boolean),
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
+  )) with HasProperty
   case isGATCGEdition extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGEdition,
     propertyName = "Is GATCG Edition",
+    propertyTypes = List(PropertyType.boolean),
+    propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
+  )) with HasProperty
+  case isGATCGInnerEdition extends CommonProperties(Property(
+    pk = CommonPropertiesUUIDs.isGATCGInnerEdition,
+    propertyName = "Is GATCG Inner Edition",
     propertyTypes = List(PropertyType.boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty

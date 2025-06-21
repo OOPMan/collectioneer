@@ -19,7 +19,7 @@ object InnerEdition:
         propertyValues = Map(
           CoreProperties.name -> PropertyValue(textValues = name ++ editionName),
           CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
-          CommonProperties.isGATCGEdition -> PropertyValue(booleanValues = true :: Nil),
+          CommonProperties.isGATCGInnerEdition -> PropertyValue(booleanValues = true :: Nil),
           EditionProperties.editionUID -> PropertyValue(textValues = innerEdition.uuid :: Nil),
           EditionProperties.cardUID -> PropertyValue(textValues = innerEdition.card_id :: Nil),
           EditionProperties.collectorNumber -> PropertyValue(textValues = innerEdition.collector_number :: Nil),

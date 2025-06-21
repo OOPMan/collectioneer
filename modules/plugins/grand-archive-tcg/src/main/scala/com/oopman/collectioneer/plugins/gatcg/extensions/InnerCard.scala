@@ -16,7 +16,7 @@ object InnerCard:
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = innerCard.name :: Nil),
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
-        CommonProperties.isGATCGCard -> PropertyValue(booleanValues = true :: Nil),
+        CommonProperties.isGATCGInnerCard -> PropertyValue(booleanValues = true :: Nil),
         CardProperties.cardUID -> PropertyValue (textValues = innerCard.uuid :: Nil),
         CardProperties.element -> PropertyValue (textValues = innerCard.element :: Nil),
         CardProperties.types -> PropertyValue (textValues = innerCard.types),
