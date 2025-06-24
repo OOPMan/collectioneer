@@ -12,7 +12,7 @@ object Circulation:
   extension (circulation: Models.Circulation)
 
     def asCollection: Collection = Collection(
-      pk = UUID.nameUUIDFromBytes (s"GATCG-circulation-${circulation.uuid}".getBytes),
+      pk = UUID.nameUUIDFromBytes (s"GATCG-circulation-${circulation.edition_id}-${circulation.uuid}".getBytes),
       virtual = true,
       propertyValues = Map(
         CoreProperties.name -> PropertyValue(textValues = circulation.name.map(_ :: Nil).getOrElse(Nil)),
