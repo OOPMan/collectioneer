@@ -20,7 +20,7 @@ extends GUIPlugin(stage), DetailViewGUIPlugin:
       .get(CommonProperties.isGATCGCardCollection)
       .exists(_.booleanValues.contains(true))
 
-  def generateCollectionRenderer(collection: Collection): Collection => Tab =
+  def generateCollectionRenderer(collection: Collection): Collection => Option[Tab] =
     val moduleDef = new ModuleDef:
       make[Collection].from(collection)
       make[GATCGCollectionRenderer].from[GATCGCollectionRenderer]

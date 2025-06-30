@@ -92,49 +92,50 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
         editions = generateEditionCollections(editionCollections)
       )
 
-  val z = generateCardDataCollection()
+  private val cardDataOption = generateCardDataCollection()
 
-  def render(collection: Collection): Tab = new Tab:
-    text = "GATCG Card"
-    content = new VBox:
-      children = Seq(
-        new HBox:
-          children = Seq(
-            // Image
-            new ImageView:
-              image = new Image(inputStreamOption.get)
-            ,
-            // Main Card Content Area
-            new TabPane:
-              tabs = Seq(
-                new Tab:
-                  text = "Main"
-                  content = new Label:
-                    text = "Main Card Text Area"
-                ,
-                new Tab:
-                  text = "Collector"
-                  content = new Label:
-                    text = "Collector Data"
-              )
-            ,
-            // Edition Data
-            new VBox:
-              children = Seq(
-                new Label:
-                  text = "Current Edition Details"
-                ,
-                new Label:
-                  text = "Available Edition Links"
-              )
-          )
-        ,
-        new HBox:
-          children = Seq(
-            new Label:
-              text = "Legality section"
-            ,
-            new Label:
-              text = "Rules section"
-          )
-      )
+  def render(collection: Collection): Option[Tab] =
+    for cardData <- cardDataOption yield new Tab:
+      text = "GATCG Card"
+      content = new VBox:
+        children = Seq(
+          new HBox:
+            children = Seq(
+              // Image
+              new ImageView:
+                image = new Image(inputStreamOption.get)
+              ,
+              // Main Card Content Area
+              new TabPane:
+                tabs = Seq(
+                  new Tab:
+                    text = "Main"
+                    content = new Label:
+                      text = "Main Card Text Area"
+                  ,
+                  new Tab:
+                    text = "Collector"
+                    content = new Label:
+                      text = "Collector Data"
+                )
+              ,
+              // Edition Data
+              new VBox:
+                children = Seq(
+                  new Label:
+                    text = "Current Edition Details"
+                  ,
+                  new Label:
+                    text = "Available Edition Links"
+                )
+            )
+          ,
+          new HBox:
+            children = Seq(
+              new Label:
+                text = "Legality section"
+              ,
+              new Label:
+                text = "Rules section"
+            )
+        )

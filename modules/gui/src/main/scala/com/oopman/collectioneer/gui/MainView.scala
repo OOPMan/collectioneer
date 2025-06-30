@@ -120,7 +120,11 @@ class MainView:
     }
     worker.onSucceeded = { e =>
       val renderers = worker.getValue
-      val tabs = renderers.map(renderer => renderer(collection))
+      val tabs =
+        for
+          renderer <- renderers
+          tab <- renderer(collection)
+        yield tab
       collectionDetailView.tabs = tabs.toSeq
     }
     worker.onFailed = { e =>

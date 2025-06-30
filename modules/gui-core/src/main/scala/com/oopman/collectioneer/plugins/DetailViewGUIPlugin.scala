@@ -5,4 +5,4 @@ import scalafx.scene.control.Tab
 
 trait DetailViewGUIPlugin extends GUIPlugin:
   def canRenderCollection(collection: Collection): Boolean
-  def generateCollectionRenderer(collection: Collection): Collection => Tab
+  def generateCollectionRenderer(collection: Collection): Collection => Option[Tab]
