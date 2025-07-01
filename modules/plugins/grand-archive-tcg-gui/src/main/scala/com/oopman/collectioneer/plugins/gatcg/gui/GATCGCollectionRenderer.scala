@@ -3,7 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg.gui
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.dao.projected.CollectionDAO
 import com.oopman.collectioneer.db.traits.dao.raw.RelationshipDAO
-import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties}
+import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties, SetCardProperties}
 import com.oopman.collectioneer.db.traits.entity.raw.{HasTopLevelCollectionPKAndLevel, Relationship, given}
 import scalafx.scene.control.{Label, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -20,14 +20,6 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
   // TODO loading system has a big. Not critical for now but needs to be fixed when said code is reworked due to its performance issues
   private val collections = collectionDAO.getAllMatchingPKs(collectionPKs)
   private val cardDataCollectionOption = collections.find(_.properties.contains(CommonProperties.isGATCGCard))
-
-  private val inputStreamOption = collections
-    .find(_.propertyValues.contains(CommonProperties.isGATCGEdition))
-    .flatMap(_.propertyValues.get(EditionProperties.image))
-    .flatMap(_.textValues.headOption)
-    .map(image => UUID.nameUUIDFromBytes(image.getBytes))
-    .map(imageHash => s"${gatcgSubConfig.imagePath}/$imageHash.jpg")
-    .map(imagePath => os.Path(imagePath).getInputStream)
 
   private def generateInnerEditionCollection(innerEditionCollection: Collection): Option[InnerEdition] =
     val childRelationships = relationshipHierarchy.filter(_.collectionPK == innerEditionCollection.pk)
@@ -93,6 +85,16 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
       )
 
   private val cardDataOption = generateCardDataCollection()
+  private val initialImageInputStreamOption =
+    for
+      cardData <- cardDataOption
+      propertyValue <- collection.propertyValues.get(SetCardProperties.primaryEditionUID)
+      primaryEditionUID <- propertyValue.textValues.headOption
+      primaryEdition <- cardData.editions.find(_.editionUID == primaryEditionUID)
+    yield
+      val imageUUID = UUID.nameUUIDFromBytes(primaryEdition.image.getBytes)
+      val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
+      os.Path(imagePath).getInputStream
 
   def render(collection: Collection): Option[Tab] =
     for cardData <- cardDataOption yield new Tab:
@@ -103,7 +105,7 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
             children = Seq(
               // Image
               new ImageView:
-                image = new Image(inputStreamOption.get)
+                initialImageInputStreamOption.foreach(inputStream => image = new Image(inputStream))
               ,
               // Main Card Content Area
               new TabPane:
