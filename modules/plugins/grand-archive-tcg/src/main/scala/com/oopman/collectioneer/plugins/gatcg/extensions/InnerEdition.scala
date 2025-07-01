@@ -10,8 +10,10 @@ import java.util.UUID
 
 object InnerEdition:
   extension (innerEdition: Models.InnerEdition)
+    
     def asCollection(innerCardData: Collection): Collection =
       val name = innerCardData.propertyValues.get(CoreProperties.name).map(_.textValues).getOrElse(Nil)
+      
       val editionName = s"(${innerEdition.set.prefix} - ${innerEdition.collector_number})" :: Nil
         Collection(
         pk = UUID.nameUUIDFromBytes(s"GATCG-inner-edition-${innerEdition.uuid}".getBytes),
