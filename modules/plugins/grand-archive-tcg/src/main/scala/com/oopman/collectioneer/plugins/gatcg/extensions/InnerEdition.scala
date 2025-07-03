@@ -30,6 +30,7 @@ object InnerEdition:
           EditionProperties.slug -> PropertyValue(textValues = innerEdition.slug :: Nil),
           EditionProperties.rarity -> PropertyValue(smallintValues = innerEdition.rarity.toShort :: Nil), // TODO: Covert to String
           EditionProperties.effect -> PropertyValue(textValues = innerEdition.effect.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.effectRaw -> PropertyValue(textValues = innerEdition.effect_raw.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.flavourText -> PropertyValue(textValues = innerEdition.flavor.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.configuration -> PropertyValue(textValues = innerEdition.configuration.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.orientation -> PropertyValue(textValues = innerEdition.orientation.map(_ :: Nil).getOrElse(Nil)),

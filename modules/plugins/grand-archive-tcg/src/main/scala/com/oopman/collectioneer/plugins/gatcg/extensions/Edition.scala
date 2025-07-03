@@ -30,6 +30,7 @@ object Edition:
           EditionProperties.slug -> PropertyValue(textValues = edition.slug :: Nil),
           EditionProperties.rarity -> PropertyValue(smallintValues = edition.rarity.toShort :: Nil),
           EditionProperties.effect -> PropertyValue(textValues = edition.effect.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.effectRaw -> PropertyValue(textValues = edition.effect_raw.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.flavourText -> PropertyValue(textValues = edition.flavor.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.configuration -> PropertyValue(textValues = edition.configuration.map(_ :: Nil).getOrElse(Nil)),
           EditionProperties.orientation -> PropertyValue(textValues = edition.orientation.map(_ :: Nil).getOrElse(Nil)),
