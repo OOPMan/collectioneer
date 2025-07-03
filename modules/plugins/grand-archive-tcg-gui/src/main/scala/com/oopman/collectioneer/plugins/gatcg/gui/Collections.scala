@@ -38,6 +38,7 @@ case class InnerEdition
   val slug: String = collection.propertyValues(EditionProperties.slug).textValues.head
   val rarity: Short = collection.propertyValues(EditionProperties.rarity).smallintValues.head
   val effect: Option[String] = collection.propertyValues.get(EditionProperties.effect).flatMap(_.textValues.headOption)
+  val effectRaw: Option[String] = collection.propertyValues.get(EditionProperties.effectRaw).flatMap(_.textValues.headOption)
   val flavourText: Option[String] = collection.propertyValues.get(EditionProperties.flavourText).flatMap(_.textValues.headOption)
   val configuration: Option[String] = collection.propertyValues.get(EditionProperties.configuration).flatMap(_.textValues.headOption)
   val orientation: Option[String] = collection.propertyValues.get(EditionProperties.orientation).flatMap(_.textValues.headOption)
@@ -56,6 +57,7 @@ case class InnerCard
   val classes: Seq[String] = collection.propertyValues(CardProperties.classes).textValues
   val subTypes: Seq[String] = collection.propertyValues(CardProperties.subTypes).textValues
   val effect: Option[String] = collection.propertyValues.get(CardProperties.effect).flatMap(_.textValues.headOption)
+  val effectRaw: Option[String] = collection.propertyValues.get(CardProperties.effectRaw).flatMap(_.textValues.headOption)
   val memoryCost: Option[Short] = collection.propertyValues.get(CardProperties.memoryCost).flatMap(_.smallintValues.headOption)
   val reserveCost: Option[Short] = collection.propertyValues.get(CardProperties.reserveCost).flatMap(_.smallintValues.headOption)
   val level: Option[Short] = collection.propertyValues.get(CardProperties.level).flatMap(_.smallintValues.headOption)
@@ -81,6 +83,7 @@ case class Edition
   val slug: String = collection.propertyValues(EditionProperties.slug).textValues.head
   val rarity: Short = collection.propertyValues(EditionProperties.rarity).smallintValues.head
   val effect: Option[String] = collection.propertyValues.get(EditionProperties.effect).flatMap(_.textValues.headOption)
+  val effectRaw: Option[String] = collection.propertyValues.get(EditionProperties.effectRaw).flatMap(_.textValues.headOption)
   val flavourText: Option[String] = collection.propertyValues.get(EditionProperties.flavourText).flatMap(_.textValues.headOption)
   val configuration: Option[String] = collection.propertyValues.get(EditionProperties.configuration).flatMap(_.textValues.headOption)
   val orientation: Option[String] = collection.propertyValues.get(EditionProperties.orientation).flatMap(_.textValues.headOption)
