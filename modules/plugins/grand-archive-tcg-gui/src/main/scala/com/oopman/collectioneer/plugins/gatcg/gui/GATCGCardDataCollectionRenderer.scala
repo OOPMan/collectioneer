@@ -13,17 +13,17 @@ import scalafx.util.StringConverter
 
 import java.util.UUID
 
-class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collection, relationshipDAO: RelationshipDAO, collectionDAO: CollectionDAO):
-  private val relationshipHierarchy = relationshipDAO.getRelationshipHierarchyByCollectionPKs(collection.pk :: Nil)
-  private val collectionPKs = relationshipHierarchy.map(_.relatedCollectionPK).distinct
+class GATCGCardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collection, relationshipDAO: RelationshipDAO, collectionDAO: CollectionDAO):
+  val relationshipHierarchy = relationshipDAO.getRelationshipHierarchyByCollectionPKs(collection.pk :: Nil)
+  val collectionPKs = relationshipHierarchy.map(_.relatedCollectionPK).distinct
   // TODO: Projected load is failing to work correctly in this scenario, see cards like Lu Bu, Circulations are
   // TODO: coming through with duplicate data. This was partially a data issue in the GATCG plugin which has been
   // TODO: corrected but a less mild version of the problem persists, which indicates that the nested PropertyValue
   // TODO loading system has a big. Not critical for now but needs to be fixed when said code is reworked due to its performance issues
-  private val collections = collectionDAO.getAllMatchingPKs(collectionPKs)
-  private val cardDataCollectionOption = collections.find(_.properties.contains(CommonProperties.isGATCGCard))
+  val collections = collectionDAO.getAllMatchingPKs(collectionPKs)
+  val cardDataCollectionOption = collections.find(_.properties.contains(CommonProperties.isGATCGCard))
 
-  private def generateInnerEditionCollection(innerEditionCollection: Collection): Option[InnerEdition] =
+  def generateInnerEditionCollection(innerEditionCollection: Collection): Option[InnerEdition] =
     val childRelationships = relationshipHierarchy.filter(_.collectionPK == innerEditionCollection.pk)
     val childPKs = childRelationships.map(_.relatedCollectionPK).toSet
     val childCollections = collections.filter(collection => childPKs.contains(collection.pk))
@@ -33,7 +33,7 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
       set = set
     )
 
-  private def generateInnerCardCollections(innerCardCollections: Seq[Collection]): Seq[InnerCard] =
+  def generateInnerCardCollections(innerCardCollections: Seq[Collection]): Seq[InnerCard] =
     for
       innerCardCollection <- innerCardCollections
       childRelationships = relationshipHierarchy.filter(_.collectionPK == innerCardCollection.pk)
@@ -51,7 +51,7 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
         rules = rules
       )
 
-  private def generateEditionCollections(editionCollections: Seq[Collection]): Seq[Edition] =
+  def generateEditionCollections(editionCollections: Seq[Collection]): Seq[Edition] =
     for
       editionCollection <- editionCollections
       childRelationships = relationshipHierarchy.filter(_.collectionPK == editionCollection.pk)
@@ -69,7 +69,7 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
         innerCards = generateInnerCardCollections(innerCardCollections)
       )
 
-  private def generateCardDataCollection(): Option[CardData] =
+  def generateCardDataCollection(): Option[CardData] =
     for
       cardDataCollection <- cardDataCollectionOption
       childRelationships = relationshipHierarchy.filter(_.collectionPK == cardDataCollection.pk)
@@ -86,7 +86,7 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
         editions = generateEditionCollections(editionCollections)
       )
 
-  private val cardDataOption = generateCardDataCollection()
+  val cardDataOption = generateCardDataCollection()
 
   def render(collection: Collection): Option[Tab] =
     for
@@ -94,61 +94,4 @@ class GATCGCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collec
       primaryEditionPropertyValue <- collection.propertyValues.get(SetCardProperties.primaryEditionUID)
       primaryEditionUID <- primaryEditionPropertyValue.textValues.headOption
       primaryEdition <- cardData.editions.find(_.editionUID == primaryEditionUID)
-    yield new Tab:
-      private val imageView = new ImageView
-
-      private val editionChoiceBox = new ChoiceBox[Edition]:
-        items = ObservableBuffer.from(cardData.editions)
-        converter = StringConverter(
-          fromStringFunction = label => cardData.editions.find(edition => label.endsWith(s"(${edition.set.prefix})")).head,
-          toStringFunction = edition => s"${edition.set.name} (${edition.set.prefix})"
-        )
-        onAction = event =>
-          val edition = selectionModel().getSelectedItem
-          val imageUUID = UUID.nameUUIDFromBytes(edition.image.getBytes)
-          val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
-          imageView.image = new Image(os.Path(imagePath).getInputStream)
-        selectionModel().select(primaryEdition)
-
-
-      text = "GATCG Card"
-      content = new VBox:
-        children = Seq(
-          editionChoiceBox,
-          new HBox:
-            children = Seq(
-              imageView,
-              // Main Card Content Area
-              new TabPane:
-                tabs = Seq(
-                  new Tab:
-                    text = "Main"
-                    content = new Label:
-                      text = "Main Card Text Area"
-                  ,
-                  new Tab:
-                    text = "Collector"
-                    content = new Label:
-                      text = "Collector Data"
-                )
-              ,
-              // Edition Data
-              new VBox:
-                children = Seq(
-                  new Label:
-                    text = "Current Edition Details"
-                  ,
-                  new Label:
-                    text = "Available Edition Links"
-                )
-            )
-          ,
-          new HBox:
-            children = Seq(
-              new Label:
-                text = "Legality section"
-              ,
-              new Label:
-                text = "Rules section"
-            )
-        )
+    yield new GATCGCardDataTab(gatcgSubConfig, cardData, primaryEdition)

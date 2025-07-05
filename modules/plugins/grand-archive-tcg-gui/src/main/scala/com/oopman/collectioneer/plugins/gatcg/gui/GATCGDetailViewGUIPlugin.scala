@@ -23,8 +23,8 @@ extends GUIPlugin(stage), DetailViewGUIPlugin:
   def generateCollectionRenderer(collection: Collection): Collection => Option[Tab] =
     val moduleDef = new ModuleDef:
       make[Collection].from(collection)
-      make[GATCGCollectionRenderer].from[GATCGCollectionRenderer]
-    val renderer = Injection(moduleDef).produce[GATCGCollectionRenderer]
+      make[GATCGCardDataCollectionRenderer].from[GATCGCardDataCollectionRenderer]
+    val renderer = Injection(moduleDef).produce[GATCGCardDataCollectionRenderer]
     renderer.render
 
   def getName: String = "GATCG DetailView GUI Plugin"
