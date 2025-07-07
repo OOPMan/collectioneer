@@ -11,6 +11,11 @@ import java.util.UUID
 class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
   val imageView = new ImageView
 
+  def updateImageView(image: String): Unit =
+    val imageUUID = UUID.nameUUIDFromBytes(image.getBytes)
+    val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
+    imageView.image = new Image(os.Path(imagePath).getInputStream)
+
   val editionChoiceBox = new ChoiceBox[Edition]:
     def generateEditionLabel(edition: Edition): String =
       val rarity = GATCGRarities.fromRarity(edition.rarity)
@@ -22,16 +27,33 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
       fromStringFunction = label => cardData.editions.find(edition => label == generateEditionLabel(edition)).head,
       toStringFunction = edition => generateEditionLabel(edition)
     )
-    onAction = event => updateTab(selectionModel().getSelectedItem)
-    selectionModel().select(primaryEdition)
+    onAction = event => handleEditionChoiceBoxOnAction(selectionModel().getSelectedItem)
 
-  def updateTab(edition: Edition): Unit =
+  def handleEditionChoiceBoxOnAction(edition: Edition): Unit =
+    // Update orientationChoiceBox contents and visibility
+    orientationChoiceBox.visible = edition.orientation.isDefined
+    val orientations =
+      for
+        innerCard <- edition.innerCards
+        orientation <- innerCard.innerEdition.orientation
+      yield orientation.capitalize
+    orientationChoiceBox.items = ObservableBuffer.from(edition.orientation.map(_.capitalize) ++ orientations)
     // TODO: Update other data
     // Update displayed image
-    // TODO: Handle cards with multiple images
-    val imageUUID = UUID.nameUUIDFromBytes(edition.image.getBytes)
-    val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
-    imageView.image = new Image(os.Path(imagePath).getInputStream)
+    updateImageView(edition.image)
+
+  val orientationChoiceBox = new ChoiceBox[String]:
+    onAction = event => handleOrientationCheckBoxOnAction(selectionModel().getSelectedItem.toLowerCase)
+
+  def handleOrientationCheckBoxOnAction(orientation: String): Unit =
+    val edition = editionChoiceBox.selectionModel().getSelectedItem
+    val image =
+      if edition.orientation.contains(orientation) then edition.image
+      else edition.innerCards.find(ic => ic.innerEdition.orientation.contains(orientation)).get.innerEdition.image
+    updateImageView(image)
+
+  editionChoiceBox.selectionModel().select(primaryEdition)
+  for orientation <- primaryEdition.orientation do orientationChoiceBox.selectionModel().select(orientation.capitalize)
 
   text = "GATCG Card"
   content = new VBox:
@@ -39,7 +61,12 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
       editionChoiceBox,
       new HBox:
         children = Seq(
-          imageView,
+          // Image area
+          new VBox:
+            children = Seq(
+              imageView,
+              orientationChoiceBox
+            ),
           // Main Card Content Area
           new TabPane:
             tabs = Seq(
