@@ -23,12 +23,46 @@ case class Circulation
   val name: Seq[String] = collection.propertyValues(CoreProperties.name).textValues
   val foil: Option[Boolean] = collection.propertyValues.get(CirculationProperties.foil).flatMap(_.booleanValues.headOption)
   val population: Int = collection.propertyValues(CirculationProperties.population).intValues.head
+  
+trait EditionCommon:
+  val editionUID: String
+  val cardUID: String
+  val name: Seq[String]
+  val collectorNumber: String
+  val illustrator: Option[String]
+  val image: String
+  val slug: String
+  val rarity: Short
+  val effect: Option[String]
+  val effectRaw: Option[String]
+  val flavourText: Option[String]
+  val configuration: Option[String]
+  val orientation: Option[String]
+  
+trait CardCommon:
+  val name: String
+  val cardUID: String
+  val element: String
+  val types: Seq[String]
+  val classes: Seq[String]
+  val subTypes: Seq[String]
+  val effect: Option[String]
+  val effectRaw: Option[String]
+  val memoryCost: Option[Short]
+  val reserveCost: Option[Short]
+  val level: Option[Short]
+  val speed: Option[String]
+  val legality: Option[io.circe.Json]
+  val power: Option[Short]
+  val life: Option[Short]
+  val durability: Option[Short]
+  
 
 case class InnerEdition
 (
   collection: projected.Collection,
   set: SetData
-) extends projected.HasCollection:
+) extends projected.HasCollection, EditionCommon:
   val editionUID: String = collection.propertyValues(EditionProperties.editionUID).textValues.head
   val cardUID: String = collection.propertyValues(EditionProperties.cardUID).textValues.head
   val name: Seq[String] = collection.propertyValues(CoreProperties.name).textValues
@@ -49,7 +83,7 @@ case class InnerCard
   innerEdition: InnerEdition,
   references: Seq[Reference],
   rules: Seq[Rule]
-) extends projected.HasCollection:
+) extends projected.HasCollection, CardCommon:
   val name: String = collection.propertyValues(CoreProperties.name).textValues.head
   val cardUID: String = collection.propertyValues(CardProperties.cardUID).textValues.head
   val element: String = collection.propertyValues(CardProperties.element).textValues.head
@@ -73,7 +107,7 @@ case class Edition
   set: SetData,
   circulations: Seq[Circulation],
   innerCards: Seq[InnerCard]
-) extends projected.HasCollection:
+) extends projected.HasCollection, EditionCommon:
   val editionUID: String = collection.propertyValues(EditionProperties.editionUID).textValues.head
   val cardUID: String = collection.propertyValues(EditionProperties.cardUID).textValues.head
   val name: Seq[String] = collection.propertyValues(CoreProperties.name).textValues
@@ -94,7 +128,7 @@ case class CardData
   editions: Seq[Edition],
   references: Seq[Reference],
   rules: Seq[Rule]
-) extends projected.HasCollection:
+) extends projected.HasCollection, CardCommon:
   val name: String = collection.propertyValues(CoreProperties.name).textValues.head
   val cardUID: String = collection.propertyValues(CardProperties.cardUID).textValues.head
   val element: String = collection.propertyValues(CardProperties.element).textValues.head
@@ -102,6 +136,7 @@ case class CardData
   val classes: Seq[String] = collection.propertyValues(CardProperties.classes).textValues
   val subTypes: Seq[String] = collection.propertyValues(CardProperties.subTypes).textValues
   val effect: Option[String] = collection.propertyValues.get(CardProperties.effect).flatMap(_.textValues.headOption)
+  val effectRaw: Option[String] = collection.propertyValues.get(CardProperties.effectRaw).flatMap(_.textValues.headOption)
   val memoryCost: Option[Short] = collection.propertyValues.get(CardProperties.memoryCost).flatMap(_.smallintValues.headOption)
   val reserveCost: Option[Short] = collection.propertyValues.get(CardProperties.reserveCost).flatMap(_.smallintValues.headOption)
   val level: Option[Short] = collection.propertyValues.get(CardProperties.level).flatMap(_.smallintValues.headOption)
