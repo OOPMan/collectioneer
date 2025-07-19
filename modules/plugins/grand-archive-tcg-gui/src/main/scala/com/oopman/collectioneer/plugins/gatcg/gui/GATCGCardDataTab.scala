@@ -4,7 +4,7 @@ import com.oopman.collectioneer.plugins.gatcg.gui.controls.CardDataVBox
 import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.Priority.Always
+import scalafx.scene.layout.Priority
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
 import scalafx.util.StringConverter
@@ -22,26 +22,26 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
 
   //
   //  val mainGridPane = new GridPane:
-  //    hgrow = Always
-  //    vgrow = Always
+  //    hgrow = Priority.Always
+  //    vgrow = Priority.Always
   //    hgap = 4
   //    vgap = 4
   //    add(cardNameText, 0, 0, 2, 1)
   //    add(elementText, 2, 0, 2, 1)
 
   val ruleGridPane = new GridPane:
-    hgrow = Always
-    vgrow = Always
+    hgrow = Priority.Always
+    vgrow = Priority.Always
     hgap = 4
     vgap = 4
   val legalityGridPane = new GridPane:
-    hgrow = Always
-    vgrow = Always
+    hgrow = Priority.Always
+    vgrow = Priority.Always
     hgap = 4
     vgap = 4
   val collectorGridPane = new GridPane:
-    hgrow = Always
-    vgrow = Always
+    hgrow = Priority.Always
+    vgrow = Priority.Always
     hgap = 4
     vgap = 4
 
@@ -117,18 +117,18 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
 
   text = "GATCG Card"
   content = new VBox:
-    hgrow = Always
-    vgrow = Always
+    hgrow = Priority.Always
+    vgrow = Priority.Always
     children = Seq(
       editionChoiceBox,
       new HBox:
-        hgrow = Always
-        vgrow = Always
+        hgrow = Priority.Always
+        vgrow = Priority.Always
         children = Seq(
           // Image area
           new VBox:
-            hgrow = Always
-            vgrow = Always
+            hgrow = Priority.Never
+            vgrow = Priority.Always
             children = Seq(
               imageView,
               new HBox(illustratorPrefixText, illustratorText),
@@ -136,8 +136,8 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
             ),
           // Main Card Content Area
           new TabPane:
-            hgrow = Always
-            vgrow = Always
+            hgrow = Priority.Always
+            vgrow = Priority.Always
             tabs = Seq(mainTab, rulesTab, legalityTab, collectorTab)
         )
     )
