@@ -25,15 +25,15 @@ object InnerEdition:
           EditionProperties.editionUID -> PropertyValue(textValues = innerEdition.uuid :: Nil),
           EditionProperties.cardUID -> PropertyValue(textValues = innerEdition.card_id :: Nil),
           EditionProperties.collectorNumber -> PropertyValue(textValues = innerEdition.collector_number :: Nil),
-          EditionProperties.illustrator -> PropertyValue(textValues = innerEdition.illustrator.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.illustrator -> PropertyValue(textValues = innerEdition.illustrator ++: Nil),
           EditionProperties.image -> PropertyValue(textValues = innerEdition.image :: Nil),
           EditionProperties.slug -> PropertyValue(textValues = innerEdition.slug :: Nil),
-          EditionProperties.rarity -> PropertyValue(smallintValues = innerEdition.rarity.toShort :: Nil), // TODO: Covert to String
-          EditionProperties.effect -> PropertyValue(textValues = innerEdition.effect.map(_ :: Nil).getOrElse(Nil)),
-          EditionProperties.effectRaw -> PropertyValue(textValues = innerEdition.effect_raw.map(_ :: Nil).getOrElse(Nil)),
-          EditionProperties.flavourText -> PropertyValue(textValues = innerEdition.flavor.map(_ :: Nil).getOrElse(Nil)),
-          EditionProperties.configuration -> PropertyValue(textValues = innerEdition.configuration.map(_ :: Nil).getOrElse(Nil)),
-          EditionProperties.orientation -> PropertyValue(textValues = innerEdition.orientation.map(_ :: Nil).getOrElse(Nil)),
+          EditionProperties.rarity -> PropertyValue(smallintValues = innerEdition.rarity.toShort :: Nil),
+          EditionProperties.effect -> PropertyValue(textValues = innerEdition.effect ++: Nil),
+          EditionProperties.effectRaw -> PropertyValue(textValues = innerEdition.effect_raw ++: Nil),
+          EditionProperties.flavourText -> PropertyValue(textValues = innerEdition.flavor ++: Nil),
+          EditionProperties.configuration -> PropertyValue(textValues = innerEdition.configuration ++: Nil),
+          EditionProperties.orientation -> PropertyValue(textValues = innerEdition.orientation ++: Nil),
         )
       )
 
