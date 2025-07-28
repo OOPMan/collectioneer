@@ -27,7 +27,7 @@ object Card:
         CardProperties.memoryCost -> PropertyValue (smallintValues = card.cost_memory.map (_.toShort :: Nil).getOrElse (Nil)),
         CardProperties.reserveCost -> PropertyValue (smallintValues = card.cost_reserve.map (_.toShort :: Nil).getOrElse (Nil)),
         CardProperties.level -> PropertyValue (smallintValues = card.level.map (_.toShort :: Nil).getOrElse (Nil)),
-        CardProperties.speed -> PropertyValue (booleanValues = card.speed.getOrElse(false) :: Nil),
+        CardProperties.speed -> PropertyValue (booleanValues = card.speed ++: Nil),
         CardProperties.legality -> PropertyValue (jsonValues = card.legality.map (_:: Nil).getOrElse (Nil)),
         CardProperties.power -> PropertyValue (smallintValues = card.power.map (_.toShort :: Nil).getOrElse (Nil)),
         CardProperties.life -> PropertyValue (smallintValues = card.life.map (_.toShort :: Nil).getOrElse (Nil)),
