@@ -1,0 +1,8 @@
+.card-data-label {
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.separator:horizontal {
+    -fx-padding: 10 0 10 0;
+}
