@@ -13,12 +13,12 @@ import java.util.UUID
 
 class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
   val imageView = new ImageView
-  val illustratorPrefixText = new Text:
+  val illustratorPrefixLabel = new Label:
     text = "Illustrator:"
-    font = Font("Sytem", FontWeight.Normal, 12)
+    font = Font("System", FontWeight.Normal, 12)
 
-  val illustratorText = new Text:
-    font = Font("Sytem", FontWeight.Bold, 12)
+  val illustratorLabel = new Label:
+    font = Font("System", FontWeight.Bold, 12)
 
   //
   //  val mainGridPane = new GridPane:
@@ -61,10 +61,11 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     content = collectorGridPane
     closable = false
 
-  def updateImageView(image: String): Unit =
+  def updateImageView(image: String, illustrator: Option[String]): Unit =
     val imageUUID = UUID.nameUUIDFromBytes(image.getBytes)
     val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
     imageView.image = new Image(os.Path(imagePath).getInputStream)
+    illustratorLabel.text = illustrator.getOrElse("")
 
   val editionChoiceBox = new ChoiceBox[Edition]:
     def generateEditionLabel(edition: Edition): String =
@@ -99,7 +100,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     // TODO: Update legalityGridPane with data
     // TODO: Update collectorGridPane with data
     // Update displayed image
-    updateImageView(edition.image)
+    updateImageView(edition.image, edition.illustrator)
 
   val orientationChoiceBox = new ChoiceBox[String]:
     onAction = event =>
@@ -108,10 +109,13 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
 
   def handleOrientationCheckBoxOnAction(orientation: String): Unit =
     val edition = editionChoiceBox.selectionModel().getSelectedItem
-    val image =
-      if edition.orientation.contains(orientation) then edition.image
-      else edition.innerCards.find(ic => ic.innerEdition.orientation.contains(orientation)).get.innerEdition.image
-    updateImageView(image)
+    val (image, illustrator) =
+      if edition.orientation.contains(orientation)
+      then (edition.image, edition.illustrator)
+      else
+        val innerEdition = edition.innerCards.find(ic => ic.innerEdition.orientation.contains(orientation)).get.innerEdition
+        (innerEdition.image, innerEdition.illustrator)
+    updateImageView(image, illustrator)
 
   editionChoiceBox.selectionModel().select(primaryEdition)
 
@@ -131,7 +135,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
             vgrow = Priority.Always
             children = Seq(
               imageView,
-              new HBox(illustratorPrefixText, illustratorText),
+              new HBox(illustratorPrefixLabel, illustratorLabel),
               orientationChoiceBox
             ),
           // Main Card Content Area
