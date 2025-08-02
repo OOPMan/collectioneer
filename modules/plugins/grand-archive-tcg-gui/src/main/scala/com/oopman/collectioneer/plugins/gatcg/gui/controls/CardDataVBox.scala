@@ -10,9 +10,9 @@ import scalafx.scene.text.{Text, TextFlow}
 
 
 class CardDataVBox(val cardData: CardData, val edition: Edition) extends VBox:
-  stylesheets.add("css/carddatavbox.css")
+  stylesheets.add("css/gatcg-ui.css")
   
-  val cardDataLabelStyleClass = "card-data-label"
+  val cardDataLabelStyleClass = "field-label"
 
   def generateTextFlow(label: String, text: String): TextFlow =
     new TextFlow(
