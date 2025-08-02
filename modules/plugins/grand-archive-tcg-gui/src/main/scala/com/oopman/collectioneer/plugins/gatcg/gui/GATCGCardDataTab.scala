@@ -12,6 +12,7 @@ import scalafx.util.StringConverter
 import java.util.UUID
 
 class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
+  
   val imageView = new ImageView
   val illustratorPrefixLabel = new Label:
     text = "Illustrator:"
@@ -94,6 +95,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
 
   text = "GATCG Card"
   content = new VBox:
+    stylesheets.add("css/gatcg-ui.css")
     hgrow = Priority.Always
     vgrow = Priority.Always
     children = Seq(

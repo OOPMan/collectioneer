@@ -7,7 +7,6 @@ import scalafx.scene.Node
 import scalafx.scene.control.Label
 
 class LegalityVBox(legality: Option[io.circe.Json]) extends VBox:
-  stylesheets.add("css/gatcg-ui.css")
 
   private val textFlowsOption =
     for
