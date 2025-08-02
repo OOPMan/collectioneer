@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.plugins.gatcg.gui
 
-import com.oopman.collectioneer.plugins.gatcg.gui.controls.CardDataVBox
+import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, LegalityVBox}
 import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -20,45 +20,17 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
   val illustratorLabel = new Label:
     font = Font("System", FontWeight.Bold, 12)
 
-  //
-  //  val mainGridPane = new GridPane:
-  //    hgrow = Priority.Always
-  //    vgrow = Priority.Always
-  //    hgap = 4
-  //    vgap = 4
-  //    add(cardNameText, 0, 0, 2, 1)
-  //    add(elementText, 2, 0, 2, 1)
-
-  val ruleGridPane = new GridPane:
-    hgrow = Priority.Always
-    vgrow = Priority.Always
-    hgap = 4
-    vgap = 4
-  val legalityGridPane = new GridPane:
-    hgrow = Priority.Always
-    vgrow = Priority.Always
-    hgap = 4
-    vgap = 4
-  val collectorGridPane = new GridPane:
-    hgrow = Priority.Always
-    vgrow = Priority.Always
-    hgap = 4
-    vgap = 4
-
   val mainTab = new Tab:
     text = "Main"
     closable = false
   val rulesTab = new Tab:
     text = "Rules"
-    content = ruleGridPane
     closable = false
   val legalityTab = new Tab:
     text = "Legality"
-    content = legalityGridPane
     closable = false
   val collectorTab = new Tab:
     text = "Collector"
-    content = collectorGridPane
     closable = false
 
   def updateImageView(image: String, illustrator: Option[String]): Unit =
@@ -96,6 +68,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     // TODO: Update mainGridPane with data
     val cardDataVBox = new CardDataVBox(cardData, edition)
     mainTab.content = cardDataVBox
+    legalityTab.content = new LegalityVBox(cardData.legality)
     // TODO: Update ruleGridPane with data
     // TODO: Update legalityGridPane with data
     // TODO: Update collectorGridPane with data
