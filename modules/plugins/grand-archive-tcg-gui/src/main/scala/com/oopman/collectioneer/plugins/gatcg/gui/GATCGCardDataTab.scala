@@ -1,6 +1,7 @@
 package com.oopman.collectioneer.plugins.gatcg.gui
 
-import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, LegalityVBox}
+import com.oopman.collectioneer.gui.StyleClasses
+import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, LegalityVBox, RulesVBox}
 import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -14,12 +15,8 @@ import java.util.UUID
 class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
   
   val imageView = new ImageView
-  val illustratorPrefixLabel = new Label:
-    text = "Illustrator:"
-    font = Font("System", FontWeight.Normal, 12)
-
-  val illustratorLabel = new Label:
-    font = Font("System", FontWeight.Bold, 12)
+  val illustratorPrefixLabel = new Label("Illustrator:") with StyleClasses("field-label")
+  val illustratorLabel = new Label
 
   val mainTab = new Tab:
     text = "Main"
@@ -38,7 +35,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     val imageUUID = UUID.nameUUIDFromBytes(image.getBytes)
     val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
     imageView.image = new Image(os.Path(imagePath).getInputStream)
-    illustratorLabel.text = illustrator.getOrElse("")
+    illustratorLabel.text = " " + illustrator.getOrElse("")
 
   val editionChoiceBox = new ChoiceBox[Edition]:
     def generateEditionLabel(edition: Edition): String =
@@ -70,8 +67,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     val cardDataVBox = new CardDataVBox(cardData, edition)
     mainTab.content = cardDataVBox
     legalityTab.content = new LegalityVBox(cardData.legality)
-    // TODO: Update ruleGridPane with data
-    // TODO: Update legalityGridPane with data
+    rulesTab.content = new RulesVBox(cardData, edition)
     // TODO: Update collectorGridPane with data
     // Update displayed image
     updateImageView(edition.image, edition.illustrator)

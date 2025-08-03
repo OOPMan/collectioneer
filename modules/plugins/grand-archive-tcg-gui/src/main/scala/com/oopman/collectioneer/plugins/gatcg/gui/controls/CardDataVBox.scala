@@ -9,7 +9,7 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.{Text, TextFlow}
 
 
-class CardDataVBox(val cardData: CardData, val edition: Edition) extends VBox:
+class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
 
   val cardDataLabelStyleClass = "field-label"
 
