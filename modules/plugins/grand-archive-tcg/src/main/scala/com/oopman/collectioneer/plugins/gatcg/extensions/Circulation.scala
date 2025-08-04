@@ -18,7 +18,8 @@ object Circulation:
         CoreProperties.name -> PropertyValue(textValues = circulation.name ++: Nil),
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCirculation -> PropertyValue(booleanValues = true :: Nil),
-        CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil ++: Nil),
+        CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil.getOrElse(false) :: Nil),
         CirculationProperties.population -> PropertyValue(intValues = circulation.population :: Nil),
+        CirculationProperties.populationOperator -> PropertyValue(textValues = circulation.population_operator :: Nil)
       )
     )

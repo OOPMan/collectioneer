@@ -21,8 +21,9 @@ case class Rule
 case class Circulation
 (collection: projected.Collection) extends projected.HasCollection:
   val name: Seq[String] = collection.propertyValues(CoreProperties.name).textValues
-  val foil: Option[Boolean] = collection.propertyValues.get(CirculationProperties.foil).flatMap(_.booleanValues.headOption)
+  val foil: Boolean = collection.propertyValues(CirculationProperties.foil).booleanValues.head
   val population: Int = collection.propertyValues(CirculationProperties.population).intValues.head
+  val populationOperator: String = collection.propertyValues(CirculationProperties.populationOperator).textValues.head
   
 trait EditionCommon:
   val editionUID: String
