@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.gatcg.gui
 
 import com.oopman.collectioneer.gui.StyleClasses
-import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, LegalityVBox, RulesVBox}
+import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, CirculationsVBox, LegalityVBox, RulesVBox}
 import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -63,12 +63,11 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
         orientationChoiceBox.selectionModel().select(orientation.capitalize)
         true
       case None => false
-    // TODO: Update mainGridPane with data
-    val cardDataVBox = new CardDataVBox(cardData, edition)
-    mainTab.content = cardDataVBox
+    // Update data tabs
+    mainTab.content = new CardDataVBox(cardData, edition)
     legalityTab.content = new LegalityVBox(cardData.legality)
     rulesTab.content = new RulesVBox(cardData, edition)
-    // TODO: Update collectorGridPane with data
+    collectorTab.content = new CirculationsVBox(edition.circulations)
     // Update displayed image
     updateImageView(edition.image, edition.illustrator)
 
