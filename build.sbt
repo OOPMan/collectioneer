@@ -47,6 +47,7 @@ lazy val commonSettings = Seq(
     "com.novocode"                    %  "junit-interface"            % "0.11"              % "test",
     "commons-codec"                   %  "commons-codec"              % "1.18.0",
     "com.lihaoyi"                     %% "os-lib"                     % "0.9.3",
+    "com.lihaoyi"                     %% "fastparse"                  % "3.1.1"
   ),
   libraryDependencies ++= circeLibraryDependencies,
 )
@@ -145,6 +146,7 @@ lazy val plugins = project
     embeddedPostgresDatabaseBackendCLI,
     postgresDatabaseBackendGUI,
     grandArchiveTCG,
+    grandArchiveTCGGUI
   )
   .dependsOn(
     postgresDatabaseBackend,
