@@ -3,6 +3,70 @@
     -fx-underline: true;
 }
 
+.life-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.power-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.rest-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.bold-text {
+    -fx-font-weight: bold;
+}
+
+.italic-text {
+    -fx-font-style: italic;
+}
+
+.bubble-text-background {
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-style: solid;
+    -fx-background-color: #000000;
+}
+
+.bubble-text {
+    -fx-fill: #ffffff;
+}
+
+.cost-text-background {
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-style: solid;
+    -fx-background-color: yellow;
+}
+
+.cost-text {
+    -fx-fill: #000000;
+    -fx-border-radius: 15;
+}
+
+.error-text {
+    -fx-font-color: grey;
+    -fx-strikethrough: true;
+}
+
+.correction-text {
+    -fx-text-color: red;
+}
+
+.redaction-text {
+    -fx-font-color: grey;
+    -fx-strikethrough: true;
+}
+
+.addition-text {
+    -fx-font-color: red;
+}
+
 .separator:horizontal {
     -fx-padding: 10 0 10 0;
 }
