@@ -27,26 +27,26 @@
 }
 
 .bubble-text-background {
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-    -fx-border-style: solid;
+    -fx-background-radius: 15px;
     -fx-background-color: #000000;
+    -fx-padding: 0px 5px 0px 5px;
+
 }
 
 .bubble-text {
     -fx-fill: #ffffff;
+    -fx-font-weight: bold;
 }
 
 .cost-text-background {
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-    -fx-border-style: solid;
-    -fx-background-color: yellow;
+    -fx-background-radius: 15px;
+    -fx-background-color: gold;
+    -fx-padding: 0px 5px 0px 5px;
 }
 
 .cost-text {
     -fx-fill: #000000;
-    -fx-border-radius: 15;
+    -fx-font-weight: bold;
 }
 
 .error-text {
