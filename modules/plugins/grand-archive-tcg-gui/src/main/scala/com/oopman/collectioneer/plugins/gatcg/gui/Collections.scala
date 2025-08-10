@@ -49,6 +49,7 @@ trait CardCommon:
   val subTypes: Seq[String]
   val effect: Option[String]
   val effectRaw: Option[String]
+  val flavourText: Option[String]
   val memoryCost: Option[Short]
   val reserveCost: Option[Short]
   val level: Option[Short]
@@ -93,6 +94,7 @@ case class InnerCard
   val subTypes: Seq[String] = collection.propertyValues(CardProperties.subTypes).textValues
   val effect: Option[String] = collection.propertyValues.get(CardProperties.effect).flatMap(_.textValues.headOption)
   val effectRaw: Option[String] = collection.propertyValues.get(CardProperties.effectRaw).flatMap(_.textValues.headOption)
+  val flavourText: Option[String] = collection.propertyValues.get(CardProperties.flavourText).flatMap(_.textValues.headOption)
   val memoryCost: Option[Short] = collection.propertyValues.get(CardProperties.memoryCost).flatMap(_.smallintValues.headOption)
   val reserveCost: Option[Short] = collection.propertyValues.get(CardProperties.reserveCost).flatMap(_.smallintValues.headOption)
   val level: Option[Short] = collection.propertyValues.get(CardProperties.level).flatMap(_.smallintValues.headOption)
@@ -138,6 +140,7 @@ case class CardData
   val subTypes: Seq[String] = collection.propertyValues(CardProperties.subTypes).textValues
   val effect: Option[String] = collection.propertyValues.get(CardProperties.effect).flatMap(_.textValues.headOption)
   val effectRaw: Option[String] = collection.propertyValues.get(CardProperties.effectRaw).flatMap(_.textValues.headOption)
+  val flavourText: Option[String] = collection.propertyValues.get(CardProperties.flavourText).flatMap(_.textValues.headOption)
   val memoryCost: Option[Short] = collection.propertyValues.get(CardProperties.memoryCost).flatMap(_.smallintValues.headOption)
   val reserveCost: Option[Short] = collection.propertyValues.get(CardProperties.reserveCost).flatMap(_.smallintValues.headOption)
   val level: Option[Short] = collection.propertyValues.get(CardProperties.level).flatMap(_.smallintValues.headOption)

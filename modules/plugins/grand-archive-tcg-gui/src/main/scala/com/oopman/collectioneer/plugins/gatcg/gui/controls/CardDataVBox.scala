@@ -1,10 +1,10 @@
 package com.oopman.collectioneer.plugins.gatcg.gui.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
-import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon, GATCGTemplateLangParser}
-import scalafx.geometry.Orientation
+import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon, GATCGTemplateLangParser, GATCGUICSS}
+import scalafx.geometry.Orientation.Horizontal
 import scalafx.scene.Node
-import scalafx.scene.control.{Separator, TitledPane}
+import scalafx.scene.control.{Label, Separator, TitledPane}
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.{Text, TextFlow}
 
@@ -28,8 +28,9 @@ class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
         preparedEffectText = effectText.replace("CARDNAME", shortName)
       yield
         GATCGTemplateLangParser.produceNodes(preparedEffectText)
-    val wrappedEffectNodes = effectNodes.map(nodes => Separator(Orientation.Horizontal) :: new TextFlow(nodes*) :: Nil).getOrElse(Nil)
-    // TODO: Display flavour text
+    val wrappedEffectNodes = effectNodes.map(nodes => Separator(Horizontal) :: new TextFlow(nodes*) :: Nil).getOrElse(Nil)
+    val flavourTexts = edition.flavourText ++ cardData.flavourText
+    val flavourTextNodes = flavourTexts.headOption.map(flavourText => Separator(Horizontal) :: new TextFlow(new Text(flavourText) with StyleClasses(GATCGUICSS.italicText)) :: Nil).getOrElse(Nil)
     val nodeOptions: List[Option[Node]] =
       Some(generateTextFlow("Name", cardData.name)) ::
       Some(generateTextFlow("Element", cardData.element)) ::
@@ -44,16 +45,8 @@ class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
       cardData.durability.map(durability => generateTextFlow("Durability", durability.toString)) ::
       cardData.speed.map(speed => generateTextFlow("Speed", speed)) ::
       Nil
-    val nodes = nodeOptions.flatten ++ wrappedEffectNodes
+    val nodes: Seq[Node] = nodeOptions.flatten ++ wrappedEffectNodes ++ flavourTextNodes
 
-    val cardNameLabelText = new Text("Name:") with StyleClasses(cardDataLabelStyleClass)
-    val cardNameText = new Text(" " + cardData.name)
-    val elementLabelText = new Text("Element:") with StyleClasses(cardDataLabelStyleClass)
-    val elementText = new Text(" " + cardData.element)
-    val typesLabelText = new Text("Types:") with StyleClasses(cardDataLabelStyleClass)
-    val typesText = new Text(" " + cardData.types.mkString(" "))
-    val subtypesLabelText = new Text("Subtypes:") with StyleClasses(cardDataLabelStyleClass)
-    val subTypesText = new Text(" " + cardData.subTypes.mkString(" "))
     new TitledPane:
       text = edition.orientation.getOrElse("front").capitalize
       expanded = true
