@@ -24,6 +24,7 @@ object Card:
         CardProperties.subTypes -> PropertyValue (textValues = card.subtypes),
         CardProperties.effect -> PropertyValue (textValues = card.effect ++: Nil),
         CardProperties.effectRaw -> PropertyValue (textValues = card.effect_raw ++: Nil),
+        CardProperties.flavourText -> PropertyValue (textValues = card.flavor ++: Nil),
         CardProperties.memoryCost -> PropertyValue (smallintValues = card.cost_memory.map(_.toShort) ++: Nil),
         CardProperties.reserveCost -> PropertyValue (smallintValues = card.cost_reserve.map(_.toShort) ++: Nil),
         CardProperties.level -> PropertyValue (smallintValues = card.level.map (_.toShort) ++: Nil),

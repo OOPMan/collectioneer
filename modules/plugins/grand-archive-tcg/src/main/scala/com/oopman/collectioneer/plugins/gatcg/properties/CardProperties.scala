@@ -70,6 +70,12 @@ enum CardProperties(val property: projected.Property):
     propertyTypes = PropertyType.text :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
+  case flavourText extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.flavourText,
+    propertyName = "Flavour text",
+    propertyTypes = PropertyType.text :: Nil,
+    propertyValues = PropertyValues.visibleGATCGProperty
+  )) with HasProperty
   case memoryCost extends CardProperties(Property(
     pk = CardPropertiesUUIDs.memoryCost,
     propertyName = "Memory Cost",

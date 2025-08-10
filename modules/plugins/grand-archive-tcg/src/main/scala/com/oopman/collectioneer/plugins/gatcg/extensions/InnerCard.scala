@@ -24,6 +24,7 @@ object InnerCard:
         CardProperties.subTypes -> PropertyValue (textValues = innerCard.subtypes),
         CardProperties.effect -> PropertyValue (textValues = innerCard.effect ++: Nil),
         CardProperties.effectRaw -> PropertyValue (textValues = innerCard.effect_raw ++: Nil),
+        CardProperties.flavourText -> PropertyValue (textValues = innerCard.flavor ++: Nil),
         CardProperties.memoryCost -> PropertyValue (smallintValues = innerCard.cost_memory.map(_.toShort) ++: Nil),
         CardProperties.reserveCost -> PropertyValue (smallintValues = innerCard.cost_reserve.map(_.toShort) ++: Nil),
         CardProperties.level -> PropertyValue (smallintValues = innerCard.level.map (_.toShort) ++: Nil),
