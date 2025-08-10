@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.gatcg.gui.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
-import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon}
+import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon, GATCGTemplateLangParser}
 import scalafx.geometry.Orientation
 import scalafx.scene.Node
 import scalafx.scene.control.{Separator, TitledPane}
@@ -21,7 +21,15 @@ class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
 
   def generateNode(cardData: CardCommon, edition: EditionCommon): Node =
     val effects = edition.effect ++ cardData.effect
-    val effect = effects.headOption.map(effect => Separator(Orientation.Horizontal) :: new TextFlow(new Text(effect)) :: Nil).getOrElse(Nil)
+    val effectNodes =
+      for
+        effectText <- effects.headOption
+        shortName <- cardData.name.split(',').headOption
+        preparedEffectText = effectText.replace("CARDNAME", shortName)
+      yield
+        GATCGTemplateLangParser.produceNodes(preparedEffectText)
+    val wrappedEffectNodes = effectNodes.map(nodes => Separator(Orientation.Horizontal) :: new TextFlow(nodes*) :: Nil).getOrElse(Nil)
+    // TODO: Display flavour text
     val nodeOptions: List[Option[Node]] =
       Some(generateTextFlow("Name", cardData.name)) ::
       Some(generateTextFlow("Element", cardData.element)) ::
@@ -36,7 +44,7 @@ class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
       cardData.durability.map(durability => generateTextFlow("Durability", durability.toString)) ::
       cardData.speed.map(speed => generateTextFlow("Speed", speed)) ::
       Nil
-    val nodes = nodeOptions.flatten ++ effect
+    val nodes = nodeOptions.flatten ++ wrappedEffectNodes
 
     val cardNameLabelText = new Text("Name:") with StyleClasses(cardDataLabelStyleClass)
     val cardNameText = new Text(" " + cardData.name)
