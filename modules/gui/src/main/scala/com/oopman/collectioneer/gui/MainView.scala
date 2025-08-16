@@ -10,6 +10,7 @@ import scalafx.Includes.*
 import scalafx.concurrent.Task
 import scalafx.scene.Node
 import scalafx.scene.control.TabPane.TabClosingPolicy
+import scalafx.scene.layout.{AnchorPane, BorderPane}
 
 
 class MainView:
@@ -23,6 +24,7 @@ class MainView:
   private lazy val rootTreeViewItem = TreeItem(rootCollection)
 
   private lazy val collectionsListTreeView = new TreeView[Collection]:
+    styleClass += CollectioneerGUICSS.listView
     root = rootTreeViewItem
     showRoot = true
     cellFactory = (cell, collection) => {
@@ -62,18 +64,24 @@ class MainView:
     }
 
   private lazy val collectionDetailView = new TabPane:
+    styleClass += CollectioneerGUICSS.detailView
     tabClosingPolicy = TabClosingPolicy.Unavailable
 
   private lazy val splitPane = new SplitPane:
+    styleClass += CollectioneerGUICSS.mainView
     items.addAll(collectionsListScrollPane, collectionDetailViewScrollPane)
 
   private lazy val collectionsListScrollPane = new ScrollPane:
+    styleClass += CollectioneerGUICSS.mainViewLeftSide
     content = collectionsListTreeView
     fitToWidth = true
     fitToHeight = true
 
   private lazy val collectionDetailViewScrollPane = new ScrollPane:
+    styleClass += CollectioneerGUICSS.mainViewRightSide
     content = collectionDetailView
+    fitToWidth = true
+    fitToHeight = true
 
   def refreshChildren(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
     val collection = treeItem.getValue

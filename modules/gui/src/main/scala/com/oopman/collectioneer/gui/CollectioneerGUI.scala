@@ -4,12 +4,12 @@ import com.oopman.collectioneer.{ConfigManager, Injection}
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ChoiceBox, Menu, MenuBar, MenuItem, ProgressIndicator}
+import scalafx.scene.control.{Button, ChoiceBox, Menu, MenuBar, MenuItem, ProgressIndicator, ScrollPane}
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.paint.*
 import scalafx.scene.paint.Color.*
-import scalafx.scene.text.Text
+import scalafx.scene.text.{Font, FontPosture, FontWeight, Text}
 import scalafx.Includes.*
 import scalafx.collections.ObservableBuffer
 import scalafx.stage.Stage
@@ -26,6 +26,7 @@ object CollectioneerGUI extends JFXApp3:
   // TODO: Tie menu-bar width to stage width somehow
 
   lazy val borderPane = new BorderPane:
+    styleClass += CollectioneerGUICSS.root
     top = new MenuBar:
       useSystemMenuBar = true
       minWidth = 1024
