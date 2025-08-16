@@ -1,6 +1,8 @@
 package com.oopman.collectioneer.plugins.gatcg.gui
 
 object GATCGUICSS:
+  val gatcgCardDataTab = "gatcg-card-data-tab"
+  val editionSelectionHBox = "edition-selection-hbox"
   val fieldLabel = "field-label"
   val boldText = "bold-text"
   val italicText = "italic-text"
@@ -15,4 +17,8 @@ object GATCGUICSS:
   val correctionText = "correction-text"
   val redactionText = "redaction-text"
   val additionText = "addition-text"
+  val mainTab = "main-tab"
+  val rulesTab = "rules-tab"
+  val legalityTab = "legality-tab"
+  val collectorTab = "collector-tab"
 

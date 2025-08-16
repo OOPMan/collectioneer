@@ -13,22 +13,27 @@ import scalafx.util.StringConverter
 import java.util.UUID
 
 class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
+  styleClass += GATCGUICSS.gatcgCardDataTab
   
   val imageView = new ImageView
-  val illustratorPrefixLabel = new Label("Illustrator:") with StyleClasses("field-label")
+  val illustratorPrefixLabel = new Label("Illustrator:") with StyleClasses(GATCGUICSS.fieldLabel)
   val illustratorLabel = new Label
 
   val mainTab = new Tab:
     text = "Main"
+    styleClass += GATCGUICSS.mainTab
     closable = false
   val rulesTab = new Tab:
     text = "Rules"
+    styleClass += GATCGUICSS.rulesTab
     closable = false
   val legalityTab = new Tab:
     text = "Legality"
+    styleClass += GATCGUICSS.legalityTab
     closable = false
   val collectorTab = new Tab:
     text = "Collector"
+    styleClass += GATCGUICSS.collectorTab
     closable = false
 
   def updateImageView(image: String, illustrator: Option[String]): Unit =
@@ -37,6 +42,8 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     imageView.image = new Image(os.Path(imagePath).getInputStream)
     illustratorLabel.text = " " + illustrator.getOrElse("")
 
+  val editionLabel = new Label("Edition:") with StyleClasses(GATCGUICSS.fieldLabel):
+    id = "edition-label"
   val editionChoiceBox = new ChoiceBox[Edition]:
     def generateEditionLabel(edition: Edition): String =
       val rarity = GATCGRarities.fromRarity(edition.rarity)
@@ -58,7 +65,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
         orientation <- innerCard.innerEdition.orientation
       yield orientation.capitalize
     orientationChoiceBox.items = ObservableBuffer.from(edition.orientation.map(_.capitalize) ++ orientations)
-    orientationChoiceBox.visible = edition.orientation match
+    orientationHBox.visible = edition.orientation match
       case Some(orientation) =>
         orientationChoiceBox.selectionModel().select(orientation.capitalize)
         true
@@ -71,10 +78,12 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     // Update displayed image
     updateImageView(edition.image, edition.illustrator)
 
+  val orientationLabel = new Label("Orientation:") with StyleClasses(GATCGUICSS.fieldLabel)
   val orientationChoiceBox = new ChoiceBox[String]:
     onAction = event =>
       for orientation <- Option(selectionModel().getSelectedItem)
       do handleOrientationCheckBoxOnAction(orientation.toLowerCase)
+  val orientationHBox = new HBox(orientationLabel, orientationChoiceBox)
 
   def handleOrientationCheckBoxOnAction(orientation: String): Unit =
     val edition = editionChoiceBox.selectionModel().getSelectedItem
@@ -94,7 +103,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     hgrow = Priority.Always
     vgrow = Priority.Always
     children = Seq(
-      editionChoiceBox,
+      new HBox(editionLabel, editionChoiceBox) with StyleClasses(GATCGUICSS.editionSelectionHBox),
       new HBox:
         hgrow = Priority.Always
         vgrow = Priority.Always
@@ -106,7 +115,7 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
             children = Seq(
               imageView,
               new HBox(illustratorPrefixLabel, illustratorLabel),
-              orientationChoiceBox
+              orientationHBox
             ),
           // Main Card Content Area
           new TabPane:
