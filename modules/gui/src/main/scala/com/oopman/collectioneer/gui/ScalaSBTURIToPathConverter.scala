@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.gui
 
+import java.nio.file.Path
 import fr.brouillard.oss.cssfx.api.URIToPathConverter
 
 /**
