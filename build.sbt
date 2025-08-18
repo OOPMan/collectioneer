@@ -22,6 +22,7 @@ lazy val scalikeJDBCDependencies = Seq(
 )
 lazy val scalaFXDependencies = Seq(
   "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
+  "fr.brouillard.oss"       %  "cssfx"            % "11.4.0"
 )
 lazy val commonSettings = Seq(
   version := "0.1.0",

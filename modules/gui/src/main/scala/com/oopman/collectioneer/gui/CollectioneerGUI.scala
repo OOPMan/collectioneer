@@ -1,22 +1,15 @@
 package com.oopman.collectioneer.gui
 
 import com.oopman.collectioneer.{ConfigManager, Injection}
-import scalafx.application.JFXApp3
-import scalafx.geometry.Insets
-import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ChoiceBox, Menu, MenuBar, MenuItem, ProgressIndicator, ScrollPane}
-import scalafx.scene.effect.DropShadow
-import scalafx.scene.layout.{BorderPane, HBox, VBox}
-import scalafx.scene.paint.*
-import scalafx.scene.paint.Color.*
-import scalafx.scene.text.{Font, FontPosture, FontWeight, Text}
-import scalafx.Includes.*
-import scalafx.collections.ObservableBuffer
-import scalafx.stage.Stage
 import distage.ModuleDef
-import scalafx.concurrent.Task
+import fr.brouillard.oss.cssfx.CSSFX
 
-import java.util.concurrent.ExecutorService
+import scalafx.application.JFXApp3
+import scalafx.scene.Scene
+import scalafx.scene.control.*
+import scalafx.scene.layout.BorderPane
+import scalafx.stage.Stage
+
 import scala.language.implicitConversions
 import scala.util.Try
 
@@ -57,6 +50,10 @@ object CollectioneerGUI extends JFXApp3:
       make[ConfigManager].from(guiConfigManager)
       make[GUIConfigManager].from(guiConfigManager)
       make[Stage].named("com.oopman.collectioneer.plugins.GUIPlugin.stage").from(primaryStage)
+    // TODO: Use parameters to determine if we should start CSSFX, enable CSSFX logging, etc
+    System.setProperty("cssfx.log", "true")
+    System.setProperty("cssfx.log.level", "INFO")
+    CSSFX.addConverter(ScalaSBTURIToPathConverter).start()
     showDatabaseBackendPicker(false)
 
   def showDatabaseBackendPicker(backButtonVisible: Boolean): Unit =
