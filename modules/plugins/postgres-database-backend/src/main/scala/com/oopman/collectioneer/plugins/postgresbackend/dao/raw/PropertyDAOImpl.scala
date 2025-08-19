@@ -38,6 +38,8 @@ object PropertyDAOImpl extends ScalikePropertyDAO:
       .map(postgresbackend.entity.raw.Property(postgresbackend.entity.raw.Property.p1.resultName))
       .list
       .apply()
+    
+  def getAllRelatedMatchingPKs(propertyPKs: Seq[UUID])(implicit session: DBSession): Seq[Property] = ???
 
   def getAllMatchingPropertyValues(comparisons: Seq[Comparison])(implicit session: DBSession = AutoSession): Seq[Property] =
     postgresbackend.PropertyValueQueryDSLSupport
