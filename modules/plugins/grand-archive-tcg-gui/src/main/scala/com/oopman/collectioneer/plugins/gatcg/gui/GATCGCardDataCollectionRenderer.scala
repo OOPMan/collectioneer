@@ -19,7 +19,7 @@ class GATCGCardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection
   // TODO: Projected load is failing to work correctly in this scenario, see cards like Lu Bu, Circulations are
   // TODO: coming through with duplicate data. This was partially a data issue in the GATCG plugin which has been
   // TODO: corrected but a less mild version of the problem persists, which indicates that the nested PropertyValue
-  // TODO loading system has a big. Not critical for now but needs to be fixed when said code is reworked due to its performance issues
+  // TODO loading system has a bug. Not critical for now but needs to be fixed when said code is reworked due to its performance issues
   val collections = collectionDAO.getAllMatchingPKs(collectionPKs)
   val cardDataCollectionOption = collections.find(_.properties.contains(CommonProperties.isGATCGCard))
 

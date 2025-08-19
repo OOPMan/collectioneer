@@ -7,6 +7,30 @@
    -fx-padding: 0 5px 0 0;
 }
 
+.illustrator-label-hbox {
+    -fx-padding: 5px 0 0 0;
+}
+
+.content-area-hbox {
+    -fx-padding: 0 5px 5px 5px;
+}
+
+.content-area-lhs-vbox {
+    -fx-padding: 0 5px 0 0;
+}
+
+.content-area-tab-vbox {
+    -fx-padding: 5px 0 0 10px;
+}
+
+.orientation-selection-hbox {
+    -fx-alignment:center-left;
+}
+
+.orientation-selection-hbox .field-label {
+    -fx-padding: 0 5px 0 0;
+}
+
 .field-label {
     -fx-font-weight: bold;
     -fx-underline: true;
