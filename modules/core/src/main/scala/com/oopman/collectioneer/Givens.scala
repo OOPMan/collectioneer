@@ -18,3 +18,6 @@ given CollectionToUUID: Conversion[raw.Collection, UUID] =
 
 given PropertyToUUID: Conversion[raw.Property, UUID] =
   (p: db.traits.entity.raw.Property) => p.pk
+
+given coreRelationshipsToRelationship: Conversion[CoreRelationships, raw.Relationship] =
+  (r: CoreRelationships) => r.relationship

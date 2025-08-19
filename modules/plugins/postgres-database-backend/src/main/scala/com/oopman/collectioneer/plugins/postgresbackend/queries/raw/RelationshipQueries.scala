@@ -39,3 +39,38 @@ object RelationshipQueries:
   def selectByPKsAndRelationshipTypes: SQL[Nothing, NoExtractor] =
     selectBySQLSyntax(collectionPKEqualsAny, relatedCollectionPKEqualsAny, relationshipTypeEqualsAny)
 
+  def selectHierarchyBeCollectionPKs =
+    sql"""
+          WITH RECURSIVE
+              cte1(top_level_collection_pk, level, pk, collection_pk, related_collection_pk, relationship_type, index, created, modified) AS (
+                  SELECT
+                      r.collection_pk,
+                      0,
+                      r.pk,
+                      r.collection_pk,
+                      r.related_collection_pk,
+                      r.relationship_type,
+                      r.index,
+                      r.created,
+                      r.modified
+                  FROM relationship AS r
+                  WHERE r.collection_pk = ANY (?::uuid[])
+                  UNION
+                  SELECT
+                      cte1.top_level_collection_pk,
+                      cte1.level + 1,
+                      r.pk,
+                      r.collection_pk,
+                      r.related_collection_pk,
+                      r.relationship_type,
+                      r.index,
+                      r.created,
+                      r.modified
+                  FROM relationship AS r
+                  INNER JOIN cte1 ON cte1.related_collection_pk = r.collection_pk
+              )
+          SELECT *
+          FROM cte1
+          ORDER BY cte1.top_level_collection_pk, cte1.level
+       """
+

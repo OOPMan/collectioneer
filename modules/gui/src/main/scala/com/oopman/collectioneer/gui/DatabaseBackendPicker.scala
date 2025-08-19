@@ -3,6 +3,7 @@ package com.oopman.collectioneer.gui
 import com.oopman.collectioneer.Injection
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
+import com.oopman.collectioneer.gui.GUIConfigManager
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, ChoiceBox, Label, ProgressIndicator}
 import scalafx.scene.layout.{BorderPane, HBox}
@@ -13,7 +14,7 @@ import scalafx.util.StringConverter
 
 object DatabaseBackendPicker:
   private lazy val plugins: Set[DatabaseBackendGUIPlugin] =
-    Injection.produceRun(inputModule = CollectioneerGUI.collectioneerGUIModule) {
+    Injection.produceRun() {
       (databaseBackendGUIPlugins: Set[DatabaseBackendGUIPlugin]) => databaseBackendGUIPlugins
     }
   private lazy val pluginMap: Map[String, DatabaseBackendGUIPlugin] = plugins.map(plugin => (plugin.getUIName, plugin)).toMap
@@ -38,15 +39,15 @@ object DatabaseBackendPicker:
       backButton.disable = true
       connectButton.disable = true
       progressIndicator.visible = true
-      val config = DatabaseBackendPicker.getConfig()
+      DatabaseBackendPicker.updateConfigDatasourceUri()
       val worker = Task {
-        Injection.produceRun(Some(config)) {
+        Injection.produceRun() {
           (databaseBackendPlugin: DatabaseBackendPlugin) => databaseBackendPlugin.startUp()
         }
       }
       worker.onSucceeded = { e =>
         progressIndicator.visible = false
-        CollectioneerGUI.showMainView(DatabaseBackendPicker.getConfig())
+        CollectioneerGUI.showMainView()
       }
       worker.onFailed = { e =>
         // TODO: Display an error message
@@ -77,7 +78,12 @@ object DatabaseBackendPicker:
     progressIndicator.visible = false
     layout
 
-  def getConfig(config: GUIConfig = GUIConfig()): GUIConfig =
-    getSelectedPlugin
-      .map(plugin => config.copy(datasourceUri = Some(plugin.getDatasourceURI)))
-      .getOrElse(config.copy(datasourceUri = None))
+  private def updateConfigDatasourceUri(): Unit =
+    Injection.produceRun() { (configManager: GUIConfigManager) =>
+      val config = configManager.getConfig
+      val updatedConfig = getSelectedPlugin
+        .map(plugin => config.copy(datasourceUri = Some(plugin.getDatasourceURI)))
+        .getOrElse(config.copy(datasourceUri = None))
+      configManager.updateConfig(updatedConfig)
+    }
+

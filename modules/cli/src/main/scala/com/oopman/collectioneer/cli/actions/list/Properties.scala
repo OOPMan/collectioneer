@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.Injection
-import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.cli.CLIConfig
 import com.oopman.collectioneer.db.traits
 import distage.*
 import io.circe.*
@@ -34,16 +34,16 @@ object Properties:
     properties: Seq[traits.entity.raw.Property]
   )
 
-  private def listProperties(config: Config)(propertyDAO: traits.dao.raw.PropertyDAO) = propertyDAO.getAll
+  private def listProperties(config: CLIConfig)(propertyDAO: traits.dao.raw.PropertyDAO) = propertyDAO.getAll
 
-  private def listPropertiesByPropertyValueQueries(config: Config)(propertyDAO: traits.dao.raw.PropertyDAO) =
+  private def listPropertiesByPropertyValueQueries(config: CLIConfig)(propertyDAO: traits.dao.raw.PropertyDAO) =
     propertyDAO.getAllMatchingPropertyValues(Common.generatePropertyValueComparisons(propertyDAO, config.propertyValueQueries))
 
-  def listPropertiesAction(config: Config): Json =
+  def listPropertiesAction(config: CLIConfig): Json =
     // TODO: Use Projected PropertyDAO for verbose results
     val properties = config.propertyValueQueries match
-      case Some(_) => Injection.produceRun(Some(config))(listPropertiesByPropertyValueQueries(config))
-      case None => Injection.produceRun(Some(config))(listProperties(config))
+      case Some(_) => Injection.produceRun()(listPropertiesByPropertyValueQueries(config))
+      case None => Injection.produceRun()(listProperties(config))
     if config.verbose then
       ListPropertiesVerboseResult(
         datasourceUri = config.datasourceUri,

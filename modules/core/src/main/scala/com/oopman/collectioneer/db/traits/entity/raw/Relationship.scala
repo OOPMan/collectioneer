@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 enum RelationshipType:
-  case ParentCollection extends RelationshipType
+  case ChildOf extends RelationshipType
   case SourceOfPropertiesAndPropertyValues extends RelationshipType
   case SourceOfChildCollections extends RelationshipType
 
@@ -23,4 +23,5 @@ trait Relationship:
                   index: Int = index,
                   created: ZonedDateTime = created,
                   modified: ZonedDateTime = modified): Relationship
-  
+
+trait HasTopLevelCollectionPKAndLevel(val topLevelCollectionPK: UUID, val level: Int)

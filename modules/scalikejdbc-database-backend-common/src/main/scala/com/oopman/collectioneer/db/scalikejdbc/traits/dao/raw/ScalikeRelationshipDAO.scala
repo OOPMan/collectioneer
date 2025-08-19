@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw
 
-import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, RelationshipType}
+import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, HasTopLevelCollectionPKAndLevel, RelationshipType}
 import scalikejdbc.DBSession
 
 import java.util.UUID
@@ -12,4 +12,4 @@ trait ScalikeRelationshipDAO:
   def getRelationshipsByCollectionPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship]
   def getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship]
   def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType])(implicit session: DBSession): Seq[Relationship]
-
+  def getRelationshipHierarchyByCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): Seq[Relationship & HasTopLevelCollectionPKAndLevel]

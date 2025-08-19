@@ -1,0 +1,123 @@
+package com.oopman.collectioneer.plugins.gatcg.gui
+
+import com.oopman.collectioneer.gui.StyleClasses
+import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, CirculationsVBox, LegalityVBox, RulesVBox}
+import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
+import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.Priority
+import scalafx.scene.layout.{GridPane, HBox, VBox}
+import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
+import scalafx.util.StringConverter
+
+import java.util.UUID
+
+class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
+  val imageView = new ImageView
+  val illustratorPrefixLabel = new Label("Illustrator:") with StyleClasses(GATCGUICSS.fieldLabel)
+  val illustratorLabel = new Label
+
+  val mainTab = new Tab:
+    text = "Main"
+    closable = false
+  val rulesTab = new Tab:
+    text = "Rules"
+    closable = false
+  val legalityTab = new Tab:
+    text = "Legality"
+    closable = false
+  val collectorTab = new Tab:
+    text = "Collector"
+    closable = false
+
+  def updateImageView(image: String, illustrator: Option[String]): Unit =
+    val imageUUID = UUID.nameUUIDFromBytes(image.getBytes)
+    val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
+    imageView.image = new Image(os.Path(imagePath).getInputStream)
+    illustratorLabel.text = " " + illustrator.getOrElse("")
+
+  val editionLabel = new Label("Edition:") with StyleClasses(GATCGUICSS.fieldLabel):
+    id = "edition-label"
+  val editionChoiceBox = new ChoiceBox[Edition]:
+    def generateEditionLabel(edition: Edition): String =
+      val rarity = GATCGRarities.fromRarity(edition.rarity)
+      s"${edition.set.prefix} - ${edition.set.language} - ${edition.collectorNumber} - ${rarity.shortLabel}"
+
+    items = ObservableBuffer.from(cardData.editions)
+    // TODO: Multiple editions with different rarities are possible, support this more cleanly...
+    converter = StringConverter(
+      fromStringFunction = label => cardData.editions.find(edition => label == generateEditionLabel(edition)).head,
+      toStringFunction = edition => generateEditionLabel(edition)
+    )
+    onAction = event => handleEditionChoiceBoxOnAction(selectionModel().getSelectedItem)
+
+  def handleEditionChoiceBoxOnAction(edition: Edition): Unit =
+    // Update orientationChoiceBox contents and visibility
+    val orientations =
+      for
+        innerCard <- edition.innerCards
+        orientation <- innerCard.innerEdition.orientation
+      yield orientation.capitalize
+    orientationChoiceBox.items = ObservableBuffer.from(edition.orientation.map(_.capitalize) ++ orientations)
+    orientationHBox.visible = edition.orientation match
+      case Some(orientation) =>
+        orientationChoiceBox.selectionModel().select(orientation.capitalize)
+        true
+      case None => false
+    // Update data tabs
+    mainTab.content = new CardDataVBox(cardData, edition)
+    legalityTab.content = new LegalityVBox(cardData.legality) with StyleClasses(GATCGUICSS.contentAreaTabVBox)
+    rulesTab.content = new RulesVBox(cardData, edition) with StyleClasses(GATCGUICSS.contentAreaTabVBox)
+    collectorTab.content = new CirculationsVBox(edition.circulations) with StyleClasses(GATCGUICSS.contentAreaTabVBox)
+    // Update displayed image
+    updateImageView(edition.image, edition.illustrator)
+
+  val orientationLabel = new Label("Orientation:") with StyleClasses(GATCGUICSS.fieldLabel)
+  val orientationChoiceBox = new ChoiceBox[String]:
+    onAction = event =>
+      for orientation <- Option(selectionModel().getSelectedItem)
+      do handleOrientationCheckBoxOnAction(orientation.toLowerCase)
+  val orientationHBox = new HBox(orientationLabel, orientationChoiceBox) with StyleClasses(GATCGUICSS.orientationSelectionHBox)
+
+  def handleOrientationCheckBoxOnAction(orientation: String): Unit =
+    val edition = editionChoiceBox.selectionModel().getSelectedItem
+    val (image, illustrator) =
+      if edition.orientation.contains(orientation)
+      then (edition.image, edition.illustrator)
+      else
+        val innerEdition = edition.innerCards.find(ic => ic.innerEdition.orientation.contains(orientation)).get.innerEdition
+        (innerEdition.image, innerEdition.illustrator)
+    updateImageView(image, illustrator)
+
+  editionChoiceBox.selectionModel().select(primaryEdition)
+
+  text = "GATCG Card"
+  content = new VBox:
+    stylesheets.add("css/gatcg-ui.css")
+    hgrow = Priority.Always
+    vgrow = Priority.Always
+    children = Seq(
+      new HBox(editionLabel, editionChoiceBox) with StyleClasses(GATCGUICSS.editionSelectionHBox),
+      new HBox:
+        styleClass += GATCGUICSS.contentAreaHBox
+        hgrow = Priority.Always
+        vgrow = Priority.Always
+        children = Seq(
+          // Image area
+          new VBox:
+            styleClass += GATCGUICSS.contentAreaLHSVBox
+            hgrow = Priority.Never
+            vgrow = Priority.Always
+            children = Seq(
+              imageView,
+              new HBox(illustratorPrefixLabel, illustratorLabel) with StyleClasses(GATCGUICSS.illustratorLabelHBox),
+              orientationHBox
+            ),
+          // Main Card Content Area
+          new TabPane:
+            hgrow = Priority.Always
+            vgrow = Priority.Always
+            tabs = Seq(mainTab, rulesTab, legalityTab, collectorTab)
+        )
+    )
+

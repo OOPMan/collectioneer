@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.scalikejdbc.dao.raw
 import com.oopman.collectioneer.db.scalikejdbc.DBConnectionProvider
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.ScalikeDatabaseBackend
 import com.oopman.collectioneer.db.traits
-import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, RelationshipType}
+import com.oopman.collectioneer.db.traits.entity.raw.{HasTopLevelCollectionPKAndLevel, Relationship, RelationshipType}
 import scalikejdbc.DBSession
 
 import java.util.UUID
@@ -21,3 +21,5 @@ class RelationshipDAOImpl(val dbProvider: DBConnectionProvider, val db: ScalikeD
     dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipsByRelatedCollectionPKsAndRelationshipTypes(relatedCollectionPKs, relationshipTypes) }
   def getRelationshipsByPKsAndRelationshipTypes(collectionPKs: Seq[UUID], relatedCollectionPKs: Seq[UUID], relationshipTypes: Seq[RelationshipType]): Seq[Relationship] =
     dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipsByPKsAndRelationshipTypes(collectionPKs, relatedCollectionPKs, relationshipTypes) }
+  def getRelationshipHierarchyByCollectionPKs(collectionPKs: Seq[UUID]): Seq[Relationship & HasTopLevelCollectionPKAndLevel] =
+    dbProvider() readOnly { implicit session => db.dao.raw.RelationshipDAO.getRelationshipHierarchyByCollectionPKs(collectionPKs) }

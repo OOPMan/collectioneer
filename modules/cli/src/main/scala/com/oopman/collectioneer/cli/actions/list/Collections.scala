@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.list
 
 import com.oopman.collectioneer.Injection
-import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.cli.CLIConfig
 import com.oopman.collectioneer.db.traits.dao.raw.{CollectionDAO, PropertyDAO}
 import com.oopman.collectioneer.db.traits
 import distage.*
@@ -36,15 +36,15 @@ object Collections:
     collections: Seq[traits.entity.raw.Collection]
   )
 
-  private def listCollections(config: Config)(collectionDAO: traits.dao.raw.CollectionDAO) = collectionDAO.getAll
+  private def listCollections(config: CLIConfig)(collectionDAO: traits.dao.raw.CollectionDAO) = collectionDAO.getAll
 
-  private def listCollectionsByPropertyValueQueries(config: Config)(propertyDAO: PropertyDAO, collectionDAO: CollectionDAO) =
+  private def listCollectionsByPropertyValueQueries(config: CLIConfig)(propertyDAO: PropertyDAO, collectionDAO: CollectionDAO) =
     collectionDAO.getAllRelatedMatchingPropertyValues(Common.generatePropertyValueComparisons(propertyDAO, config.propertyValueQueries))
 
-  def listCollectionsAction(config: Config): Json =
+  def listCollectionsAction(config: CLIConfig): Json =
     val collections = config.propertyValueQueries match
-      case Some(_) => Injection.produceRun(Some(config))(listCollectionsByPropertyValueQueries(config))
-      case None => Injection.produceRun(Some(config))(listCollections(config))
+      case Some(_) => Injection.produceRun()(listCollectionsByPropertyValueQueries(config))
+      case None => Injection.produceRun()(listCollections(config))
     if config.verbose then
       // TODO: Verbose list includes all property values for each collection
       ListCollectionsVerboseResult(

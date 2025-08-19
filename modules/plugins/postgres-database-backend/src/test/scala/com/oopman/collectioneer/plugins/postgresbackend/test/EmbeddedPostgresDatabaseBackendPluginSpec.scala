@@ -1,12 +1,17 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test
 
-import com.oopman.collectioneer.Config
+import com.oopman.collectioneer.{Config, SubConfig}
 import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin
 import org.scalatest.flatspec.AnyFlatSpec
+
 import java.util.UUID
 
 class EmbeddedPostgresDatabaseBackendPluginSpec extends AnyFlatSpec:
-  case class TestConfig(datasourceUri: Option[String]) extends Config
+  case class TestConfig
+  (
+    datasourceUri: Option[String], 
+    subConfigs: Map[String, SubConfig] = Map.empty
+  ) extends Config
 
   behavior of "com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.compatibleWithDatasourceUri"
 

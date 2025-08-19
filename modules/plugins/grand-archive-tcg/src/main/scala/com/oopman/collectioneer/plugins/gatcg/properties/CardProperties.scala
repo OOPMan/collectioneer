@@ -13,6 +13,7 @@ private object CardPropertiesUUIDs:
   val classes = "6e27e02d-09a2-4db9-9b9e-13e349fa86d5"
   val subTypes = "4fa54ad8-c7c3-49ed-ae43-4c864585cce6"
   val effect = "cfb96e6f-31bd-42a2-8756-ab66ff8dbb37"
+  val effectRaw = "a10e2c4f-e5c5-4dcc-8c7a-fa151cc35045"
   val memoryCost = "932eec50-0e66-4198-a908-b0ae0e4049f5"
   val reserveCost = "78237d1d-8be0-4426-8111-d8ef4274f441"
   val level = "cc5cfe91-3914-4cd0-9f5b-57a11a3e5424"
@@ -60,6 +61,18 @@ enum CardProperties(val property: projected.Property):
   case effect extends CardProperties(Property(
     pk = CardPropertiesUUIDs.effect,
     propertyName = "Effect",
+    propertyTypes = PropertyType.text :: Nil,
+    propertyValues = PropertyValues.visibleGATCGProperty
+  )) with HasProperty
+  case effectRaw extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.effectRaw,
+    propertyName = "Raw Effect",
+    propertyTypes = PropertyType.text :: Nil,
+    propertyValues = PropertyValues.visibleGATCGProperty
+  )) with HasProperty
+  case flavourText extends CardProperties(Property(
+    pk = CardPropertiesUUIDs.flavourText,
+    propertyName = "Flavour text",
     propertyTypes = PropertyType.text :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty

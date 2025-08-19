@@ -1,0 +1,25 @@
+package com.oopman.collectioneer.plugins.gatcg.gui
+
+object GATCGUICSS:
+  val gatcgCardDataTab = "gatcg-card-data-tab"
+  val editionSelectionHBox = "edition-selection-hbox"
+  val illustratorLabelHBox = "illustrator-label-hbox"
+  val contentAreaHBox = "content-area-hbox"
+  val contentAreaLHSVBox = "content-area-lhs-vbox"
+  val orientationSelectionHBox = "orientation-selection-hbox"
+  val contentAreaTabVBox = "content-area-tab-vbox"
+  val fieldLabel = "field-label"
+  val boldText = "bold-text"
+  val italicText = "italic-text"
+  val bubbleText = "bubble-text"
+  val bubbleTextBackground = "bubble-text-background"
+  val costText = "cost-text"
+  val costTextBackground = "cost-text-background"
+  val errorText = "error-text"
+  val lifeText = "life-text"
+  val powerText = "power-text"
+  val restText = "rest-text"
+  val correctionText = "correction-text"
+  val redactionText = "redaction-text"
+  val additionText = "addition-text"
+
