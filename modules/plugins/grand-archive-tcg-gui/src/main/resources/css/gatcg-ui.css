@@ -83,21 +83,21 @@
 }
 
 .error-text {
-    -fx-font-color: grey;
+    -fx-fill: grey;
     -fx-strikethrough: true;
 }
 
 .correction-text {
-    -fx-text-color: red;
+    -fx-fill: red;
 }
 
 .redaction-text {
-    -fx-font-color: grey;
+    -fx-fill: grey;
     -fx-strikethrough: true;
 }
 
 .addition-text {
-    -fx-font-color: red;
+    -fx-fill: red;
 }
 
 .separator:horizontal {
