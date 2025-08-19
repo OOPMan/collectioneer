@@ -1,0 +1,106 @@
+.edition-selection-hbox {
+    -fx-alignment: center-left;
+    -fx-padding: 5px;
+}
+
+.edition-selection-hbox .field-label {
+   -fx-padding: 0 5px 0 0;
+}
+
+.illustrator-label-hbox {
+    -fx-padding: 5px 0 0 0;
+}
+
+.content-area-hbox {
+    -fx-padding: 0 5px 5px 5px;
+}
+
+.content-area-lhs-vbox {
+    -fx-padding: 0 5px 0 0;
+}
+
+.content-area-tab-vbox {
+    -fx-padding: 5px 0 0 10px;
+}
+
+.orientation-selection-hbox {
+    -fx-alignment:center-left;
+}
+
+.orientation-selection-hbox .field-label {
+    -fx-padding: 0 5px 0 0;
+}
+
+.field-label {
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.life-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.power-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.rest-text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.bold-text {
+    -fx-font-weight: bold;
+}
+
+.italic-text {
+    -fx-font-style: italic;
+}
+
+.bubble-text-background {
+    -fx-background-radius: 15px;
+    -fx-background-color: #000000;
+    -fx-padding: 0px 5px 0px 5px;
+
+}
+
+.bubble-text {
+    -fx-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.cost-text-background {
+    -fx-background-radius: 15px;
+    -fx-background-color: gold;
+    -fx-padding: 0px 5px 0px 5px;
+}
+
+.cost-text {
+    -fx-fill: #000000;
+    -fx-font-weight: bold;
+}
+
+.error-text {
+    -fx-fill: grey;
+    -fx-strikethrough: true;
+}
+
+.correction-text {
+    -fx-fill: red;
+}
+
+.redaction-text {
+    -fx-fill: grey;
+    -fx-strikethrough: true;
+}
+
+.addition-text {
+    -fx-fill: red;
+}
+
+.separator:horizontal {
+    -fx-padding: 10 0 10 0;
+}
+

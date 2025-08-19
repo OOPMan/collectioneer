@@ -3,11 +3,11 @@ package com.oopman.collectioneer.plugins.gatcg.actions
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
-import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ParentCollection, SourceOfPropertiesAndPropertyValues}
+import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.given
 import com.oopman.collectioneer.db.traits.entity.raw.given
-import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties}
+import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
 import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models}
 
 import java.util.UUID
@@ -33,7 +33,7 @@ def importDataset(cards: List[Models.Card],
     val processRuleResults = rules.map(processRule(cardDataCollection))
     val references = card.references ++ card.referenced_by
     val processReferenceResults = references.map(processReference(cardDataCollection))
-    val editionsBySet = card.editions.groupBy(_.set)
+    val editionsBySet = card.editions.groupBy(_.set).map((set, editions) => set -> editions.sortBy(_.rarity))
     val processSetEditionResults = editionsBySet.map(processSetEditions(cardDataCollection)).values
     val (listOfCollectionSeqs, listOfRelationshipSeqs) =
       (processRuleResults ++ processReferenceResults ++ processSetEditionResults).unzip
@@ -58,7 +58,8 @@ def importDataset(cards: List[Models.Card],
       propertyValues = Map(
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCardCollection -> PropertyValue(booleanValues = true :: Nil),
-        EditionProperties.collectorNumber -> PropertyValue(textValues = editions.map(_.collector_number))
+        EditionProperties.collectorNumber -> PropertyValue(textValues = editions.map(_.collector_number)),
+        SetCardProperties.primaryEditionUID -> PropertyValue(textValues = editions.head.uuid :: Nil)
       )
     )
     val (collections, relationships) = editions
@@ -67,28 +68,28 @@ def importDataset(cards: List[Models.Card],
     val additionalRelationships = List(
       Relationship(
         pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCollection.pk}-${setDataCollection.pk}-$SourceOfPropertiesAndPropertyValues".getBytes),
-        collectionPK = setCollection.pk,
         relatedCollectionPK = setDataCollection.pk,
-        relationshipType = SourceOfPropertiesAndPropertyValues
+        relationshipType = SourceOfPropertiesAndPropertyValues,
+        collectionPK = setCollection.pk,
       ),
       Relationship(
-        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCardCollection.pk}-${setCollection.pk}-$ParentCollection".getBytes),
-        collectionPK = setCardCollection.pk,
-        relatedCollectionPK = setCollection.pk,
-        relationshipType = ParentCollection
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCardCollection.pk}-${setCollection.pk}-$ChildOf".getBytes),
+        relatedCollectionPK = setCardCollection.pk,
+        relationshipType = ChildOf,
+        collectionPK = setCollection.pk,
       ),
       Relationship(
         pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCardCollection.pk}-${cardDataCollection.pk}-$SourceOfPropertiesAndPropertyValues".getBytes),
-        collectionPK = setCardCollection.pk,
         relatedCollectionPK = cardDataCollection.pk,
-        relationshipType = SourceOfPropertiesAndPropertyValues
+        relationshipType = SourceOfPropertiesAndPropertyValues,
+        collectionPK = setCardCollection.pk,
       ),
     )
     set -> (collections :+ setCardCollection, relationships ++ additionalRelationships)
   // Function to process Editions
-  def processEdition(cardData: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
+  def processEdition(cardDataCollection: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Edition.*
-    val editionCollection: Collection = edition.asCollection(cardData)
+    val editionCollection: Collection = edition.asCollection(cardDataCollection)
     val circulations = (edition.circulations ++ edition.circulationTemplates).distinct
     val processCirculationResults = circulations.map(processCirculation(editionCollection))
     val otherOrientations = edition.other_orientations.getOrElse(Nil)
@@ -98,16 +99,16 @@ def importDataset(cards: List[Models.Card],
     val relationships = listOfRelationshipSeqs.flatten
     val additionalRelationships = List(
       Relationship(
-        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${editionCollection.pk}-${cardData.pk}-$ParentCollection".getBytes),
-        collectionPK = editionCollection.pk,
-        relatedCollectionPK = cardData.pk,
-        relationshipType = ParentCollection
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${editionCollection.pk}-${cardDataCollection.pk}-$ChildOf".getBytes),
+        relatedCollectionPK = editionCollection.pk,
+        relationshipType = ChildOf,
+        collectionPK = cardDataCollection.pk,
       ),
       Relationship(
-        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setDataCollection.pk}-${editionCollection.pk}-$ParentCollection".getBytes),
-        collectionPK = setDataCollection,
-        relatedCollectionPK = editionCollection,
-        relationshipType = ParentCollection
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setDataCollection.pk}-${editionCollection.pk}-$ChildOf".getBytes),
+        relatedCollectionPK = setDataCollection,
+        relationshipType = ChildOf,
+        collectionPK = editionCollection,
       )
     )
     (collections :+ editionCollection, relationships ++ additionalRelationships)
@@ -117,17 +118,17 @@ def importDataset(cards: List[Models.Card],
     val innerEditionCollection: Collection = innerEdition.asCollection(cardCollection)
     val relationships = List(
       Relationship(
-        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${innerEditionCollection.pk}-${cardCollection.pk}-$ParentCollection".getBytes),
-        collectionPK = innerEditionCollection.pk,
-        relatedCollectionPK = cardCollection.pk,
-        relationshipType = ParentCollection
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${innerEditionCollection.pk}-${cardCollection.pk}-$ChildOf".getBytes),
+        relatedCollectionPK = innerEditionCollection.pk,
+        relationshipType = ChildOf,
+        collectionPK = cardCollection.pk,
       ),
       // TODO: Determine if having multiple parent relationships for a single Collection is a problem...
       Relationship(
-        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setDataCollection.pk}-${innerEditionCollection.pk}-$ParentCollection".getBytes),
-        collectionPK = setDataCollection,
-        relatedCollectionPK = innerEditionCollection,
-        relationshipType = ParentCollection
+        pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setDataCollection.pk}-${innerEditionCollection.pk}-$ChildOf".getBytes),
+        relatedCollectionPK = setDataCollection,
+        relationshipType = ChildOf,
+        collectionPK = innerEditionCollection,
       )
     )
     (innerEditionCollection :: Nil, relationships)
@@ -136,10 +137,10 @@ def importDataset(cards: List[Models.Card],
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerCard.*
     val innerCardCollection: Collection = innerCard.asCollection
     val relationship = Relationship(
-      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${innerCardCollection.pk}-${editionCollection.pk}-$ParentCollection".getBytes),
-      collectionPK = innerCardCollection.pk,
-      relatedCollectionPK = editionCollection.pk,
-      relationshipType = ParentCollection
+      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${innerCardCollection.pk}-${editionCollection.pk}-$ChildOf".getBytes),
+      relatedCollectionPK = innerCardCollection.pk,
+      relationshipType = ChildOf,
+      collectionPK = editionCollection.pk,
     )
     val rules = innerCard.rule.getOrElse(Nil)
     val processRuleResults = rules.map(processRule(innerCardCollection))
@@ -156,10 +157,10 @@ def importDataset(cards: List[Models.Card],
     import com.oopman.collectioneer.plugins.gatcg.extensions.Circulation.*
     val circulationCollection = circulationMap.getOrElseUpdate(circulation, circulation.asCollection)
     val relationship = Relationship(
-      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${circulationCollection.pk}-${editionCollection.pk}-$ParentCollection".getBytes),
-      collectionPK = circulationCollection.pk,
-      relatedCollectionPK = editionCollection.pk,
-      relationshipType = ParentCollection
+      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${circulationCollection.pk}-${editionCollection.pk}-$ChildOf".getBytes),
+      relatedCollectionPK = circulationCollection.pk,
+      relationshipType = ChildOf,
+      collectionPK = editionCollection.pk,
     )
     (circulationCollection :: Nil, relationship :: Nil)
   // Function to process Rules
@@ -167,10 +168,10 @@ def importDataset(cards: List[Models.Card],
     import com.oopman.collectioneer.plugins.gatcg.extensions.Rule.*
     val ruleCollection: Collection = rule.asCollection
     val relationship = Relationship(
-      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${ruleCollection.pk}-${cardCollection.pk}-$ParentCollection".getBytes),
-      collectionPK = ruleCollection.pk,
-      relatedCollectionPK = cardCollection.pk,
-      relationshipType = ParentCollection
+      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${ruleCollection.pk}-${cardCollection.pk}-$ChildOf".getBytes),
+      relatedCollectionPK = ruleCollection.pk,
+      relationshipType = ChildOf,
+      collectionPK = cardCollection.pk,
     )
     (ruleCollection :: Nil, relationship :: Nil)
   // Function to process References
@@ -178,10 +179,10 @@ def importDataset(cards: List[Models.Card],
     import com.oopman.collectioneer.plugins.gatcg.extensions.Reference.*
     val referenceCollection: Collection = reference.asCollection
     val relationship = Relationship(
-      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${referenceCollection.pk}-${cardCollection.pk}-$ParentCollection".getBytes)  ,
-      collectionPK = referenceCollection.pk,
-      relatedCollectionPK = cardCollection.pk,
-      relationshipType = ParentCollection
+      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${referenceCollection.pk}-${cardCollection.pk}-$ChildOf".getBytes)  ,
+      relatedCollectionPK = referenceCollection.pk,
+      relationshipType = ChildOf,
+      collectionPK = cardCollection.pk,
     )
     (referenceCollection :: Nil, relationship :: Nil)
   // Process and import data
@@ -189,10 +190,10 @@ def importDataset(cards: List[Models.Card],
   val collections = listOfCollectionSeqs.flatten
   val relationships = listOfRelationshipSeqs.flatten
   val setRelationships = setMap.values.map(setCollection => Relationship(
-    pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCollection.pk}-${GATCGRootCollection.pk}-$ParentCollection".getBytes),
-    collectionPK = setCollection,
-    relatedCollectionPK = GATCGRootCollection,
-    relationshipType = ParentCollection
+    pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCollection.pk}-${GATCGRootCollection.pk}-$ChildOf".getBytes),
+    relatedCollectionPK = setCollection,
+    relationshipType = ChildOf,
+    collectionPK = GATCGRootCollection,
   ))
   val allCollections = GATCGRootCollection :: Nil ++ setMap.values ++ setDataMap.values ++ circulationMap.values ++ collections
   def allRelationships = GATCGRootCollectionRelationship :: Nil ++ setRelationships ++ relationships

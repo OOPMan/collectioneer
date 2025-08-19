@@ -1,12 +1,21 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.cli.{Config, Subconfig, Subject, Verb}
+import com.oopman.collectioneer.{SubConfig, WithTag}
+import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
+import distage.ModuleDef
 import io.circe.Json
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
 
-case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends Subconfig()
+case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends CLISubConfig, WithTag[EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig]:
+  def getModuleDefForSubConfig: ModuleDef = 
+    val subConfig = this
+    new ModuleDef:
+      many[SubConfig].add(subConfig)
+      many[CLISubConfig].add(subConfig)
+      make[EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig].from(subConfig)
+
 
 object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
   def getName: String = "Embedded PostgreSQL Database Backend CLI"
@@ -15,14 +24,14 @@ object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
 
   def getVersion: String = "master"
 
-  def getDefaultSubconfig: Subconfig = EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig()
+  def getDefaultSubConfig: CLISubConfig = EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig()
 
-  def getActions(builder: OParserBuilder[Config]): List[(Verb, Subject, Config => Json, List[OParser[?, Config]])] =
+  def getActions(builder: OParserBuilder[CLIConfig]): List[(Verb, Subject, CLIConfig => Json, List[OParser[?, CLIConfig]])] =
     List(
       (Verb.get, Subject.database, getDatabase, List())
     )
 
-  def getDatabase(config: Config) =
+  def getDatabase(config: CLIConfig) =
     import io.circe.*
     import io.circe.syntax.*
     println()

@@ -98,7 +98,8 @@ object Models:
     name: Option[String],
     foil: Option[Boolean],
     kind: String,
-    population: Int
+    population: Int,
+    population_operator: String
   ) extends GATCG
 
   case class Set

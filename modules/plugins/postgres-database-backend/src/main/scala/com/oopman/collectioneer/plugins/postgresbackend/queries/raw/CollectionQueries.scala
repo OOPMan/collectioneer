@@ -1,5 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
+import com.oopman.collectioneer.{CoreCollections, given}
 import com.oopman.collectioneer.db.SortDirection
 import com.oopman.collectioneer.db.traits.entity.raw.Property
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw.Collection
@@ -71,25 +72,24 @@ object CollectionQueries:
           parentCollectionPKs.map(_.toString).reduce((left, right) => s"$left, $right")
         )
         sqls"""
-               SELECT r.collection_pk
+               SELECT r.related_collection_pk
                FROM relationship AS r
-               WHERE r.related_collection_pk = ANY ('{$parentCollectionPKsSQLSyntax}'::uuid[])
-               AND r.relationship_type = 'ParentCollection'
+               WHERE r.collection_pk = ANY ('{$parentCollectionPKsSQLSyntax}'::uuid[])
+               AND r.relationship_type = 'ChildOf'
             """
-      else // TODO: This should query for children of the rootCollection?
-        // TODO: This SQL does not seem to work when there are no items in the relationship table at all...
+      else {
+        val rootCollectionPK = SQLSyntax.createUnsafely(CoreCollections.root.pk.toString)
         sqls"""
-               SELECT c.pk
-               FROM collection AS c
-               LEFT JOIN relationship AS r ON r.related_collection_pk = c.pk
-               WHERE r.relationship_type = 'ParentCollection'
-               GROUP BY c.pk
+               SELECT r.related_collection_pk
+               FROM relationship AS r
+               WHERE r.relationship_type = 'ChildOf' AND r.collection_pk = '$rootCollectionPK'::uuid'
             """
+      }
     }
     val cte1BodyComponents =
       comparisonSQLSyntax.map(Seq(_)).getOrElse(Nil) ++
       collectionPKsSQLSyntax.map(Seq(_)).getOrElse(Nil) ++
-        parentCollectionPKsSQLSyntax.map(Seq(_)).getOrElse(Nil)
+      parentCollectionPKsSQLSyntax.map(Seq(_)).getOrElse(Nil)
     val cte1BodySQL =
       if cte1BodyComponents.nonEmpty
       then

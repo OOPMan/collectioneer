@@ -9,4 +9,5 @@ val AllProperties: Seq[projected.Property] =
   EditionProperties.properties ++
   ReferenceProperties.properties ++
   RuleProperties.properties ++
-  SetProperties.properties
+  SetProperties.properties ++
+  SetCardProperties.properties

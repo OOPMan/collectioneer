@@ -17,7 +17,7 @@ import java.util.UUID
 
 class GATCGMainViewGUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), MainViewGUIPlugin:
-  private val whitelistedProperties: Seq[RawProperty] = Seq(SetProperties.setPrefix, EditionProperties.collectorNumber)
+  private val whitelistedProperties: Seq[RawProperty] = Seq(SetProperties.prefix, EditionProperties.collectorNumber)
 
   private def setCollectionCellFactory(cell: TreeCell[Collection], collection: Collection): Unit =
     val setName = collection.propertyValues
@@ -25,7 +25,7 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse(collection.pk.toString)
     val setPrefix = collection.propertyValues
-      .find((property, pv) => property == SetProperties.setPrefix)
+      .find((property, pv) => property == SetProperties.prefix)
       .flatMap((property, pv) => pv.textValues.headOption)
       .getOrElse("?")
     cell.text = s"$setName ($setPrefix)"
@@ -45,14 +45,14 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
     collection.propertyValues.keySet.intersect(whitelistedProperties.toSet).nonEmpty
 
   def canGetRawChildCollections(collection: Collection): Boolean =
-    collection.propertyValues.contains(SetProperties.setPrefix)
+    collection.propertyValues.contains(SetProperties.prefix)
 
   def canGetPropertyPKsForInflation(collection: Collection): Boolean =
     if collection == GATCGRootCollection then true
-    else collection.propertyValues.contains(SetProperties.setPrefix)
+    else collection.propertyValues.contains(SetProperties.prefix)
 
   def getCollectionsListTreeViewCellFactory(collection: Collection): (TreeCell[Collection], Collection) => Unit =
-    if collection.propertyValues.contains(SetProperties.setPrefix)
+    if collection.propertyValues.contains(SetProperties.prefix)
     then setCollectionCellFactory
     else cardCollectionCellFactory
 
@@ -64,12 +64,12 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
 
   def getPropertyPKsForInflation(collection: Collection): Seq[UUID] =
     if collection.pk == GATCGRootCollection.pk
-    then Seq(CoreProperties.name.property.pk, SetProperties.setPrefix.property.pk)
+    then Seq(CoreProperties.name.property.pk, SetProperties.prefix.property.pk)
     else Seq(CoreProperties.name.property.pk, EditionProperties.collectorNumber.property.pk)
 
-  def getName: String = "GATCG UI Plugin"
+  def getName: String = "GATCG MainView GUI Plugin"
 
-  def getShortName: String = "GATCGGUI"
+  def getShortName: String = "GATCGMainViewGUI"
 
   def getVersion: String = "master"
 

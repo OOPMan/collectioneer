@@ -19,6 +19,7 @@ private object EditionPropertiesUUIDs:
   val slug = "ff777245-92fd-46b0-908f-fe5152dae509"
   val rarity = "2a9e5492-f032-4a4b-b01b-379ff7197f8a"
   val effect = "40513d4c-2fae-4d23-9c85-cb0df15dbb4c"
+  val effectRaw = "70a30e78-1acb-4287-a1b4-1a810e914a67"
   val flavourText = "49aa3c45-2a44-4e52-9e9b-b4ef7513498f"
   val configuration = "ad41846c-0372-4e93-a425-878d433bd70c"
   val orientation = "f921e51b-f273-4066-927f-ac0ecf6e1cee"
@@ -74,6 +75,12 @@ enum EditionProperties(val property: projected.Property):
   case effect extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effect,
     propertyName = "Effect",
+    propertyTypes = PropertyType.text :: Nil,
+    propertyValues = PropertyValues.visibleGATCGProperty,
+  )) with HasProperty
+  case effectRaw extends EditionProperties(Property(
+    pk = EditionPropertiesUUIDs.effectRaw,
+    propertyName = "Raw Effect",
     propertyTypes = PropertyType.text :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty

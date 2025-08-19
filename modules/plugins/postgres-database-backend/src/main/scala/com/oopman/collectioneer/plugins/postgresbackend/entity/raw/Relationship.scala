@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 
 import com.oopman.collectioneer.db.entity.raw
-import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, RelationshipType}
+import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, HasTopLevelCollectionPKAndLevel, RelationshipType}
 import scalikejdbc.*
 
 import java.util.UUID
@@ -12,7 +12,7 @@ object Relationship extends SQLSyntaxSupport[raw.Relationship]:
   val r1 = Relationship.syntax("r1")
   val r2 = Relationship.syntax("r2")
   
-  def apply(rs: WrappedResultSet) =
+  def wrappedResultSetToRelationship(rs: WrappedResultSet): Relationship =
     raw.Relationship(
       pk = UUID.fromString(rs.string("pk")),
       collectionPK = UUID.fromString(rs.string("collection_pk")), 
@@ -21,6 +21,20 @@ object Relationship extends SQLSyntaxSupport[raw.Relationship]:
       index = rs.int("index"), 
       created = rs.dateTime("created"), 
       modified = rs.dateTime("modified")
+    )
+    
+  def wrappedResultSetToRelationshipAndHasTopLevelCollectionPKAndLevel(rs: WrappedResultSet): Relationship & HasTopLevelCollectionPKAndLevel =
+    new raw.Relationship(
+      pk = UUID.fromString(rs.string("pk")),
+      collectionPK = UUID.fromString(rs.string("collection_pk")),
+      relatedCollectionPK = UUID.fromString(rs.string("related_collection_pk")),
+      relationshipType = RelationshipType.valueOf(rs.string("relationship_type")),
+      index = rs.int("index"),
+      created = rs.dateTime("created"),
+      modified = rs.dateTime("modified")
+    ) with HasTopLevelCollectionPKAndLevel(
+      topLevelCollectionPK = UUID.fromString(rs.string("top_level_collection_pk")),
+      level = rs.int("level")
     )
   
   def relationshipSeqToBatchUpsertSeq(relationships: Seq[Relationship]): Seq[Seq[Any]] =

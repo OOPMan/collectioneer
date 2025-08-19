@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.dao.raw
 
 import com.oopman.collectioneer.db.scalikejdbc.traits.dao.raw.ScalikeRelationshipDAO
-import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, RelationshipType}
+import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, HasTopLevelCollectionPKAndLevel, RelationshipType}
 import com.oopman.collectioneer.plugins.postgresbackend
 import scalikejdbc.DBSession
 
@@ -29,7 +29,7 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
         session.connection.createArrayOf("varchar", collectionPKs.toArray),
         session.connection.createArrayOf("varchar", relationshipTypes.toArray)
       )
-      .map(postgresbackend.entity.raw.Relationship.apply)
+      .map(postgresbackend.entity.raw.Relationship.wrappedResultSetToRelationship)
       .list
       .apply()
 
@@ -40,7 +40,7 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
         session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
         session.connection.createArrayOf("varchar", relationshipTypes.toArray)
       )
-      .map(postgresbackend.entity.raw.Relationship.apply)
+      .map(postgresbackend.entity.raw.Relationship.wrappedResultSetToRelationship)
       .list
       .apply()
 
@@ -52,7 +52,14 @@ object RelationshipDAOImpl extends ScalikeRelationshipDAO:
         session.connection.createArrayOf("varchar", relatedCollectionPKs.toArray),
         session.connection.createArrayOf("varchar", relationshipTypes.toArray)
       )
-      .map(postgresbackend.entity.raw.Relationship.apply)
+      .map(postgresbackend.entity.raw.Relationship.wrappedResultSetToRelationship)
       .list
       .apply()
 
+  def getRelationshipHierarchyByCollectionPKs(collectionPKs: Seq[UUID])(implicit session: DBSession): Seq[Relationship & HasTopLevelCollectionPKAndLevel] =
+    postgresbackend.queries.raw.RelationshipQueries
+      .selectHierarchyBeCollectionPKs
+      .bind(session.connection.createArrayOf("varchar", collectionPKs.toArray))
+      .map(postgresbackend.entity.raw.Relationship.wrappedResultSetToRelationshipAndHasTopLevelCollectionPKAndLevel)
+      .list
+      .apply()

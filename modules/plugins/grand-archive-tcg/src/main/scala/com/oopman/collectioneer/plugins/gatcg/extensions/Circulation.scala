@@ -12,13 +12,14 @@ object Circulation:
   extension (circulation: Models.Circulation)
 
     def asCollection: Collection = Collection(
-      pk = UUID.nameUUIDFromBytes (s"GATCG-circulation-${circulation.uuid}".getBytes),
+      pk = UUID.nameUUIDFromBytes (s"GATCG-circulation-${circulation.edition_id}-${circulation.uuid}".getBytes),
       virtual = true,
       propertyValues = Map(
-        CoreProperties.name -> PropertyValue(textValues = circulation.name.map(_ :: Nil).getOrElse(Nil)),
+        CoreProperties.name -> PropertyValue(textValues = circulation.name ++: Nil),
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
-        CommonProperties.isGATCGCirculation -> PropertyValue(booleanValues = List(true)),
-        CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil.map(_ :: Nil).getOrElse(Nil)),
+        CommonProperties.isGATCGCirculation -> PropertyValue(booleanValues = true :: Nil),
+        CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil.getOrElse(false) :: Nil),
         CirculationProperties.population -> PropertyValue(intValues = circulation.population :: Nil),
+        CirculationProperties.populationOperator -> PropertyValue(textValues = circulation.population_operator :: Nil)
       )
     )

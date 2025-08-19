@@ -28,3 +28,7 @@ trait Collection:
   override def hashCode(): Int = pk.hashCode()
 
   override def toString: String = s"Raw Collection ($pk)"
+
+
+trait HasCollection:
+  def collection: Collection

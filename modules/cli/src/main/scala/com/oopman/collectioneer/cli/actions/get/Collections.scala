@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.cli.actions.get
 
 import com.oopman.collectioneer.Injection
-import com.oopman.collectioneer.cli.Config
+import com.oopman.collectioneer.cli.CLIConfig
 import com.oopman.collectioneer.cli.actions.get.Properties.{PropertyWithPropertyValues, propertyToPropertyWithPropertyValues, propertyValuesToPropertiesMap}
 import com.oopman.collectioneer.db.traits
 import io.circe.*
@@ -51,7 +51,7 @@ object Collections:
       modified = property.modified
     )
   
-  def getCollections(config: Config): Json =
+  def getCollections(config: CLIConfig): Json =
     def getCollections(collectionDAO: traits.dao.projected.CollectionDAO) =
       val collections = collectionDAO.getAllMatchingPKs(config.uuids)
       GetCollectionsResult(
@@ -68,4 +68,4 @@ object Collections:
             relatedProperties = collection.properties.map(propertyEntityToProperty),
             propertyValues = propertyValuesToPropertiesMap(collection.propertyValues)
           ))).asJson
-    Injection.produceRun(Some(config))(getCollections)
+    Injection.produceRun()(getCollections)

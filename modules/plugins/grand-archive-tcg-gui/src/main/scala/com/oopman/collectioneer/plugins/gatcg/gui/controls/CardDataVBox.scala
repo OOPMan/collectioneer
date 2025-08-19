@@ -1,0 +1,56 @@
+package com.oopman.collectioneer.plugins.gatcg.gui.controls
+
+import com.oopman.collectioneer.gui.StyleClasses
+import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon, GATCGTemplateLangParser, GATCGUICSS}
+import scalafx.geometry.Orientation.Horizontal
+import scalafx.scene.Node
+import scalafx.scene.control.{Label, Separator, TitledPane}
+import scalafx.scene.layout.VBox
+import scalafx.scene.text.{Text, TextFlow}
+
+
+class CardDataVBox(cardData: CardData, edition: Edition) extends VBox:
+
+  val cardDataLabelStyleClass = "field-label"
+
+  def generateTextFlow(label: String, text: String): TextFlow =
+    new TextFlow(
+      new Text(label + ":") with StyleClasses(cardDataLabelStyleClass),
+      new Text(" " + text)
+    )
+
+  def generateNode(cardData: CardCommon, edition: EditionCommon): Node =
+    val effects = edition.effect ++ cardData.effect
+    val effectNodes =
+      for
+        effectText <- effects.headOption
+        shortName <- cardData.name.split(',').headOption
+        preparedEffectText = effectText.replace("CARDNAME", shortName)
+      yield
+        GATCGTemplateLangParser.produceNodes(preparedEffectText)
+    val wrappedEffectNodes = effectNodes.map(nodes => Separator(Horizontal) :: new TextFlow(nodes*) :: Nil).getOrElse(Nil)
+    val flavourTexts = edition.flavourText ++ cardData.flavourText
+    val flavourTextNodes = flavourTexts.headOption.map(flavourText => Separator(Horizontal) :: new TextFlow(new Text(flavourText) with StyleClasses(GATCGUICSS.italicText)) :: Nil).getOrElse(Nil)
+    val nodeOptions: List[Option[Node]] =
+      Some(generateTextFlow("Name", cardData.name)) ::
+      Some(generateTextFlow("Element", cardData.element)) ::
+      cardData.level.map(level => generateTextFlow("Level", level.toString)) ::
+      Some(generateTextFlow("Classes", cardData.classes.mkString(" "))) ::
+      Some(generateTextFlow("Types", cardData.types.mkString(" "))) ::
+      Some(generateTextFlow("Sub-types", cardData.subTypes.mkString(" "))) ::
+      cardData.reserveCost.map(cost => generateTextFlow("Reserve Cost", cost.toString)) ::
+      cardData.memoryCost.map(cost => generateTextFlow("Memory Cost", cost.toString)) ::
+      cardData.power.map(power => generateTextFlow("Power", power.toString)) ::
+      cardData.life.map(life => generateTextFlow("Life", life.toString)) ::
+      cardData.durability.map(durability => generateTextFlow("Durability", durability.toString)) ::
+      cardData.speed.map(speed => generateTextFlow("Speed", speed)) ::
+      Nil
+    val nodes: Seq[Node] = nodeOptions.flatten ++ wrappedEffectNodes ++ flavourTextNodes
+
+    new TitledPane:
+      text = edition.orientation.getOrElse("front").capitalize
+      expanded = true
+      content = new VBox(nodes*)
+
+  children = generateNode(cardData, edition) +: edition.innerCards.map(innerCard => generateNode(innerCard, innerCard.innerEdition))
+
