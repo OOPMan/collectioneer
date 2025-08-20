@@ -31,8 +31,8 @@ class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, prima
     closable = false
 
   def updateImageView(image: String, illustrator: Option[String]): Unit =
-    val imageUUID = UUID.nameUUIDFromBytes(image.getBytes)
-    val imagePath = s"${gatcgSubConfig.imagePath}/$imageUUID.jpg"
+    val baseImage = image.stripPrefix("/cards/images").stripSuffix(".jpg")
+    val imagePath = s"${gatcgSubConfig.imagePath}/$baseImage.png"
     imageView.image = new Image(os.Path(imagePath).getInputStream)
     illustratorLabel.text = " " + illustrator.getOrElse("")
 
