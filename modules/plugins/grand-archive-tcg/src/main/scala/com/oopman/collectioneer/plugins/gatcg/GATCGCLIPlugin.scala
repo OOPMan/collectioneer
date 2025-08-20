@@ -19,6 +19,7 @@ import sttp.model.Uri
 
 import java.io.{ByteArrayInputStream, File}
 import java.util.UUID
+import scala.annotation.tailrec
 import scala.language.postfixOps
 import scala.util.*
 
@@ -65,6 +66,24 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       (Verb.download, Subject("images", Map.empty), downloadImages, List(datasetPathOpt, imagesPathOpt))
     )
 
+  @tailrec
+  private def sendRequest[A, B]
+  (
+    client: SimpleHttpClient = SimpleHttpClient(),
+    request: RequestT[Identity, Either[A, B], Any],
+    delayBetweenRequests: Long = 500,
+    backoffFactor: Long = 1,
+    backoffLimit: Int = 10
+  ): Try[Response[Either[A, B]]] =
+    try Success(client.send(request))
+    catch case exception: Throwable =>
+      val delayBeforeRetry = delayBetweenRequests * backoffFactor
+      logger.warn(s"Failed to retrieve ${request.uri} due to $exception. Retrying in $delayBeforeRetry milliseconds")
+      this.synchronized { this.wait(delayBeforeRetry) }
+      if backoffFactor < backoffLimit
+      then sendRequest(client, request, delayBetweenRequests, backoffFactor + 1)
+      else Failure(exception)
+
   def getData
   (
     client: SimpleHttpClient = SimpleHttpClient(),
@@ -73,17 +92,17 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     pageSize: Int = 50,
     delayBetweenRequests: Long = 500
   ): Try[Vector[Json]] =
-    logger.info(s"Retrieving page $page with page size $pageSize from $baseUri")
+    val uri = uri"$baseUri/cards/search?page=$page&page_size=$pageSize"
     val request = basicRequest
-      .get(uri"$baseUri/cards/search?page=$page&page_size=$pageSize")
+      .get(uri)
       .response(asJson[io.circe.Json])
-    val response = client.send(request)
-    response.body match
-      case Left(body) =>
-        val message = s"Error downloading $page with page size $pageSize from $baseUri: ${response.code}"
+    logger.info(s"Retrieving page $page with page size $pageSize from $uri")
+    sendRequest(client, request, delayBetweenRequests) match
+      case Success(Response(Left(body), code, statusText, headers, history, request)) =>
+        val message = s"Error downloading $page with page size $pageSize from $baseUri: $code"
         logger.error(message)
         Failure(RuntimeException(message))
-      case Right(body) =>
+      case Success(Response(Right(body), code, statusText, headers, history, request)) =>
         val hasMore = root.has_more.boolean.getOption(body).getOrElse(false)
         val data = root.data.arr.getOption(body).getOrElse(Vector())
         if !hasMore then
@@ -91,6 +110,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         else
           this.synchronized { wait(delayBetweenRequests) }
           getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
+      case Failure(exception) => Failure(exception)
 
   def getAndSaveImages
   (
@@ -98,7 +118,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     imagesPath: Path,
     client: SimpleHttpClient = SimpleHttpClient(),
     baseUri: String = "https://api.gatcg.com",
-    delayBetweenRequests: Long = 500
+    delayBetweenRequests: Long = 1000
   ): Int =
     import Models.*
     val cards = data.as[List[Card]].getOrElse(Nil)
@@ -112,34 +132,34 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
             innerCard <- edition.other_orientations.getOrElse(Nil)
           yield
             innerCard.edition.image
-        images.prepended(edition.image)
+        edition.image +: images
     val uniqueImages = images.flatten.toSet
     var downloaded = 0
     for
       image <- uniqueImages
-      imageHash = UUID.nameUUIDFromBytes(image.getBytes)
-      imagePath = imagesPath / s"$imageHash.jpg"
+      imageSlug = image.stripPrefix("/cards/images/").stripSuffix(".jpg")
+      imagePath = imagesPath / s"$imageSlug.png"
       if !os.exists(imagePath)
-    do Uri.parse(s"$baseUri$image") match
+      uriString = s"$baseUri$image?rounded=true"
+    do Uri.parse(uriString) match
       case Left(value) =>
-        logger.error(s"Failed to parse $baseUri$image to a Uri")
+        logger.error(s"Failed to parse $uriString to a Uri")
       case Right(uri) =>
         logger.info(s"Downloading $uri")
         val request = basicRequest
           .get(uri)
           .response(asByteArray)
-        val response = client.send(request)
-        response.body match
-          case Left(value) =>
-            logger.error(s"Failed to retrieve $baseUri$image")
-          case Right(value) =>
-            val inputStream = new ByteArrayInputStream(value)
+        sendRequest(client, request, delayBetweenRequests) match
+          case Failure(exception) =>
+            logger.error(s"Failed to download $uri due to $exception")
+          case Success(Response(Left(body), code, statusText, headers, history, request)) =>
+            logger.error(s"Failed to retrieve $uri due to $code: $body")
+          case Success(Response(Right(body), code, statusText, headers, history, request)) =>
+            val inputStream = new ByteArrayInputStream(body)
             os.write(imagePath, inputStream)
             downloaded += 1
-        this.synchronized {
-          this.wait(delayBetweenRequests)
-        }
-    logger.info(s"Download $downloaded images out of ${uniqueImages.size}")
+        this.synchronized { this.wait(delayBetweenRequests) }
+    logger.info(s"Downloaded $downloaded images out of ${uniqueImages.size}")
     downloaded
 
   def importDataset(config: CLIConfig): Json =
