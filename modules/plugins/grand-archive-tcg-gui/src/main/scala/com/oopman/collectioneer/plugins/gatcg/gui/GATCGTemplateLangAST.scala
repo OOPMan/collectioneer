@@ -6,6 +6,11 @@ import scalafx.scene.layout.StackPane
 import scalafx.scene.text.Text
 
 object GATCGTemplateLangAST:
+  private def childrenToStyledNodes(children: Seq[AST], styleClass: String): Seq[Node] =
+    val nodes = children.flatMap(_.toNodes)
+    nodes.foreach(_.styleClass += styleClass)
+    nodes
+
   sealed trait AST:
     def index: Int
     def toNodes: Seq[Node]
@@ -13,16 +18,16 @@ object GATCGTemplateLangAST:
   case class RegularText(index: Int, text: String) extends AST:
     def toNodes = Text(text) :: Nil
 
-  case class BoldText(index: Int, text: String) extends AST:
-    def toNodes = new Text(text) with StyleClasses(GATCGUICSS.boldText) :: Nil
+  case class BoldText(index: Int, children: Seq[AST]) extends AST:
+    def toNodes = childrenToStyledNodes(children, GATCGUICSS.boldText)
 
-  case class ItalicText(index: Int, text: String) extends AST:
-    def toNodes = new Text(text) with StyleClasses(GATCGUICSS.italicText) :: Nil
+  case class ItalicText(index: Int, children: Seq[AST]) extends AST:
+    def toNodes = childrenToStyledNodes(children, GATCGUICSS.italicText)
 
-  case class BubbleText(index: Int, text: String) extends AST:
+  case class BubbleText(index: Int, childASTs: Seq[AST]) extends AST:
     def toNodes =
       val outerNode = new StackPane with StyleClasses(GATCGUICSS.bubbleTextBackground):
-        children = new Text(text) with StyleClasses(GATCGUICSS.bubbleText) :: Nil
+        children = childrenToStyledNodes(childASTs, GATCGUICSS.bubbleText)
       outerNode :: Nil
 
   case class Life(index: Int) extends AST:
@@ -40,15 +45,14 @@ object GATCGTemplateLangAST:
         children = new Text(text) with StyleClasses(GATCGUICSS.costText) :: Nil
       outerNode :: Nil
 
-  case class ErrorCorrection(index: Int, error: String, correction: String) extends AST:
+  case class ErrorCorrection(index: Int, error: Seq[AST], correction: Seq[AST]) extends AST:
     def toNodes =
-      new Text(error) with StyleClasses(GATCGUICSS.errorText) ::
-      Text(" ") ::
-      new Text(correction) with StyleClasses(GATCGUICSS.correctionText) ::
-      Nil
+      (childrenToStyledNodes(error, GATCGUICSS.errorText) :+ Text(" ")) ++ childrenToStyledNodes(correction, GATCGUICSS.correctionText)
 
-  case class Redaction(index: Int, text: String) extends AST:
-    def toNodes = new Text(text) with StyleClasses(GATCGUICSS.redactionText) :: Nil
+  case class Redaction(index: Int, children: Seq[AST]) extends AST:
+    def toNodes =
+      childrenToStyledNodes(children, GATCGUICSS.redactionText)
 
-  case class Addition(index: Int, text: String) extends AST:
-    def toNodes = new Text(text) with StyleClasses(GATCGUICSS.additionText) :: Nil
+  case class Addition(index: Int, children: Seq[AST]) extends AST:
+    def toNodes =
+      childrenToStyledNodes(children, GATCGUICSS.additionText)
