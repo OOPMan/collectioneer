@@ -1,10 +1,12 @@
 package com.oopman.collectioneer.plugins.gatcg.gui
 
 import com.oopman.collectioneer.Plugin
-import com.oopman.collectioneer.plugins.{DetailViewGUIPlugin, GUIPlugin, GUISubConfigCodecPlugin, MainViewGUIPlugin}
+import com.oopman.collectioneer.plugins.{DetailViewGUIPlugin, GUIPlugin, GUISubConfigCodecPlugin, MainViewGUIPlugin, PluginsMenuGUIPlugin}
 import izumi.distage.plugins.PluginDef
 
 object GATCGUIPluginDef extends PluginDef:
+  many[PluginsMenuGUIPlugin]
+    .add[GATCGPluginsMenuGUIPlugin]
   many[GUISubConfigCodecPlugin]
     .add[GATCGGUISubConfigCodecPlugin]
   many[DetailViewGUIPlugin]
