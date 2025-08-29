@@ -1,9 +1,10 @@
 package com.oopman.collectioneer.gui
 
+import com.oopman.collectioneer.plugins.PluginsMenuGUIPlugin
 import com.oopman.collectioneer.{ConfigManager, Injection}
 import distage.ModuleDef
 import fr.brouillard.oss.cssfx.CSSFX
-
+import izumi.distage.model.exceptions.runtime.ProvisioningException
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.control.*
@@ -17,6 +18,11 @@ object CollectioneerGUI extends JFXApp3:
   // TODO: Create lazy vals for menu items
   // TODO: Implement handlers for menu items
   // TODO: Tie menu-bar width to stage width somehow
+  lazy val pluginsMenuGUIPlugins: Set[PluginsMenuGUIPlugin] = 
+    try Injection.produce[Set[PluginsMenuGUIPlugin]]()
+    catch case e: ProvisioningException => Set.empty // TODO: Log this error
+    
+  lazy val pluginsMenu = new Menu("Plugins")
 
   lazy val borderPane = new BorderPane:
     styleClass += CollectioneerGUICSS.root
@@ -30,6 +36,7 @@ object CollectioneerGUI extends JFXApp3:
             new MenuItem("Exit")
           )
         },
+        pluginsMenu,
         new Menu("Help") {
           items = List(
             new MenuItem("About")
@@ -54,6 +61,8 @@ object CollectioneerGUI extends JFXApp3:
     System.setProperty("cssfx.log", "true")
     System.setProperty("cssfx.log.level", "INFO")
     CSSFX.addConverter(ScalaSBTURIToPathConverter).start()
+    // TODO: Collect PluginsMenuGUIPlugin instances and construct Plugins menu contents
+    pluginsMenu.items = pluginsMenuGUIPlugins.map(_.getMenu)
     showDatabaseBackendPicker(false)
 
   def showDatabaseBackendPicker(backButtonVisible: Boolean): Unit =
