@@ -10,9 +10,10 @@ lazy val circeLibraryDependencies = Seq(
   "io.circe" %% "circe-yaml"    % "0.15.1",
   "io.circe" %% "circe-optics"  % "0.15.0"
 )
+lazy val sttpVersion = "3.9.4"
 lazy val sttpLibraryDependencies = Seq(
-  "com.softwaremill.sttp.client3"   %% "core"  % "3.9.4",
-  "com.softwaremill.sttp.client3"   %% "circe" % "3.9.4"
+  "com.softwaremill.sttp.client3"   %% "core"  % sttpVersion,
+  "com.softwaremill.sttp.client3"   %% "circe" % sttpVersion
 )
 lazy val flywayVersion = "10.6.0"
 lazy val scalikeJDBCDependencies = Seq(
@@ -51,6 +52,7 @@ lazy val commonSettings = Seq(
     "com.lihaoyi"                     %% "fastparse"                  % "3.1.1"
   ),
   libraryDependencies ++= circeLibraryDependencies,
+  libraryDependencies ++= sttpLibraryDependencies
 )
 
 lazy val collectioneer = project
@@ -197,8 +199,7 @@ lazy val grandArchiveTCG = project
   .settings(commonSettings)
   .settings(
     name := "Grand Archive TCG Plugin",
-    exportJars := true,
-    libraryDependencies ++= sttpLibraryDependencies,
+    exportJars := true
   )
   .dependsOn(core, cliCore)
 
