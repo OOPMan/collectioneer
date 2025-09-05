@@ -1,8 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg
 
-import com.oopman.collectioneer.{Injection, Plugin}
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
+import com.oopman.collectioneer.plugins.gatcg.actions.DownloadDataset
+import com.oopman.collectioneer.{Injection, Plugin, SttpHelper}
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
 import io.circe.*
@@ -19,7 +20,6 @@ import sttp.model.Uri
 
 import java.io.{ByteArrayInputStream, File}
 import java.util.UUID
-import scala.annotation.tailrec
 import scala.language.postfixOps
 import scala.util.*
 
@@ -66,24 +66,6 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       (Verb.download, Subject("images", Map.empty), downloadImages, List(datasetPathOpt, imagesPathOpt))
     )
 
-  @tailrec
-  private def sendRequest[A, B]
-  (
-    client: SimpleHttpClient = SimpleHttpClient(),
-    request: RequestT[Identity, Either[A, B], Any],
-    delayBetweenRequests: Long = 500,
-    backoffFactor: Long = 1,
-    backoffLimit: Int = 10
-  ): Try[Response[Either[A, B]]] =
-    try Success(client.send(request))
-    catch case exception: Throwable =>
-      val delayBeforeRetry = delayBetweenRequests * backoffFactor
-      logger.warn(s"Failed to retrieve ${request.uri} due to $exception. Retrying in $delayBeforeRetry milliseconds")
-      this.synchronized { this.wait(delayBeforeRetry) }
-      if backoffFactor < backoffLimit
-      then sendRequest(client, request, delayBetweenRequests, backoffFactor + 1)
-      else Failure(exception)
-
   def getData
   (
     client: SimpleHttpClient = SimpleHttpClient(),
@@ -97,7 +79,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       .get(uri)
       .response(asJson[io.circe.Json])
     logger.info(s"Retrieving page $page with page size $pageSize from $uri")
-    sendRequest(client, request, delayBetweenRequests) match
+    SttpHelper.sendRequest(client, request, delayBetweenRequests) match
       case Success(Response(Left(body), code, statusText, headers, history, request)) =>
         val message = s"Error downloading $page with page size $pageSize from $baseUri: $code"
         logger.error(message)
@@ -149,7 +131,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
         val request = basicRequest
           .get(uri)
           .response(asByteArray)
-        sendRequest(client, request, delayBetweenRequests) match
+        SttpHelper.sendRequest(client, request, delayBetweenRequests) match
           case Failure(exception) =>
             logger.error(s"Failed to download $uri due to $exception")
           case Success(Response(Left(body), code, statusText, headers, history, request)) =>
@@ -200,15 +182,11 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     "Something".asJson
 
   def downloadDataset(config: CLIConfig): Json =
-    logger.info("Downloading GATCG dataaset")
-    val result = getData() match
+    val path = getSubConfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
+    val downloadDataset = new DownloadDataset(path) with LazyLogging
+    val result = downloadDataset() match
       case Failure(e) => DownloadDatasetResult(downloadSucceeded = false, errorMessage = Some(e.getMessage))
-      case Success(data) =>
-        logger.info(s"Downloaded ${data.length} GATCG cards")
-        val path = getSubConfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
-        val dataAsString = data.asJson.spaces2
-        os.write(path, dataAsString)
-        DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
+      case Success(data) => DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
     result.asJson
 
   def downloadImages(config: CLIConfig): Json =
