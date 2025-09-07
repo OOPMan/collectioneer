@@ -3,7 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg.gui.menu
 import com.oopman.collectioneer.plugins.{GUIPlugin, PluginsMenuGUIPlugin}
 import distage.Id
 import scalafx.scene.control.{Menu, MenuItem}
-import scalafx.stage.{FileChooser, Stage}
+import scalafx.stage.{DirectoryChooser, FileChooser, Stage}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -14,10 +14,15 @@ extends GUIPlugin(stage), PluginsMenuGUIPlugin:
     initialDirectory = os.home.toIO
     initialFileName = s"gatcg.${LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)}.json"
 
+  private lazy val gatcgImagesPathDirectoryChooser = new DirectoryChooser:
+    title = "Select directory to save GATCG Images JSON Path to"
+    initialDirectory = os.home.toIO // TODO: Get this from config
+
   private lazy val downloadDatasetMenuItem = new MenuItem("Download Dataset"):
     onAction = event => {
+      gatcgJSONFileChooser.title = "Save GATCG JSON File"
       for path <- Option(gatcgJSONFileChooser.showSaveDialog(stage))
-      do new DownloadDatasetStage(path, stage)
+      do DownloadDatasetStage(path, stage).show()
     }
 
   private lazy val importDatasetMenuItem = new MenuItem("Import Dataset"):
@@ -31,11 +36,12 @@ extends GUIPlugin(stage), PluginsMenuGUIPlugin:
 
   private lazy val downloadImagesMenuItem = new MenuItem("Download Images"):
     onAction = event => {
-      // TODO: Handle click
-      /**
-       * Step 1: Show directory chooser dialog (on cancel, do nothing further)
-       * Step 2: Show new window that downloads images, displaying progress
-       */
+      gatcgJSONFileChooser.title = "Select GATCG JSON File"
+      for
+        datasetPath <- Option(gatcgJSONFileChooser.showOpenDialog(stage))
+        imagesPath <- Option(gatcgImagesPathDirectoryChooser.showDialog(stage))
+      do
+        DownloadImagesStage(datasetPath, imagesPath, stage).show()
     }
 
   def getMenu: Menu = new Menu("Grand Archive TCG"):
