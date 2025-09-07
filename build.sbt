@@ -25,6 +25,10 @@ lazy val scalaFXDependencies = Seq(
   "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
   "fr.brouillard.oss"       %  "cssfx"            % "11.4.0"
 )
+lazy val akkaVersion = "2.8.8"
+lazy val akkaDependencies = Seq(
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion
+)
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := scala3Version,
@@ -52,7 +56,8 @@ lazy val commonSettings = Seq(
     "com.lihaoyi"                     %% "fastparse"                  % "3.1.1"
   ),
   libraryDependencies ++= circeLibraryDependencies,
-  libraryDependencies ++= sttpLibraryDependencies
+  libraryDependencies ++= sttpLibraryDependencies,
+  libraryDependencies ++= akkaDependencies
 )
 
 lazy val collectioneer = project
