@@ -12,7 +12,6 @@ import scalafx.scene.layout.BorderPane
 import scalafx.stage.Stage
 
 import scala.language.implicitConversions
-import scala.util.Try
 
 object CollectioneerGUI extends JFXApp3:
   // TODO: Create lazy vals for menu items
@@ -64,6 +63,9 @@ object CollectioneerGUI extends JFXApp3:
     // TODO: Collect PluginsMenuGUIPlugin instances and construct Plugins menu contents
     pluginsMenu.items = pluginsMenuGUIPlugins.map(_.getMenu)
     showDatabaseBackendPicker(false)
+
+  override def stopApp(): Unit =
+    com.oopman.collectioneer.Implicits.actorSystem.terminate()
 
   def showDatabaseBackendPicker(backButtonVisible: Boolean): Unit =
     borderPane.center = DatabaseBackendPicker.getNode(backButtonVisible)
