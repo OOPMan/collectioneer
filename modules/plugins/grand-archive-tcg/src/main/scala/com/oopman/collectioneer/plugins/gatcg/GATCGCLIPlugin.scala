@@ -2,7 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
-import com.oopman.collectioneer.plugins.gatcg.actions.DownloadDataset
+import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages}
 import com.oopman.collectioneer.{Injection, Plugin, SttpHelper}
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
@@ -12,13 +12,11 @@ import io.circe.optics.JsonPath.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import izumi.distage.plugins.PluginDef
-import os.Path
 import scopt.{OParser, OParserBuilder}
 import sttp.client3.*
 import sttp.client3.circe.*
-import sttp.model.Uri
 
-import java.io.{ByteArrayInputStream, File}
+import java.io.File
 import java.util.UUID
 import scala.language.postfixOps
 import scala.util.*
@@ -94,56 +92,6 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
           getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
       case Failure(exception) => Failure(exception)
 
-  def getAndSaveImages
-  (
-    data: Json,
-    imagesPath: Path,
-    client: SimpleHttpClient = SimpleHttpClient(),
-    baseUri: String = "https://api.gatcg.com",
-    delayBetweenRequests: Long = 1000
-  ): Int =
-    import Models.*
-    val cards = data.as[List[Card]].getOrElse(Nil)
-    val images =
-      for
-        card <- cards
-        edition <- card.editions
-      yield
-        val images =
-          for
-            innerCard <- edition.other_orientations.getOrElse(Nil)
-          yield
-            innerCard.edition.image
-        edition.image +: images
-    val uniqueImages = images.flatten.toSet
-    var downloaded = 0
-    for
-      image <- uniqueImages
-      imageSlug = image.stripPrefix("/cards/images/").stripSuffix(".jpg")
-      imagePath = imagesPath / s"$imageSlug.png"
-      if !os.exists(imagePath)
-      uriString = s"$baseUri$image?rounded=true"
-    do Uri.parse(uriString) match
-      case Left(value) =>
-        logger.error(s"Failed to parse $uriString to a Uri")
-      case Right(uri) =>
-        logger.info(s"Downloading $uri")
-        val request = basicRequest
-          .get(uri)
-          .response(asByteArray)
-        SttpHelper.sendRequest(client, request, delayBetweenRequests) match
-          case Failure(exception) =>
-            logger.error(s"Failed to download $uri due to $exception")
-          case Success(Response(Left(body), code, statusText, headers, history, request)) =>
-            logger.error(s"Failed to retrieve $uri due to $code: $body")
-          case Success(Response(Right(body), code, statusText, headers, history, request)) =>
-            val inputStream = new ByteArrayInputStream(body)
-            os.write(imagePath, inputStream)
-            downloaded += 1
-        this.synchronized { this.wait(delayBetweenRequests) }
-    logger.info(s"Downloaded $downloaded images out of ${uniqueImages.size}")
-    downloaded
-
   def importDataset(config: CLIConfig): Json =
     val subConfig = getSubConfigFromConfig(config)
     val pathOption = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath))
@@ -194,11 +142,9 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
     val imagesPath = subConfig.grandArchiveTCGImages.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultImagesPath)
-    if !os.exists(datasetPath) then return Json.Null
-    if !os.exists(imagesPath) then os.makeDir.all(imagesPath)
-    val json = parse(os.read(datasetPath)).getOrElse(Nil.asJson)
-    val downloaded = getAndSaveImages(json, imagesPath)
-    downloaded.asJson
+    val downloadImages = new DownloadImages(datasetPath, imagesPath) with LazyLogging
+    val result = downloadImages()
+    "".asJson
 
   def validateDataset(config: CLIConfig): Json =
     logger.info("Validating GATCG Dataset")
