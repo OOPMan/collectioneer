@@ -78,11 +78,10 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     object importDatasetModule extends ModuleDef:
       make[os.Path].from(datasetPath)
       make[ImportDataset]
+      make[Int].named("com.oopman.collectioneer.plugins.gatcg.actions.ImportDataset.batchSize").from(500)
 
     val importDataset = Injection.produce[ImportDataset](importDatasetModule)
-    importDataset()
-    // TODO: Replace with a real response
-    "Something".asJson
+    importDataset().asJson
 
   def downloadDataset(config: CLIConfig): Json =
     val path = getSubConfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
