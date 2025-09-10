@@ -1,9 +1,10 @@
 package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
+import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages}
-import com.oopman.collectioneer.{Injection, Plugin, SttpHelper}
+import com.oopman.collectioneer.{Injection, Plugin}
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
 import io.circe.*
@@ -13,8 +14,6 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import izumi.distage.plugins.PluginDef
 import scopt.{OParser, OParserBuilder}
-import sttp.client3.*
-import sttp.client3.circe.*
 
 import java.io.File
 import java.util.UUID
@@ -64,68 +63,24 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       (Verb.download, Subject("images", Map.empty), downloadImages, List(datasetPathOpt, imagesPathOpt))
     )
 
-  def getData
-  (
-    client: SimpleHttpClient = SimpleHttpClient(),
-    baseUri: String = "https://api.gatcg.com",
-    page: Int = 1,
-    pageSize: Int = 50,
-    delayBetweenRequests: Long = 500
-  ): Try[Vector[Json]] =
-    val uri = uri"$baseUri/cards/search?page=$page&page_size=$pageSize"
-    val request = basicRequest
-      .get(uri)
-      .response(asJson[io.circe.Json])
-    logger.info(s"Retrieving page $page with page size $pageSize from $uri")
-    SttpHelper.sendRequest(client, request, delayBetweenRequests) match
-      case Success(Response(Left(body), code, statusText, headers, history, request)) =>
-        val message = s"Error downloading $page with page size $pageSize from $baseUri: $code"
-        logger.error(message)
-        Failure(RuntimeException(message))
-      case Success(Response(Right(body), code, statusText, headers, history, request)) =>
-        val hasMore = root.has_more.boolean.getOption(body).getOrElse(false)
-        val data = root.data.arr.getOption(body).getOrElse(Vector())
-        if !hasMore then
-          Success(data)
-        else
-          this.synchronized { wait(delayBetweenRequests) }
-          getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
-      case Failure(exception) => Failure(exception)
-
   def importDataset(config: CLIConfig): Json =
     val subConfig = getSubConfigFromConfig(config)
-    val pathOption = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath))
-    val dataOption: Option[Vector[Json]] = pathOption
-      .map(path => parse(os.read(path)))
-      .map {
-        case Left(parsingException) =>
-          logger.error("Failed to parse GATCG JSON Dataset", parsingException)
-          Vector()
-        case Right(json) =>
-          json.asArray.getOrElse(Vector())
-      }
-    val dataTry: Try[Json] = dataOption match {
-      case Some(Vector()) =>
-        val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
-        logger.error(message)
-        Failure(RuntimeException(message))
-      case Some(value) =>
-        logger.info(s"Loaded ${value.length} items from GATCG JSON Dataset")
-        Success(value.asJson)
-      case None =>
-        logger.warn("No GATCG JSON Dataset passed so data will be retrieved from the GATCG Index API")
-        getData().map(_.asJson)
-    }
-    val modelsTry = dataTry.flatMap(data => {
-      import Models.*
-      data.as[List[Card]].toTry
-    })
-    val result = modelsTry.map(cards => {
-      object importDatasetModule extends ModuleDef:
-        make[List[Models.Card]].from(cards)
+    val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
 
-      Injection.produceRun(importDatasetModule)(actions.importDataset)
-    })
+    class ImportDataset(datasetPath: os.Path,
+                        collectionDAO: traits.dao.projected.CollectionDAO,
+                        rawCollectionDAO: traits.dao.raw.CollectionDAO,
+                        propertyDAO: traits.dao.projected.PropertyDAO,
+                        propertyValueDAO: traits.dao.projected.PropertyValueDAO,
+                        relationshipDAO: traits.dao.raw.RelationshipDAO)
+      extends actions.ImportDataset(datasetPath, collectionDAO, rawCollectionDAO, propertyDAO, propertyValueDAO, relationshipDAO) with LazyLogging
+
+    object importDatasetModule extends ModuleDef:
+      make[os.Path].from(datasetPath)
+      make[ImportDataset]
+
+    val importDataset = Injection.produce[ImportDataset](importDatasetModule)
+    importDataset()
     // TODO: Replace with a real response
     "Something".asJson
 
