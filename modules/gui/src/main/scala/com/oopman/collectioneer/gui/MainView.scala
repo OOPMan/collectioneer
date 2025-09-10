@@ -1,23 +1,25 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection, given}
-import com.oopman.collectioneer.db.{SortDirection, traits}
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.entity.raw.Collection as RawCollection
+import com.oopman.collectioneer.db.{SortDirection, traits}
 import com.oopman.collectioneer.plugins.{DetailViewGUIPlugin, MainViewGUIPlugin}
-import scalafx.scene.control.{ScrollPane, SelectionMode, SplitPane, TabPane, TreeCell, TreeItem, TreeView}
+import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection}
+import com.typesafe.scalalogging.LazyLogging
+import izumi.distage.model.exceptions.runtime.ProvisioningException
 import scalafx.Includes.*
 import scalafx.concurrent.Task
 import scalafx.scene.Node
 import scalafx.scene.control.TabPane.TabClosingPolicy
-import scalafx.scene.layout.{AnchorPane, BorderPane}
+import scalafx.scene.control.*
 
 
-class MainView:
+class MainView extends LazyLogging:
   private lazy val plugins: Set[MainViewGUIPlugin] =
-    Injection.produceRun() {
-      (mainViewGUIPlugins: Set[MainViewGUIPlugin]) => mainViewGUIPlugins
-    }
+    try Injection.produce[Set[MainViewGUIPlugin]]()
+    catch case e: ProvisioningException =>
+      logger.warn("Failed to produce any MainViewGUIPlugin instances")
+      Set.empty
 
   private lazy val rootCollection = CoreCollections.root.collection
 
@@ -116,15 +118,14 @@ class MainView:
   def refreshDetailView(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
     val collection = treeItem.getValue
     val worker = Task {
-      // TODO: Module is missing stage for detailviewguiplugin
-      Injection.produceRun() {
-        (plugins: Set[DetailViewGUIPlugin]) =>
-          val renderers = plugins
-            .filter(_.canRenderCollection(collection))
-            .map(_.generateCollectionRenderer(collection))
-          // TODO: In the event that renderers is empty, we should return a default renderer that simply renders the propertyValue data in a tetual form
-          renderers
-      }
+      val detailViewGUIPlugins =
+        try Injection.produce[Set[DetailViewGUIPlugin]]()
+        catch case e: ProvisioningException =>
+          logger.warn("Failed to produce any DetailViewGUIPlugin instances")
+          Set.empty
+      detailViewGUIPlugins
+        .filter(_.canRenderCollection(collection))
+        .map(_.generateCollectionRenderer(collection))
     }
     worker.onSucceeded = { e =>
       val renderers = worker.getValue
