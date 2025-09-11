@@ -9,6 +9,7 @@ import scalafx.scene.control.TextArea
 
 import scala.concurrent.*
 import scala.concurrent.duration.*
+import scala.util.Try
 
 /**
  * By default, one batch of up to 100 messages will be processed and output to the TextArea every 1 milliseconds
@@ -33,7 +34,7 @@ class TextAreaAppender(textArea: TextArea, queueLimit: Int = 10000, batchSize: I
     .run()
 
   override def stop(): Unit =
-    messages.complete()
+    Try(messages.complete())
     super.stop()
 
   override def append(eventObject: ILoggingEvent): Unit =
