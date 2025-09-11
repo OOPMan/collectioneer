@@ -2,6 +2,7 @@ package com.oopman.collectioneer.plugins.gatcg.actions
 
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
+import com.oopman.collectioneer.db.traits.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, SourceOfPropertiesAndPropertyValues}
 import com.oopman.collectioneer.db.traits.entity.raw.{RelationshipType, given}
 import com.oopman.collectioneer.db.{entity, traits}
@@ -9,7 +10,6 @@ import com.oopman.collectioneer.given
 import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
 import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models}
 import com.typesafe.scalalogging.Logger
-import distage.Id
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
@@ -18,12 +18,10 @@ import io.circe.syntax.*
 import java.util.UUID
 
 trait ImportDataset(datasetPath: os.Path,
-                    collectionDAO: traits.dao.projected.CollectionDAO,
-                    rawCollectionDAO: traits.dao.raw.CollectionDAO,
-                    propertyDAO: traits.dao.projected.PropertyDAO,
-                    propertyValueDAO: traits.dao.projected.PropertyValueDAO,
-                    relationshipDAO: traits.dao.raw.RelationshipDAO,
-                    batchSize: Int @Id("com.oopman.collectioneer.plugins.gatcg.actions.ImportDataset.batchSize") = 500):
+                    collectionWriter: Seq[Collection] => Seq[Int],
+                    relationshipWriter: Seq[Relationship] => Seq[Int],
+                    propertyWriter: Seq[Property] => Seq[Int],
+                    batchSize: Int = 500):
   
   protected def logger: Logger
   protected val setMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
@@ -209,9 +207,9 @@ trait ImportDataset(datasetPath: os.Path,
 
   protected def writeCollectionsAndRelationships(collections: Seq[Collection], relationships: Seq[Relationship]): Int =
     logger.info(s"Writing ${collections.size} Collections in batches of $batchSize to Database")
-    val createUpdateCollectionsResult = writeElementsInBatchesUsingDAOMethod(collections, collectionDAO.createOrUpdateCollections)
+    val createUpdateCollectionsResult = writeElementsInBatchesUsingDAOMethod(collections, collectionWriter)
     logger.info(s"Writing ${relationships.size} Relationships in batches of $batchSize to Database")
-    val createUpdateRelationshipsResult = writeElementsInBatchesUsingDAOMethod(relationships, relationshipDAO.createOrUpdateRelationships)
+    val createUpdateRelationshipsResult = writeElementsInBatchesUsingDAOMethod(relationships, relationshipWriter)
     createUpdateCollectionsResult + createUpdateRelationshipsResult
 
   def apply(): Int =
@@ -220,7 +218,7 @@ trait ImportDataset(datasetPath: os.Path,
     val cards = json.as[List[Card]].getOrElse(Nil)
     // Create/Update properties
     logger.info("Creating GATCG Properties")
-    propertyDAO.createOrUpdateProperties(AllProperties)
+    propertyWriter(AllProperties)
     // Generate Cards, Editions, Circulations
     logger.info("Generating Collections and Relationships")
     val (listOfCollectionSeqs, listOfRelationshipSeqs) = cards.map(processCard).unzip

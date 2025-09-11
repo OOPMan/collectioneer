@@ -3,7 +3,7 @@ package com.oopman.collectioneer.plugins.gatcg
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.plugins.CLIPlugin
-import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages}
+import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages, ImportDataset}
 import com.oopman.collectioneer.{Injection, Plugin}
 import com.typesafe.scalalogging.LazyLogging
 import distage.ModuleDef
@@ -67,20 +67,16 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
 
-    class ImportDataset(datasetPath: os.Path,
-                        collectionDAO: traits.dao.projected.CollectionDAO,
-                        rawCollectionDAO: traits.dao.raw.CollectionDAO,
-                        propertyDAO: traits.dao.projected.PropertyDAO,
-                        propertyValueDAO: traits.dao.projected.PropertyValueDAO,
-                        relationshipDAO: traits.dao.raw.RelationshipDAO)
-      extends actions.ImportDataset(datasetPath, collectionDAO, rawCollectionDAO, propertyDAO, propertyValueDAO, relationshipDAO) with LazyLogging
+    object ImportDatasetModule extends ModuleDef:
+      make[Tuple3[traits.dao.projected.CollectionDAO, traits.dao.raw.RelationshipDAO, traits.dao.projected.PropertyDAO]]
 
-    object importDatasetModule extends ModuleDef:
-      make[os.Path].from(datasetPath)
-      make[ImportDataset]
-      make[Int].named("com.oopman.collectioneer.plugins.gatcg.actions.ImportDataset.batchSize").from(500)
+    val (collectionDAO, relationshipDAO, propertyDAO) =
+      Injection.produce[(
+        traits.dao.projected.CollectionDAO,
+        traits.dao.raw.RelationshipDAO,
+        traits.dao.projected.PropertyDAO)](ImportDatasetModule)
 
-    val importDataset = Injection.produce[ImportDataset](importDatasetModule)
+    val importDataset = new ImportDataset(datasetPath, collectionDAO.createOrUpdateCollections, relationshipDAO.createOrUpdateRelationships, propertyDAO.createOrUpdateProperties) with LazyLogging
     importDataset().asJson
 
   def downloadDataset(config: CLIConfig): Json =
