@@ -33,13 +33,6 @@ abstract class AbstractActionStage(parent: Stage) extends Stage:
         logger.addAppender(appender)
       case _ => // Do Nothing
 
-  protected def stopLogger(logger: Logger): Unit =
-    logger.underlying match
-      case logger: ch.qos.logback.classic.Logger =>
-        appender.stop()
-      case _ => // Do Nothing
-
-
   initOwner(parent)
   initModality(Modality.None)
   onCloseRequest = { event => task.cancel() }
@@ -51,7 +44,6 @@ abstract class AbstractActionStage(parent: Stage) extends Stage:
       content = new VBox(progressBar, logTextArea, closeCancelButton)
 
   override def close(): Unit =
-    println("Killing appender")
     appender.stop()
     super.close()
 
