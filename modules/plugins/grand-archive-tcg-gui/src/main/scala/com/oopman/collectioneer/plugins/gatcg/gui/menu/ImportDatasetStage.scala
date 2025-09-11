@@ -11,7 +11,7 @@ import javafx.concurrent.Task
 import scalafx.stage.Stage
 
 import java.io.File
-import scala.util.Try
+import scala.util.{Success, Try}
 
 object ImportDatasetStage:
   def apply(datasetPath: File, parent: Stage) = new ImportDatasetStage(datasetPath, parent)
@@ -51,7 +51,8 @@ class ImportDatasetStage(datasetPath: File, parent: Stage) extends AbstractActio
 
       override protected def writeCollections(collections: Seq[Collection]): Seq[Int] =
         val result =
-          for daos <- daos yield
+          if isCancelled then Success(Nil)
+          else for daos <- daos yield
             val result = daos.collectionDAO.createOrUpdateCollections(collections)
             collectionsWritten += collections.size
             updateProgress(collectionsWritten + relationshipsWritten, totalCollectionsAndRelationships)
@@ -60,7 +61,8 @@ class ImportDatasetStage(datasetPath: File, parent: Stage) extends AbstractActio
 
       override protected def writeRelationships(relationships: Seq[Relationship]): Seq[Int] =
         val result =
-          for daos <- daos yield
+          if isCancelled then Success(Nil)
+          else for daos <- daos yield
               val result = daos.relationshipDAO.createOrUpdateRelationships(relationships)
               relationshipsWritten += relationships.size
               updateProgress(collectionsWritten + relationshipsWritten, totalCollectionsAndRelationships)
@@ -68,4 +70,5 @@ class ImportDatasetStage(datasetPath: File, parent: Stage) extends AbstractActio
         result.getOrElse(Nil)
 
       override protected def writeProperties(properties: Seq[Property]): Seq[Int] =
-        daos.map(daos => daos.propertyDAO.createOrUpdateProperties(properties)).getOrElse(Nil)
+        if isCancelled then Nil
+        else daos.map(daos => daos.propertyDAO.createOrUpdateProperties(properties)).getOrElse(Nil)
