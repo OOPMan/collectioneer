@@ -17,13 +17,14 @@ import io.circe.syntax.*
 
 import java.util.UUID
 
-trait ImportDataset(datasetPath: os.Path,
-                    collectionWriter: Seq[Collection] => Seq[Int],
-                    relationshipWriter: Seq[Relationship] => Seq[Int],
-                    propertyWriter: Seq[Property] => Seq[Int],
-                    batchSize: Int = 500):
+trait ImportDataset(protected val datasetPath: os.Path,
+                    protected val batchSize: Int = 500):
   
   protected def logger: Logger
+  protected def writeCollections(collections: Seq[Collection]): Seq[Int]
+  protected def writeRelationships(relationships: Seq[Relationship]): Seq[Int]
+  protected def writeProperties(properties: Seq[Property]): Seq[Int]
+
   protected val setMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
   protected val setDataMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
   protected val circulationMap: collection.mutable.Map[Models.Circulation, Collection] = collection.mutable.Map()
@@ -195,7 +196,7 @@ trait ImportDataset(datasetPath: os.Path,
     )
     (referenceCollection :: Nil, relationship :: Nil)
 
-  protected def writeElementsInBatchesUsingDAOMethod[T](elements: Seq[T], writer: Seq[T] => Seq[Int]): Int =
+  protected def writeElementsInBatchesUsingWriteFunction[T](elements: Seq[T], writer: Seq[T] => Seq[Int]): Int =
     val groupedElements = elements.grouped(batchSize)
     val results =
       for
@@ -206,10 +207,10 @@ trait ImportDataset(datasetPath: os.Path,
     results.sum
 
   protected def writeCollectionsAndRelationships(collections: Seq[Collection], relationships: Seq[Relationship]): Int =
-    logger.info(s"Writing ${collections.size} Collections in batches of $batchSize to Database")
-    val createUpdateCollectionsResult = writeElementsInBatchesUsingDAOMethod(collections, collectionWriter)
-    logger.info(s"Writing ${relationships.size} Relationships in batches of $batchSize to Database")
-    val createUpdateRelationshipsResult = writeElementsInBatchesUsingDAOMethod(relationships, relationshipWriter)
+    logger.info(s"Creating/Updating GATCG ${collections.size} Collections in batches of $batchSize")
+    val createUpdateCollectionsResult = writeElementsInBatchesUsingWriteFunction(collections, writeCollections)
+    logger.info(s"Creation/Updating GATCG ${relationships.size} Relationships in batches of $batchSize")
+    val createUpdateRelationshipsResult = writeElementsInBatchesUsingWriteFunction(relationships, writeRelationships)
     createUpdateCollectionsResult + createUpdateRelationshipsResult
 
   def apply(): Int =
@@ -217,8 +218,8 @@ trait ImportDataset(datasetPath: os.Path,
     import Models.*
     val cards = json.as[List[Card]].getOrElse(Nil)
     // Create/Update properties
-    logger.info("Creating GATCG Properties")
-    propertyWriter(AllProperties)
+    logger.info("Creating/Updating GATCG Properties")
+    writeProperties(AllProperties)
     // Generate Cards, Editions, Circulations
     logger.info("Generating Collections and Relationships")
     val (listOfCollectionSeqs, listOfRelationshipSeqs) = cards.map(processCard).unzip

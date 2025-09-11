@@ -1,12 +1,14 @@
 package com.oopman.collectioneer.plugins.gatcg
 
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
+import com.oopman.collectioneer.db.entity.projected.Collection
+import com.oopman.collectioneer.db.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits
+import com.oopman.collectioneer.db.traits.entity.projected.Property
 import com.oopman.collectioneer.plugins.CLIPlugin
 import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages, ImportDataset}
 import com.oopman.collectioneer.{Injection, Plugin}
 import com.typesafe.scalalogging.LazyLogging
-import distage.ModuleDef
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.optics.JsonPath.*
@@ -66,17 +68,19 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
   def importDataset(config: CLIConfig): Json =
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
+    val collectionDAO = Injection.produce[traits.dao.projected.CollectionDAO]()
+    val relationshipDAO = Injection.produce[traits.dao.raw.RelationshipDAO]()
+    val propertyDAO = Injection.produce[traits.dao.projected.PropertyDAO]()
+    val importDataset = new ImportDataset(datasetPath) with LazyLogging:
+      override protected def writeCollections(collections: Seq[Collection]): Seq[Int] =
+        collectionDAO.createOrUpdateCollections(collections)
 
-    object ImportDatasetModule extends ModuleDef:
-      make[Tuple3[traits.dao.projected.CollectionDAO, traits.dao.raw.RelationshipDAO, traits.dao.projected.PropertyDAO]]
+      override protected def writeRelationships(relationships: Seq[Relationship]): Seq[Int] =
+        relationshipDAO.createOrUpdateRelationships(relationships)
 
-    val (collectionDAO, relationshipDAO, propertyDAO) =
-      Injection.produce[(
-        traits.dao.projected.CollectionDAO,
-        traits.dao.raw.RelationshipDAO,
-        traits.dao.projected.PropertyDAO)](ImportDatasetModule)
+      override protected def writeProperties(properties: Seq[Property]): Seq[Int] =
+        propertyDAO.createOrUpdateProperties(properties)
 
-    val importDataset = new ImportDataset(datasetPath, collectionDAO.createOrUpdateCollections, relationshipDAO.createOrUpdateRelationships, propertyDAO.createOrUpdateProperties) with LazyLogging
     importDataset().asJson
 
   def downloadDataset(config: CLIConfig): Json =
