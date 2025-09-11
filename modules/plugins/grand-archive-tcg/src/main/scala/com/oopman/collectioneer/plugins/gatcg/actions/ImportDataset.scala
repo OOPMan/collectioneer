@@ -237,4 +237,4 @@ trait ImportDataset(protected val datasetPath: os.Path,
       (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)
     )
 
-    writeCollectionsAndRelationships(allCollections, relationships)
+    writeCollectionsAndRelationships(allCollections, distinctRelationships)
