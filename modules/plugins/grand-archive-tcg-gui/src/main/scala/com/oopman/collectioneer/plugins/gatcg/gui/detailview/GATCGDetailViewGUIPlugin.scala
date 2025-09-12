@@ -1,11 +1,12 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview
 
 import com.oopman.collectioneer.Injection
 import com.oopman.collectioneer.db.traits.dao.projected.CollectionDAO
 import com.oopman.collectioneer.db.traits.dao.raw.RelationshipDAO
 import com.oopman.collectioneer.db.traits.entity.projected.Collection
-import com.oopman.collectioneer.db.traits.entity.raw.{HasTopLevelCollectionPKAndLevel, Relationship, given}
-import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties}
+import com.oopman.collectioneer.db.traits.entity.raw.given
+import com.oopman.collectioneer.plugins.gatcg.gui.GATCGSubConfig
+import com.oopman.collectioneer.plugins.gatcg.properties.CommonProperties
 import com.oopman.collectioneer.plugins.{DetailViewGUIPlugin, GUIPlugin}
 import distage.{Id, ModuleDef}
 import scalafx.scene.control.Tab
@@ -23,8 +24,8 @@ extends GUIPlugin(stage), DetailViewGUIPlugin:
   def generateCollectionRenderer(collection: Collection): Collection => Option[Tab] =
     val moduleDef = new ModuleDef:
       make[Collection].from(collection)
-      make[GATCGCardDataCollectionRenderer].from[GATCGCardDataCollectionRenderer]
-    val renderer = Injection(moduleDef).produce[GATCGCardDataCollectionRenderer]
+      make[CardDataCollectionRenderer].from[CardDataCollectionRenderer]
+    val renderer = Injection(moduleDef).produce[CardDataCollectionRenderer]
     renderer.render
 
   def getName: String = "GATCG DetailView GUI Plugin"

@@ -1,25 +1,24 @@
 package com.oopman.collectioneer.plugins.gatcg
 
-import com.oopman.collectioneer.{Injection, Plugin}
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
+import com.oopman.collectioneer.db.entity.projected.Collection
+import com.oopman.collectioneer.db.entity.raw.Relationship
+import com.oopman.collectioneer.db.traits
+import com.oopman.collectioneer.db.traits.entity.projected.Property
 import com.oopman.collectioneer.plugins.CLIPlugin
+import com.oopman.collectioneer.plugins.gatcg.actions.{DownloadDataset, DownloadImages, ImportDataset}
+import com.oopman.collectioneer.{Injection, Plugin}
 import com.typesafe.scalalogging.LazyLogging
-import distage.ModuleDef
 import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.optics.JsonPath.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import izumi.distage.plugins.PluginDef
-import os.Path
 import scopt.{OParser, OParserBuilder}
-import sttp.client3.*
-import sttp.client3.circe.*
-import sttp.model.Uri
 
-import java.io.{ByteArrayInputStream, File}
+import java.io.File
 import java.util.UUID
-import scala.annotation.tailrec
 import scala.language.postfixOps
 import scala.util.*
 
@@ -66,149 +65,30 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
       (Verb.download, Subject("images", Map.empty), downloadImages, List(datasetPathOpt, imagesPathOpt))
     )
 
-  @tailrec
-  private def sendRequest[A, B]
-  (
-    client: SimpleHttpClient = SimpleHttpClient(),
-    request: RequestT[Identity, Either[A, B], Any],
-    delayBetweenRequests: Long = 500,
-    backoffFactor: Long = 1,
-    backoffLimit: Int = 10
-  ): Try[Response[Either[A, B]]] =
-    try Success(client.send(request))
-    catch case exception: Throwable =>
-      val delayBeforeRetry = delayBetweenRequests * backoffFactor
-      logger.warn(s"Failed to retrieve ${request.uri} due to $exception. Retrying in $delayBeforeRetry milliseconds")
-      this.synchronized { this.wait(delayBeforeRetry) }
-      if backoffFactor < backoffLimit
-      then sendRequest(client, request, delayBetweenRequests, backoffFactor + 1)
-      else Failure(exception)
-
-  def getData
-  (
-    client: SimpleHttpClient = SimpleHttpClient(),
-    baseUri: String = "https://api.gatcg.com",
-    page: Int = 1,
-    pageSize: Int = 50,
-    delayBetweenRequests: Long = 500
-  ): Try[Vector[Json]] =
-    val uri = uri"$baseUri/cards/search?page=$page&page_size=$pageSize"
-    val request = basicRequest
-      .get(uri)
-      .response(asJson[io.circe.Json])
-    logger.info(s"Retrieving page $page with page size $pageSize from $uri")
-    sendRequest(client, request, delayBetweenRequests) match
-      case Success(Response(Left(body), code, statusText, headers, history, request)) =>
-        val message = s"Error downloading $page with page size $pageSize from $baseUri: $code"
-        logger.error(message)
-        Failure(RuntimeException(message))
-      case Success(Response(Right(body), code, statusText, headers, history, request)) =>
-        val hasMore = root.has_more.boolean.getOption(body).getOrElse(false)
-        val data = root.data.arr.getOption(body).getOrElse(Vector())
-        if !hasMore then
-          Success(data)
-        else
-          this.synchronized { wait(delayBetweenRequests) }
-          getData(client, baseUri, page + 1, pageSize).map(newData => data :++ newData)
-      case Failure(exception) => Failure(exception)
-
-  def getAndSaveImages
-  (
-    data: Json,
-    imagesPath: Path,
-    client: SimpleHttpClient = SimpleHttpClient(),
-    baseUri: String = "https://api.gatcg.com",
-    delayBetweenRequests: Long = 1000
-  ): Int =
-    import Models.*
-    val cards = data.as[List[Card]].getOrElse(Nil)
-    val images =
-      for
-        card <- cards
-        edition <- card.editions
-      yield
-        val images =
-          for
-            innerCard <- edition.other_orientations.getOrElse(Nil)
-          yield
-            innerCard.edition.image
-        edition.image +: images
-    val uniqueImages = images.flatten.toSet
-    var downloaded = 0
-    for
-      image <- uniqueImages
-      imageSlug = image.stripPrefix("/cards/images/").stripSuffix(".jpg")
-      imagePath = imagesPath / s"$imageSlug.png"
-      if !os.exists(imagePath)
-      uriString = s"$baseUri$image?rounded=true"
-    do Uri.parse(uriString) match
-      case Left(value) =>
-        logger.error(s"Failed to parse $uriString to a Uri")
-      case Right(uri) =>
-        logger.info(s"Downloading $uri")
-        val request = basicRequest
-          .get(uri)
-          .response(asByteArray)
-        sendRequest(client, request, delayBetweenRequests) match
-          case Failure(exception) =>
-            logger.error(s"Failed to download $uri due to $exception")
-          case Success(Response(Left(body), code, statusText, headers, history, request)) =>
-            logger.error(s"Failed to retrieve $uri due to $code: $body")
-          case Success(Response(Right(body), code, statusText, headers, history, request)) =>
-            val inputStream = new ByteArrayInputStream(body)
-            os.write(imagePath, inputStream)
-            downloaded += 1
-        this.synchronized { this.wait(delayBetweenRequests) }
-    logger.info(s"Downloaded $downloaded images out of ${uniqueImages.size}")
-    downloaded
-
   def importDataset(config: CLIConfig): Json =
     val subConfig = getSubConfigFromConfig(config)
-    val pathOption = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath))
-    val dataOption: Option[Vector[Json]] = pathOption
-      .map(path => parse(os.read(path)))
-      .map {
-        case Left(parsingException) =>
-          logger.error("Failed to parse GATCG JSON Dataset", parsingException)
-          Vector()
-        case Right(json) =>
-          json.asArray.getOrElse(Vector())
-      }
-    val dataTry: Try[Json] = dataOption match {
-      case Some(Vector()) =>
-        val message = "GATCG JSON Dataset contains no data or the root element is not an Array"
-        logger.error(message)
-        Failure(RuntimeException(message))
-      case Some(value) =>
-        logger.info(s"Loaded ${value.length} items from GATCG JSON Dataset")
-        Success(value.asJson)
-      case None =>
-        logger.warn("No GATCG JSON Dataset passed so data will be retrieved from the GATCG Index API")
-        getData().map(_.asJson)
-    }
-    val modelsTry = dataTry.flatMap(data => {
-      import Models.*
-      data.as[List[Card]].toTry
-    })
-    val result = modelsTry.map(cards => {
-      object importDatasetModule extends ModuleDef:
-        make[List[Models.Card]].from(cards)
+    val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
+    val collectionDAO = Injection.produce[traits.dao.projected.CollectionDAO]()
+    val relationshipDAO = Injection.produce[traits.dao.raw.RelationshipDAO]()
+    val propertyDAO = Injection.produce[traits.dao.projected.PropertyDAO]()
+    val importDataset = new ImportDataset(datasetPath) with LazyLogging:
+      override protected def writeCollections(collections: Seq[Collection]): Seq[Int] =
+        collectionDAO.createOrUpdateCollections(collections)
 
-      Injection.produceRun(importDatasetModule)(actions.importDataset)
-    })
-    // TODO: Replace with a real response
-    "Something".asJson
+      override protected def writeRelationships(relationships: Seq[Relationship]): Seq[Int] =
+        relationshipDAO.createOrUpdateRelationships(relationships)
+
+      override protected def writeProperties(properties: Seq[Property]): Seq[Int] =
+        propertyDAO.createOrUpdateProperties(properties)
+
+    importDataset().asJson
 
   def downloadDataset(config: CLIConfig): Json =
-    logger.info("Downloading GATCG dataaset")
-    val result = getData() match
+    val path = getSubConfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
+    val downloadDataset = new DownloadDataset(path) with LazyLogging
+    val result = downloadDataset() match
       case Failure(e) => DownloadDatasetResult(downloadSucceeded = false, errorMessage = Some(e.getMessage))
-      case Success(data) =>
-        logger.info(s"Downloaded ${data.length} GATCG cards")
-        val path = getSubConfigFromConfig(config).grandArchiveTCGJSON.map(os.Path.apply).getOrElse(defaultDatasetPath)
-        val dataAsString = data.asJson.spaces2
-        os.write(path, dataAsString)
-        DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
+      case Success(data) => DownloadDatasetResult(datasetPath = Some(path.toString), datasetSize = data.length)
     result.asJson
 
   def downloadImages(config: CLIConfig): Json =
@@ -216,11 +96,9 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
     val subConfig = getSubConfigFromConfig(config)
     val datasetPath = subConfig.grandArchiveTCGJSON.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultDatasetPath)
     val imagesPath = subConfig.grandArchiveTCGImages.map(os.FilePath.apply).map(p => os.Path(p, defaultRootPath)).getOrElse(defaultImagesPath)
-    if !os.exists(datasetPath) then return Json.Null
-    if !os.exists(imagesPath) then os.makeDir.all(imagesPath)
-    val json = parse(os.read(datasetPath)).getOrElse(Nil.asJson)
-    val downloaded = getAndSaveImages(json, imagesPath)
-    downloaded.asJson
+    val downloadImages = new DownloadImages(datasetPath, imagesPath) with LazyLogging
+    val result = downloadImages()
+    "".asJson
 
   def validateDataset(config: CLIConfig): Json =
     logger.info("Validating GATCG Dataset")

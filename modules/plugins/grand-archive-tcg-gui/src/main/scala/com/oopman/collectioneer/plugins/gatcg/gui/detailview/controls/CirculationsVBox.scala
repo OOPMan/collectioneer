@@ -1,4 +1,4 @@
-package com.oopman.collectioneer.plugins.gatcg.gui.controls
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
 import com.oopman.collectioneer.plugins.gatcg.gui.Circulation

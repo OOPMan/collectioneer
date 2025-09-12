@@ -1,18 +1,14 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
-import com.oopman.collectioneer.plugins.gatcg.gui.controls.{CardDataVBox, CirculationsVBox, LegalityVBox, RulesVBox}
-import scalafx.collections.{ObservableBuffer, fillSFXCollectionWithOne}
-import scalafx.scene.control.{ChoiceBox, Label, ScrollPane, Tab, TabPane}
+import com.oopman.collectioneer.plugins.gatcg.gui.*
+import scalafx.collections.ObservableBuffer
+import scalafx.scene.control.*
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.Priority
-import scalafx.scene.layout.{GridPane, HBox, VBox}
-import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
+import scalafx.scene.layout.{HBox, Priority, VBox}
 import scalafx.util.StringConverter
 
-import java.util.UUID
-
-class GATCGCardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
+class CardDataTab(gatcgSubConfig: GATCGSubConfig, cardData: CardData, primaryEdition: Edition) extends Tab:
   val imageView = new ImageView
   val illustratorPrefixLabel = new Label("Illustrator:") with StyleClasses(GATCGUICSS.fieldLabel)
   val illustratorLabel = new Label

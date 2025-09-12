@@ -1,10 +1,10 @@
-package com.oopman.collectioneer.plugins.gatcg.gui.controls
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
-import scalafx.scene.layout.VBox
-import scalafx.scene.text.{Text, TextFlow}
 import scalafx.scene.Node
 import scalafx.scene.control.Label
+import scalafx.scene.layout.VBox
+import scalafx.scene.text.{Text, TextFlow}
 
 class LegalityVBox(legality: Option[io.circe.Json]) extends VBox:
 

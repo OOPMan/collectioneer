@@ -1,7 +1,8 @@
-package com.oopman.collectioneer.plugins.gatcg.gui.controls
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview.controls
 
 import com.oopman.collectioneer.gui.StyleClasses
-import com.oopman.collectioneer.plugins.gatcg.gui.{CardCommon, CardData, Edition, EditionCommon, GATCGTemplateLangParser, GATCGUICSS}
+import com.oopman.collectioneer.plugins.gatcg.gui.detailview.GATCGTemplateLangParser
+import com.oopman.collectioneer.plugins.gatcg.gui.*
 import scalafx.geometry.Orientation.Horizontal
 import scalafx.scene.Node
 import scalafx.scene.control.{Label, Separator, TitledPane}

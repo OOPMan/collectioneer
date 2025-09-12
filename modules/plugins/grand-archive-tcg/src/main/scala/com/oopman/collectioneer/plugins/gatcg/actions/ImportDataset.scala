@@ -2,31 +2,35 @@ package com.oopman.collectioneer.plugins.gatcg.actions
 
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
 import com.oopman.collectioneer.db.entity.raw.Relationship
-import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType
+import com.oopman.collectioneer.db.traits.entity.projected.Property
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, SourceOfPropertiesAndPropertyValues}
+import com.oopman.collectioneer.db.traits.entity.raw.{RelationshipType, given}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
 import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models}
+import com.typesafe.scalalogging.Logger
+import io.circe.*
+import io.circe.generic.auto.*
+import io.circe.parser.*
+import io.circe.syntax.*
 
 import java.util.UUID
 
+trait ImportDataset(protected val datasetPath: os.Path,
+                    protected val batchSize: Int = 500):
+  
+  protected def logger: Logger
+  protected def writeCollections(collections: Seq[Collection]): Seq[Int]
+  protected def writeRelationships(relationships: Seq[Relationship]): Seq[Int]
+  protected def writeProperties(properties: Seq[Property]): Seq[Int]
 
-def importDataset(cards: List[Models.Card],
-                  collectionDAO: traits.dao.projected.CollectionDAO,
-                  rawCollectionDAO: traits.dao.raw.CollectionDAO,
-                  propertyDAO: traits.dao.projected.PropertyDAO,
-                  propertyValueDAO: traits.dao.projected.PropertyValueDAO,
-                  relationshipDAO: traits.dao.raw.RelationshipDAO) =
-  // Create/Update properties
-  propertyDAO.createOrUpdateProperties(AllProperties)
-  // Generate Cards, Editions, Circulations
-  val setMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
-  val setDataMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
-  val circulationMap: collection.mutable.Map[Models.Circulation, Collection] = collection.mutable.Map()
+  protected val setMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
+  protected val setDataMap: collection.mutable.Map[Models.Set, Collection] = collection.mutable.Map()
+  protected val circulationMap: collection.mutable.Map[Models.Circulation, Collection] = collection.mutable.Map()
+
   // Function to process Cards
-  def processCard(card: Models.Card): (Seq[Collection], Seq[Relationship]) =
+  protected def processCard(card: Models.Card): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Card.*
     val cardDataCollection: Collection = card.asCollection
     val rules = card.rule.getOrElse(Nil)
@@ -40,8 +44,9 @@ def importDataset(cards: List[Models.Card],
     val collections = listOfCollectionSeqs.flatten
     val relationships = listOfRelationshipSeqs.flatten
     (collections :+ cardDataCollection, relationships)
+    
   // Function to process Editions-by-Set
-  def processSetEditions(cardDataCollection: Collection)(set: Models.Set, editions: Seq[Models.Edition]): (Models.Set, (Seq[Collection], Seq[Relationship])) =
+  protected def processSetEditions(cardDataCollection: Collection)(set: Models.Set, editions: Seq[Models.Edition]): (Models.Set, (Seq[Collection], Seq[Relationship])) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Set.*
     val setDataCollection = setDataMap.getOrElseUpdate(set, set.asCollection)
     val setCollection = setMap.getOrElseUpdate(set, Collection(
@@ -86,8 +91,9 @@ def importDataset(cards: List[Models.Card],
       ),
     )
     set -> (collections :+ setCardCollection, relationships ++ additionalRelationships)
+  
   // Function to process Editions
-  def processEdition(cardDataCollection: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
+  protected def processEdition(cardDataCollection: Collection, setDataCollection: Collection)(edition: Models.Edition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Edition.*
     val editionCollection: Collection = edition.asCollection(cardDataCollection)
     val circulations = (edition.circulations ++ edition.circulationTemplates).distinct
@@ -112,8 +118,9 @@ def importDataset(cards: List[Models.Card],
       )
     )
     (collections :+ editionCollection, relationships ++ additionalRelationships)
+  
   // Function to process InnerEditions nested within InnerCards
-  def processInnerEdition(cardCollection: Collection, setDataCollection: Collection)(innerEdition: Models.InnerEdition): (Seq[Collection], Seq[Relationship]) =
+  protected def processInnerEdition(cardCollection: Collection, setDataCollection: Collection)(innerEdition: Models.InnerEdition): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerEdition.*
     val innerEditionCollection: Collection = innerEdition.asCollection(cardCollection)
     val relationships = List(
@@ -132,8 +139,9 @@ def importDataset(cards: List[Models.Card],
       )
     )
     (innerEditionCollection :: Nil, relationships)
+  
   // Function to process InnerCards nested within Editions
-  def processInnerCard(editionCollection: Collection, setDataCollection: Collection)(innerCard: Models.InnerCard): (Seq[Collection], Seq[Relationship]) =
+  protected def processInnerCard(editionCollection: Collection, setDataCollection: Collection)(innerCard: Models.InnerCard): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.InnerCard.*
     val innerCardCollection: Collection = innerCard.asCollection
     val relationship = Relationship(
@@ -152,8 +160,9 @@ def importDataset(cards: List[Models.Card],
     val collections = listOfCollectionSeqs.flatten
     val relationships = listOfRelationshipSeqs.flatten
     (collections :+ innerCardCollection, relationships :+ relationship)
+    
   // Function to process Circulations
-  def processCirculation(editionCollection: Collection)(circulation: Models.Circulation): (Seq[Collection], Seq[Relationship]) =
+  protected def processCirculation(editionCollection: Collection)(circulation: Models.Circulation): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Circulation.*
     val circulationCollection = circulationMap.getOrElseUpdate(circulation, circulation.asCollection)
     val relationship = Relationship(
@@ -163,8 +172,9 @@ def importDataset(cards: List[Models.Card],
       collectionPK = editionCollection.pk,
     )
     (circulationCollection :: Nil, relationship :: Nil)
+    
   // Function to process Rules
-  def processRule(cardCollection: Collection)(rule: Models.Rule): (Seq[Collection], Seq[Relationship]) =
+  protected def processRule(cardCollection: Collection)(rule: Models.Rule): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Rule.*
     val ruleCollection: Collection = rule.asCollection
     val relationship = Relationship(
@@ -175,7 +185,7 @@ def importDataset(cards: List[Models.Card],
     )
     (ruleCollection :: Nil, relationship :: Nil)
   // Function to process References
-  def processReference(cardCollection: Collection)(reference: Models.Reference): (Seq[Collection], Seq[Relationship]) =
+  protected def processReference(cardCollection: Collection)(reference: Models.Reference): (Seq[Collection], Seq[Relationship]) =
     import com.oopman.collectioneer.plugins.gatcg.extensions.Reference.*
     val referenceCollection: Collection = reference.asCollection
     val relationship = Relationship(
@@ -185,21 +195,46 @@ def importDataset(cards: List[Models.Card],
       collectionPK = cardCollection.pk,
     )
     (referenceCollection :: Nil, relationship :: Nil)
-  // Process and import data
-  val (listOfCollectionSeqs, listOfRelationshipSeqs) = cards.map(processCard).unzip
-  val collections = listOfCollectionSeqs.flatten
-  val relationships = listOfRelationshipSeqs.flatten
-  val setRelationships = setMap.values.map(setCollection => Relationship(
-    pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCollection.pk}-${GATCGRootCollection.pk}-$ChildOf".getBytes),
-    relatedCollectionPK = setCollection,
-    relationshipType = ChildOf,
-    collectionPK = GATCGRootCollection,
-  ))
-  val allCollections = GATCGRootCollection :: Nil ++ setMap.values ++ setDataMap.values ++ circulationMap.values ++ collections
-  def allRelationships = GATCGRootCollectionRelationship :: Nil ++ setRelationships ++ relationships
-  val distinctRelationships = allRelationships.distinctBy(relationship =>
-    (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)
-  )
-  collectionDAO.createOrUpdateCollections(allCollections)
-  relationshipDAO.createOrUpdateRelationships(distinctRelationships)
-  "Replace with something real"
+
+  protected def writeElementsInBatchesUsingWriteFunction[T](elements: Seq[T], writer: Seq[T] => Seq[Int]): Int =
+    val groupedElements = elements.grouped(batchSize)
+    val results =
+      for
+        elementsGroup <- groupedElements
+        results = writer(elementsGroup)
+        result <- results
+      yield result
+    results.sum
+
+  protected def writeCollectionsAndRelationships(collections: Seq[Collection], relationships: Seq[Relationship]): Int =
+    logger.info(s"Creating/Updating GATCG ${collections.size} Collections in batches of $batchSize")
+    val createUpdateCollectionsResult = writeElementsInBatchesUsingWriteFunction(collections, writeCollections)
+    logger.info(s"Creation/Updating GATCG ${relationships.size} Relationships in batches of $batchSize")
+    val createUpdateRelationshipsResult = writeElementsInBatchesUsingWriteFunction(relationships, writeRelationships)
+    createUpdateCollectionsResult + createUpdateRelationshipsResult
+
+  def apply(): Int =
+    val json = parse(os.read(datasetPath)).getOrElse(Nil.asJson)
+    import Models.*
+    val cards = json.as[List[Card]].getOrElse(Nil)
+    // Create/Update properties
+    logger.info("Creating/Updating GATCG Properties")
+    writeProperties(AllProperties)
+    // Generate Cards, Editions, Circulations
+    logger.info("Generating Collections and Relationships")
+    val (listOfCollectionSeqs, listOfRelationshipSeqs) = cards.map(processCard).unzip
+    val collections = listOfCollectionSeqs.flatten
+    val relationships = listOfRelationshipSeqs.flatten
+    val setRelationships = setMap.values.map(setCollection => Relationship(
+      pk = UUID.nameUUIDFromBytes(s"GATCG-relationship-${setCollection.pk}-${GATCGRootCollection.pk}-$ChildOf".getBytes),
+      relatedCollectionPK = setCollection,
+      relationshipType = ChildOf,
+      collectionPK = GATCGRootCollection,
+    ))
+    val allCollections = GATCGRootCollection :: Nil ++ setMap.values ++ setDataMap.values ++ circulationMap.values ++ collections
+    def allRelationships = GATCGRootCollectionRelationship :: Nil ++ setRelationships ++ relationships
+    val distinctRelationships = allRelationships.distinctBy(relationship =>
+      (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)
+    )
+
+    writeCollectionsAndRelationships(allCollections, distinctRelationships)

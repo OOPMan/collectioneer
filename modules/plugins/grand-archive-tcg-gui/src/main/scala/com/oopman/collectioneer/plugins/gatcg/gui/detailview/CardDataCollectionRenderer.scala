@@ -1,19 +1,17 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview
 
-import com.oopman.collectioneer.db.traits.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.dao.projected.CollectionDAO
 import com.oopman.collectioneer.db.traits.dao.raw.RelationshipDAO
-import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties, SetCardProperties}
-import com.oopman.collectioneer.db.traits.entity.raw.{HasTopLevelCollectionPKAndLevel, Relationship, given}
-import scalafx.collections.ObservableBuffer
-import scalafx.scene.control.{ChoiceBox, Label, Tab, TabPane}
-import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{HBox, VBox}
-import scalafx.util.StringConverter
+import com.oopman.collectioneer.db.traits.entity.projected.Collection
+import com.oopman.collectioneer.db.traits.entity.raw.given
+import com.oopman.collectioneer.plugins.gatcg.gui.*
+import com.oopman.collectioneer.plugins.gatcg.gui.detailview.controls.CardDataTab
+import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, SetCardProperties}
+import scalafx.scene.control.Tab
 
 import java.util.UUID
 
-class GATCGCardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collection, relationshipDAO: RelationshipDAO, collectionDAO: CollectionDAO):
+class CardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Collection, relationshipDAO: RelationshipDAO, collectionDAO: CollectionDAO):
   val relationshipHierarchy = relationshipDAO.getRelationshipHierarchyByCollectionPKs(collection.pk :: Nil)
   val collectionPKs = relationshipHierarchy.map(_.relatedCollectionPK).distinct
   // TODO: Projected load is failing to work correctly in this scenario, see cards like Lu Bu, Circulations are
@@ -94,4 +92,4 @@ class GATCGCardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection
       primaryEditionPropertyValue <- collection.propertyValues.get(SetCardProperties.primaryEditionUID)
       primaryEditionUID <- primaryEditionPropertyValue.textValues.headOption
       primaryEdition <- cardData.editions.find(_.editionUID == primaryEditionUID)
-    yield new GATCGCardDataTab(gatcgSubConfig, cardData, primaryEdition)
+    yield new CardDataTab(gatcgSubConfig, cardData, primaryEdition)

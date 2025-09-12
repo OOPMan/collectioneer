@@ -1,6 +1,7 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview
 
 import com.oopman.collectioneer.gui.StyleClasses
+import com.oopman.collectioneer.plugins.gatcg.gui.GATCGUICSS
 import scalafx.scene.Node
 import scalafx.scene.layout.StackPane
 import scalafx.scene.text.Text

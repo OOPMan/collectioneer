@@ -1,14 +1,13 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.mainview
 
-import com.oopman.collectioneer.{CoreProperties, given}
+import com.oopman.collectioneer.CoreProperties
 import com.oopman.collectioneer.db.SortDirection
 import com.oopman.collectioneer.db.traits.dao.raw.CollectionDAO
 import com.oopman.collectioneer.db.traits.entity.projected.{Collection, Property}
-import com.oopman.collectioneer.db.traits.entity.raw.{Collection as RawCollection, Property as RawProperty}
+import com.oopman.collectioneer.db.traits.entity.raw.{Collection as RawCollection, Property as RawProperty, given}
 import com.oopman.collectioneer.plugins.gatcg.GATCGRootCollection
-import com.oopman.collectioneer.plugins.gatcg.properties.{CommonProperties, EditionProperties, SetProperties}
+import com.oopman.collectioneer.plugins.gatcg.properties.{EditionProperties, SetProperties}
 import com.oopman.collectioneer.plugins.{GUIPlugin, MainViewGUIPlugin}
-import com.oopman.collectioneer.db.traits.entity.raw.given
 import distage.Id
 import scalafx.scene.control.TreeCell
 import scalafx.stage.Stage

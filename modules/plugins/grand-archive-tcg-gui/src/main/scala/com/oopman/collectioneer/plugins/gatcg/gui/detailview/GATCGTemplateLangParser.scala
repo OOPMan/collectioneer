@@ -1,7 +1,7 @@
-package com.oopman.collectioneer.plugins.gatcg.gui
+package com.oopman.collectioneer.plugins.gatcg.gui.detailview
 
 import fastparse.*
-import NoWhitespace.*
+import fastparse.NoWhitespace.*
 import scalafx.scene.Node
 
 object GATCGTemplateLangParser:
