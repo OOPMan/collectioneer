@@ -1,10 +1,9 @@
 package com.oopman.collectioneer
 
+import com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.db.traits.entity.raw.Relationship
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.ChildOf
-import com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.db.traits.entity.raw.given
 
 private object CoreRelationshipUUIDs:
   val commonPropertiesChildOfRoot = "f3ff67b6-f1b9-43a3-99d9-961dc40b921b"
@@ -15,12 +14,12 @@ enum CoreRelationships(val relationship: Relationship):
     pk = CoreRelationshipUUIDs.commonPropertiesChildOfRoot,
     relatedCollectionPK = CoreCollections.commonProperties,
     relationshipType = ChildOf,
-    collectionPK = CoreCollections.root,
+    collectionPK = CoreCollections.properties,
   ))
 
   case commonPropertiesOfPropertiesChildOfRoot extends CoreRelationships(raw.Relationship(
     pk = CoreRelationshipUUIDs.commonPropertiesOfPropertiesChildOfRoot,
     relatedCollectionPK = CoreCollections.commonPropertiesOfProperties,
     relationshipType = ChildOf,
-    collectionPK = CoreCollections.root,
+    collectionPK = CoreCollections.properties,
   ))
