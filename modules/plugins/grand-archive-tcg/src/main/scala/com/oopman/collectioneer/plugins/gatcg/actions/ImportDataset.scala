@@ -8,7 +8,7 @@ import com.oopman.collectioneer.db.traits.entity.raw.{RelationshipType, given}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.given
 import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
-import com.oopman.collectioneer.plugins.gatcg.{GATCGRootCollection, GATCGRootCollectionRelationship, Models}
+import com.oopman.collectioneer.plugins.gatcg.*
 import com.typesafe.scalalogging.Logger
 import io.circe.*
 import io.circe.generic.auto.*
@@ -231,8 +231,8 @@ trait ImportDataset(protected val datasetPath: os.Path,
       relationshipType = ChildOf,
       collectionPK = GATCGRootCollection,
     ))
-    val allCollections = GATCGRootCollection :: Nil ++ setMap.values ++ setDataMap.values ++ circulationMap.values ++ collections
-    def allRelationships = GATCGRootCollectionRelationship :: Nil ++ setRelationships ++ relationships
+    val allCollections = GATCGRootCollection :: GATCGPropertiesCollection :: Nil ++ setMap.values ++ setDataMap.values ++ circulationMap.values ++ collections
+    def allRelationships = GATCGRootCollectionRelationship :: GATCGPropertiesCollectionRelationship :: Nil ++ setRelationships ++ relationships
     val distinctRelationships = allRelationships.distinctBy(relationship =>
       (relationship.collectionPK, relationship.relatedCollectionPK, relationship.relationshipType)
     )
