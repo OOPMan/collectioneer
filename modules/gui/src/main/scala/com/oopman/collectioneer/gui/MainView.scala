@@ -10,8 +10,9 @@ import izumi.distage.model.exceptions.runtime.ProvisioningException
 import scalafx.Includes.*
 import scalafx.concurrent.Task
 import scalafx.scene.Node
-import scalafx.scene.control.TabPane.TabClosingPolicy
 import scalafx.scene.control.*
+import scalafx.scene.control.TabPane.TabClosingPolicy
+import scalafx.scene.layout.BorderPane
 
 
 class MainView extends LazyLogging:
@@ -25,7 +26,7 @@ class MainView extends LazyLogging:
 
   private lazy val rootTreeViewItem = TreeItem(rootCollection)
 
-  private lazy val collectionsListTreeView = new TreeView[Collection]:
+  private lazy val collectionsListTreeView: TreeView[Collection] = new TreeView[Collection]:
     styleClass += CollectioneerGUICSS.listView
     root = rootTreeViewItem
     showRoot = true
@@ -58,6 +59,7 @@ class MainView extends LazyLogging:
           newItem.value = worker.getValue
           if newItem.getChildren.size() == 0 then refreshChildren(newItem)
           refreshDetailView(newItem)
+          createCollectionButton.disable = false
         }
         // TODO: Handle failure
         val thread = new Thread(worker)
@@ -84,6 +86,31 @@ class MainView extends LazyLogging:
     content = collectionDetailView
     fitToWidth = true
     fitToHeight = true
+
+  private lazy val createCollectionButton: Button = new Button:
+    disable = true
+    text = "Create Collection"
+    // TODO: Make it an icon button
+    onAction = { e =>
+      collectionsListTreeView.disable = true
+      disable = true
+      val selectedCollection = collectionsListTreeView.selectionModel().getSelectedItem.getValue
+      collectionDetailViewScrollPane.content = new CreateCollectionVBox(selectedCollection.pk):
+        def onDone(collection: Option[Collection] = None): Unit =
+          // TODO: Add newly created Collection to TreeView or refresh parent?
+          collectionDetailViewScrollPane.content = collectionDetailView
+          createCollectionButton.disable = false
+          collectionsListTreeView.disable = false
+    }
+
+  private lazy val toolbar = new ToolBar:
+    // TODO: Style to introduce spacing around content
+    content = createCollectionButton :: Nil
+
+  private lazy val borderLayout = new BorderPane:
+    // TODO: Style to introduce spacing around top and center
+    top = toolbar
+    center = splitPane
 
   def refreshChildren(treeItem: TreeItem[Collection] = rootTreeViewItem): Unit =
     val collection = treeItem.getValue
@@ -147,4 +174,4 @@ class MainView extends LazyLogging:
 
   def getNode: Node =
     refreshChildren()
-    splitPane
+    borderLayout
