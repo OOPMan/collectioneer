@@ -1,7 +1,7 @@
 import scala.collection.Seq
 
 lazy val scala213Version      = "2.13.10"
-lazy val scala3Version        = "3.6.3"
+lazy val scala3Version        = "3.7.4"
 lazy val circeVersion         = "0.14.6"
 lazy val circeLibraryDependencies = Seq(
   "io.circe" %% "circe-core"    % circeVersion,
@@ -22,8 +22,9 @@ lazy val scalikeJDBCDependencies = Seq(
   "org.scalikejdbc"                 %% "scalikejdbc-test"           % "4.2.1"               % "test",
 )
 lazy val scalaFXDependencies = Seq(
-  "org.scalafx"             %% "scalafx"          % "23.0.1-R34",
-  "fr.brouillard.oss"       %  "cssfx"            % "11.4.0"
+  "org.scalafx"             %% "scalafx"          % "26.0.0-R38",
+  "fr.brouillard.oss"       %  "cssfx"            % "11.4.0",
+  "net.synedra"             %  "validatorfx"      % "0.6.3"
 )
 lazy val akkaVersion = "2.8.8"
 lazy val akkaDependencies = Seq(
@@ -34,15 +35,15 @@ lazy val commonSettings = Seq(
   scalaVersion := scala3Version,
   crossScalaVersions := Seq(scala213Version, scala3Version),
   scalacOptions ++= Seq(
-    "-Yretain-trees", "-java-output-version:21"
+    "-Yretain-trees", "-java-output-version:24", "-Wconf:msg=Implicit parameters should be provided with a `using` clause:s"
   ),
   javacOptions ++= Seq(
-    "-source", "21", "-target", "21"
+    "-source", "24", "-target", "24"
   ),
   libraryDependencies ++= Seq(
     "com.typesafe.scala-logging"      %% "scala-logging"              % "3.9.4",
-    "io.7mind.izumi"                  %% "distage-core"               % "1.2.16",
-    "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.16",
+    "io.7mind.izumi"                  %% "distage-core"               % "1.2.25",
+    "io.7mind.izumi"                  %% "distage-extension-plugins"  % "1.2.25",
     "dev.zio"                         %% "zio"                        % "2.1.16",
     "dev.zio"                         %% "izumi-reflect"              % "3.0.3",
     "org.scalactic"                   %% "scalactic"                  % "3.2.18",
