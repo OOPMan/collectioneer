@@ -1,22 +1,28 @@
 package com.oopman.collectioneer.gui
 
-import com.oopman.collectioneer.db.traits.entity.projected.Collection
+import com.oopman.collectioneer.db.traits.entity.projected.{Collection, Property as ProjectedProperty}
 import com.oopman.collectioneer.db.traits.entity.raw.{Property, RelationshipType, given}
 import com.oopman.collectioneer.db.{SortDirection, entity, traits}
 import com.oopman.collectioneer.gui.controls.PropertyEditor
+import com.oopman.collectioneer.plugins.PropertyValueEditorGUIPlugin
 import com.oopman.collectioneer.{CoreCollections, CoreProperties, Injection}
-import scalafx.collections.ObservableBuffer
+import scalafx.Includes.jfxActionEvent2sfx
+import scalafx.collections.{ObservableBuffer, ObservableMap}
 import scalafx.concurrent.Task
+import scalafx.event.ActionEvent
 import scalafx.scene.control.*
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 import scalafx.util.StringConverter
 
 import java.util.UUID
-import scala.language.implicitConversions
+import scala.language.{implicitConversions, postfixOps}
 
 abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
   def onDone(collection: Option[Collection] = None): Unit
 
+  private lazy val plugins: Seq[PropertyValueEditorGUIPlugin] = Injection.produce[Set[PropertyValueEditorGUIPlugin]]().toSeq.sortBy(_.getRank)
+  private val propertyValueEditorHasErrors = ObservableMap.empty[PropertyValueEditorGUIPlugin.PropertyValueEditor, Boolean]
+  private val propertyValueEditors = scala.collection.mutable.Set.empty[PropertyValueEditorGUIPlugin.PropertyValueEditor]
   private val propertyEditorsGridPane = new GridPane
   private val propertyEditorsScrollPane = new ScrollPane:
     content = propertyEditorsGridPane
@@ -36,23 +42,27 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
       catch
         case _ => // TODO: Warn?
 
-  private def addProperty(property: Property, removable: Boolean = true): Unit =
+  private def addProperty(property: ProjectedProperty, removable: Boolean = true): Unit =
+    val usablePlugins = plugins.filter(_.canEditPropertyValuesForProperty(property))
     val rowNumber = propertyEditorsGridPane.getRowCount
     val label = new Label(property.propertyName + ":")
-    val propertyEditor = new PropertyEditor(property)
+//    val propertyEditor = new PropertyEditor(property)
+    val propertyValueEditor = usablePlugins.head.generatePropertyValueEditor(property, None) // TODO: Do this properly
+    val subscription = propertyValueEditor.hasErrors.subscribe(hasErrors => propertyValueEditorHasErrors(propertyValueEditor) = hasErrors)
+    propertyValueEditors.add(propertyValueEditor)
 
     propertyEditorsGridPane.add(label, 1, rowNumber)
-    propertyEditorsGridPane.add(propertyEditor, 2, rowNumber)
+    propertyEditorsGridPane.add(propertyValueEditor, 2, rowNumber)
 
     if removable then
       val removeButton: Button = new Button("-"):
-        onAction = event =>
+        onAction = { event =>
           val rowIndex = Option(GridPane.getRowIndex(this)).map(_.toInt).getOrElse(0)
           removeRowFromPropertyEditorsGridPane(rowIndex)
+          subscription.unsubscribe()
+          propertyValueEditors.remove(propertyValueEditor)
+        }
       propertyEditorsGridPane.add(removeButton, 0, rowNumber)
-
-  addProperty(CoreProperties.name, false)
-  addProperty(CoreProperties.description, false)
 
   // Property Adder controls
   private val propertyLoadProgressIndicator = new ProgressIndicator:
@@ -66,7 +76,7 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
       // TODO: Select Property should not be available in the picker
     }
 
-  private val propertyChoiceBox = new ChoiceBox[Property]:
+  private val propertyChoiceBox = new ChoiceBox[ProjectedProperty]:
     disable = true
     converter = StringConverter(
       fromStringFunction = propertyName => items().stream().filter(p => p.propertyName == propertyName).findFirst().get(),
@@ -74,7 +84,7 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
     )
     onAction = event => addPropertyButton.disable = false
 
-  private val propertyGroupChoiceBox = new ChoiceBox[(String, Seq[Property])]:
+  private val propertyGroupChoiceBox = new ChoiceBox[(String, Seq[ProjectedProperty])]:
     converter = StringConverter(
       fromStringFunction = propertyGroupName => items().stream().filter((pn, _) => propertyGroupName == pn).findFirst().get(),
       toStringFunction = t => Option(t).map(_._1).getOrElse("")
@@ -93,19 +103,20 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
       cancelCreateCollectionButton.disable = true
       onDone()
 
-
   private val saveButton: Button = new Button("Save"):
+
+    disable = true
     onAction = event =>
       saveButton.disable = true
       saveProgressIndicator.visible = true
       val propertyValues =
-        for node <- propertyEditorsGridPane.children
-        yield node match
-          case propertyEditor: PropertyEditor => Some(propertyEditor.property -> propertyEditor.getPropetyValue)
-          case _ => None
+        for
+          propertyValueEditor <- propertyValueEditors
+          propertyValue <- propertyValueEditor.getPropertyValue
+        yield propertyValueEditor.property -> propertyValue
       val collection = entity.projected.Collection(
         virtual = virtualCheckbox.selected.value,
-        propertyValues = propertyValues.flatten.toMap
+        propertyValues = propertyValues.toMap
       )
       val relationship = entity.raw.Relationship(
         collectionPK = parentCollectionPK,
@@ -124,7 +135,7 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
         // TODO: Might need to check worker.value to confirm writes
         onDone(Some(collection))
       }
-      worker.onFailed = { e=>
+      worker.onFailed = { e =>
         // TODO: Warn of failure
         onDone(None)
       }
@@ -164,8 +175,20 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
   }
   worker.onSucceeded = { e =>
     val collections = worker.getValue
-    val propertiesByPropertyGroup = collections
-      .map(collection => collection.propertyValues(CoreProperties.name).textValues.head -> collection.properties.filterNot(property => property == CoreProperties.name || property == CoreProperties.description))
+    // TODO: Properties on Projected Collections are Projected Properties so this
+    val propertiesByPropertyGroup =
+      for
+        collection <- collections
+        properties = collection.properties.filterNot(property => property == CoreProperties.name || property == CoreProperties.description)
+      yield
+        val projectedProperties = properties.flatMap {
+          case p: ProjectedProperty => Some(p)
+          case _ => None
+        }
+        collection.propertyValues(CoreProperties.name).textValues.head -> projectedProperties
+
+//    val propertiesByPropertyGroup = collections
+//      .map(collection => collection.propertyValues(CoreProperties.name).textValues.head -> collection.properties.filterNot(property => property == CoreProperties.name || property == CoreProperties.description))
     propertyGroupChoiceBox.items = ObservableBuffer.from(propertiesByPropertyGroup)
     propertyAdderHBox.children = Seq(propertyGroupChoiceBox, propertyChoiceBox, addPropertyButton)
   }
@@ -176,4 +199,11 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
   private val thread = new Thread(worker)
   thread.setDaemon(true)
   thread.start()
+
+  propertyValueEditorHasErrors.onChange {
+    if (propertyValueEditorHasErrors.values().contains(true)) saveButton.disable = true
+    else saveButton.disable = false
+  }
+  addProperty(CoreProperties.name.property, false)
+  addProperty(CoreProperties.description.property, false)
 
