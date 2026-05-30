@@ -1,14 +1,14 @@
 package com.oopman.collectioneer.plugins.postgresbackend.gui
 
-import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
 import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin.encodePercentString
+import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
 import distage.Id
 import javafx.util.converter.IntegerStringConverter
+import scalafx.Includes.*
 import scalafx.scene.Node
 import scalafx.scene.control.{Label, PasswordField, TextField, TextFormatter}
 import scalafx.scene.layout.GridPane
 import scalafx.stage.Stage
-import scalafx.Includes.*
 
 class PostgresDatabaseBackendUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
@@ -55,7 +55,7 @@ extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
 
   def getName: String = "PostgreSQL Database Backend UI"
 
-  def getShortName: String = "postgresbackendui"
+  override def getShortName: String = "postgresbackendui"
 
   def getVersion: String = "master"
 

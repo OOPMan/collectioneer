@@ -39,7 +39,7 @@ class GATCGCLIPlugin extends CLIPlugin with LazyLogging:
 
   def getName: String = "Grand Archive TCG"
 
-  def getShortName: String = "GATCG"
+  override def getShortName: String = "GATCG"
 
   def getVersion: String = "master"
 

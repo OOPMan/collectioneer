@@ -3,11 +3,11 @@ package com.oopman.collectioneer.plugins.postgresbackend.gui
 import com.oopman.collectioneer.plugins.postgresbackend.EmbeddedPostgresDatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.{DatabaseBackendGUIPlugin, GUIPlugin}
 import distage.Id
+import scalafx.Includes.*
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label, TextField}
 import scalafx.scene.layout.GridPane
 import scalafx.stage.{DirectoryChooser, Stage}
-import scalafx.Includes.*
 
 class EmbeddedPostgresDatabaseBackendUIPlugin(stage: Stage @Id("com.oopman.collectioneer.plugins.GUIPlugin.stage"))
 extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
@@ -43,7 +43,7 @@ extends GUIPlugin(stage), DatabaseBackendGUIPlugin:
 
   def getName: String = "Embedded PostgreSQL Database Backend UI"
 
-  def getShortName: String = "postgresbackendui"
+  override def getShortName: String = "postgresbackendui"
 
   def getVersion: String = "master"
 

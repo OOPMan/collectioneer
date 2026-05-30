@@ -16,15 +16,15 @@ class GATCGGUISubConfigCodecPlugin extends GUISubConfigCodecPlugin:
     Json.Null
 
   def decoder: Decoder[GUISubConfig] =
+    import cats.syntax.functor.*
     import io.circe.*
     import io.circe.generic.semiauto.*
-    import cats.syntax.functor._
     deriveDecoder[GATCGSubConfig].widen
 
   def getDefaultGUISubConfig: GUISubConfig = defaultSubConfig
 
   def getName: String = "GATCG SubConfig Codec Plugin"
 
-  def getShortName: String = "GATCGSubConfigCodec"
+  override def getShortName: String = "GATCGSubConfigCodec"
 
   def getVersion: String = "master"

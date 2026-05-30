@@ -68,7 +68,7 @@ extends GUIPlugin(stage), MainViewGUIPlugin:
 
   def getName: String = "GATCG MainView GUI Plugin"
 
-  def getShortName: String = "GATCGMainViewGUI"
+  override def getShortName: String = "GATCGMainViewGUI"
 
   def getVersion: String = "master"
 

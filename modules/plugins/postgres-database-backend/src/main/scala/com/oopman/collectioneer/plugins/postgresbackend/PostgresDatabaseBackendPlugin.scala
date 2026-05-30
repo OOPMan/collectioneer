@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
+import com.oopman.collectioneer.Config
 import com.oopman.collectioneer.db.scalikejdbc.ScalikeJDBCDatabaseBackendPlugin
 import com.oopman.collectioneer.plugins.postgresbackend.PostgresDatabaseBackendModule
-import com.oopman.collectioneer.Config
 import com.typesafe.scalalogging.LazyLogging
 import izumi.distage.model.definition.ModuleDef
 import org.postgresql.PGProperty
@@ -15,7 +15,7 @@ import javax.sql.DataSource
 class PostgresDatabaseBackendPlugin(val config: Config) extends ScalikeJDBCDatabaseBackendPlugin with LazyLogging:
   def getName = "PostgreSQL Database Backend"
 
-  def getShortName = "postgresbackend"
+  override def getShortName = "postgresbackend"
 
   def getVersion = "master"
 

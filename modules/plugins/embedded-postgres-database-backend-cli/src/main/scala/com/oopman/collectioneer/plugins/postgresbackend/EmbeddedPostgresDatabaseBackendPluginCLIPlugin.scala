@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.plugins.postgresbackend
 
-import com.oopman.collectioneer.{SubConfig, WithTag}
 import com.oopman.collectioneer.cli.{CLIConfig, CLISubConfig, Subject, Verb}
 import com.oopman.collectioneer.plugins.CLIPlugin
+import com.oopman.collectioneer.{SubConfig, WithTag}
 import distage.ModuleDef
 import io.circe.Json
 import izumi.distage.plugins.PluginDef
@@ -20,7 +20,7 @@ case class EmbeddedPostgresDatabaseBackendPluginCLIPluginConfig() extends CLISub
 object EmbeddedPostgresDatabaseBackendPluginCLIPlugin extends CLIPlugin:
   def getName: String = "Embedded PostgreSQL Database Backend CLI"
 
-  def getShortName: String = "embeddedpostgresbackendcli"
+  override def getShortName: String = "embeddedpostgresbackendcli"
 
   def getVersion: String = "master"
 

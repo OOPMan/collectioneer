@@ -30,6 +30,6 @@ extends GUIPlugin(stage), DetailViewGUIPlugin:
 
   def getName: String = "GATCG DetailView GUI Plugin"
 
-  def getShortName: String = "GATCGDetailViewGUI"
+  override def getShortName: String = "GATCGDetailViewGUI"
 
   def getVersion: String = "master"
