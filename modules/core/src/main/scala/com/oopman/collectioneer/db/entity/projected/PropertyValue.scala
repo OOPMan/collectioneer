@@ -8,12 +8,11 @@ import java.util.UUID
 
 case class PropertyValue
 (
-  textValues: Seq[String] = Nil,
+  stringValues: Seq[String] = Nil,
   byteValues: Seq[Array[Byte]] = Nil,
-  smallintValues: Seq[Short] = Nil,
+  shortValues: Seq[Short] = Nil,
   intValues: Seq[Int] = Nil,
-  bigintValues: Seq[BigInt] = Nil,
-  numericValues: Seq[BigDecimal] = Nil,
+  longValues: Seq[Long] = Nil, // TODO: We need to re-write this to Long
   floatValues: Seq[Float] = Nil,
   doubleValues: Seq[Double] = Nil,
   booleanValues: Seq[Boolean] = Nil,
@@ -24,12 +23,11 @@ case class PropertyValue
   jsonValues: Seq[io.circe.Json] = Nil
 ) extends projected.PropertyValue:
 
-  def projectedCopyWith(textValues: Seq[String] = textValues,
+  def projectedCopyWith(stringValues: Seq[String] = stringValues,
                         byteValues: Seq[Array[Byte]] = byteValues,
-                        smallintValues: Seq[Short] = smallintValues,
+                        shortValues: Seq[Short] = shortValues,
                         intValues: Seq[Int] = intValues,
-                        bigintValues: Seq[BigInt] = bigintValues,
-                        numericValues: Seq[BigDecimal] = numericValues,
+                        longValues: Seq[Long] = longValues,
                         floatValues: Seq[Float] = floatValues,
                         doubleValues: Seq[Double] = doubleValues,
                         booleanValues: Seq[Boolean] = booleanValues,
@@ -40,12 +38,11 @@ case class PropertyValue
                         jsonValues: Seq[io.circe.Json] = jsonValues
                        ): projected.PropertyValue =
     copy(
-      textValues = textValues,
+      stringValues = stringValues,
       byteValues = byteValues,
-      smallintValues = smallintValues,
+      shortValues = shortValues,
       intValues = intValues,
-      bigintValues = bigintValues,
-      numericValues = numericValues,
+      longValues = longValues,
       floatValues = floatValues,
       doubleValues = doubleValues,
       booleanValues = booleanValues,

@@ -7,8 +7,8 @@ import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, 
 import com.oopman.collectioneer.db.traits.entity.raw.{RelationshipType, given}
 import com.oopman.collectioneer.db.{entity, traits}
 import com.oopman.collectioneer.given
-import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
 import com.oopman.collectioneer.plugins.gatcg.*
+import com.oopman.collectioneer.plugins.gatcg.properties.{AllProperties, CommonProperties, EditionProperties, SetCardProperties}
 import com.typesafe.scalalogging.Logger
 import io.circe.*
 import io.circe.generic.auto.*
@@ -63,8 +63,8 @@ trait ImportDataset(protected val datasetPath: os.Path,
       propertyValues = Map(
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCardCollection -> PropertyValue(booleanValues = true :: Nil),
-        EditionProperties.collectorNumber -> PropertyValue(textValues = editions.map(_.collector_number)),
-        SetCardProperties.primaryEditionUID -> PropertyValue(textValues = editions.head.uuid :: Nil)
+        EditionProperties.collectorNumber -> PropertyValue(stringValues = editions.map(_.collector_number)),
+        SetCardProperties.primaryEditionUID -> PropertyValue(stringValues = editions.head.uuid :: Nil)
       )
     )
     val (collections, relationships) = editions

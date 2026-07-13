@@ -90,6 +90,6 @@ class CardDataCollectionRenderer(gatcgSubConfig: GATCGSubConfig, collection: Col
     for
       cardData <- cardDataOption
       primaryEditionPropertyValue <- collection.propertyValues.get(SetCardProperties.primaryEditionUID)
-      primaryEditionUID <- primaryEditionPropertyValue.textValues.headOption
+      primaryEditionUID <- primaryEditionPropertyValue.stringValues.headOption
       primaryEdition <- cardData.editions.find(_.editionUID == primaryEditionUID)
     yield new CardDataTab(gatcgSubConfig, cardData, primaryEdition)

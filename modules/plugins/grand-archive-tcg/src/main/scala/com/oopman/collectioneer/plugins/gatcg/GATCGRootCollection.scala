@@ -16,8 +16,8 @@ val GATCGRootCollection = Collection(
   pk = "b3192f7b-d4d6-4510-ba5c-aa1b60ab3982",
   virtual = true,
   propertyValues = Map(
-    CoreProperties.name -> PropertyValue(textValues = name :: Nil),
-    CoreProperties.description -> PropertyValue(textValues = description :: Nil),
+    CoreProperties.name -> PropertyValue(stringValues = name :: Nil),
+    CoreProperties.description -> PropertyValue(stringValues = description :: Nil),
     CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
     // TODO: Add properties for links
   )
@@ -28,8 +28,8 @@ val GATCGPropertiesCollection = Collection(
   virtual = true,
   properties = properties.AllProperties,
   propertyValues = Map(
-    CoreProperties.name -> PropertyValue(textValues = "Grand Archive TCG Properties" :: Nil),
-    CoreProperties.description -> PropertyValue(textValues = "A collection of properties belong to the Grand Archive TCG Plugin" :: Nil)
+    CoreProperties.name -> PropertyValue(stringValues = "Grand Archive TCG Properties" :: Nil),
+    CoreProperties.description -> PropertyValue(stringValues = "A collection of properties belong to the Grand Archive TCG Plugin" :: Nil)
   )
 )
 

@@ -1,10 +1,9 @@
 package com.oopman.collectioneer.plugins.postgresbackend.test
 
 import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
+import com.oopman.collectioneer.db.traits.entity.raw.{PropertyType, given}
 import com.oopman.collectioneer.plugins.postgresbackend.PropertyValueQueryDSLSupport
 import com.oopman.collectioneer.{CoreProperties, given}
-import com.oopman.collectioneer.db.traits.entity.raw.given 
 
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
@@ -36,8 +35,8 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
     assert(parameters.length == 2)
   }
 
-  it should "handle BigInt PropertyValueVectorComparisons" in { implicit session =>
-    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(BigInt.apply)
+  it should "handle Long PropertyValueVectorComparisons" in { implicit session =>
+    val comparison: Comparison = CoreProperties.name equalToAny Seq(1L, 2L)
     val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
     assert(comparsonSQL.nonEmpty)
     assert(parameters.length == 2)
@@ -116,16 +115,6 @@ class PropertyValueQueryDSLSupportSpec extends BaseFunSuite:
     assert(parameters.head.isInstanceOf[UUID])
     assert(parameters(1).isInstanceOf[java.sql.Array])
     assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "varchar")
-  }
-
-  it should "handle BigDecimal PropertyValueVectorComparisons" in { implicit session =>
-    val comparison: Comparison = CoreProperties.name equalToAny Seq(1, 2).map(BigDecimal.apply)
-    val (comparsonSQL, parameters) = PropertyValueQueryDSLSupport.comparisonToSQL(comparison)
-    assert(comparsonSQL.nonEmpty)
-    assert(parameters.length == 2)
-    assert(parameters.head.isInstanceOf[UUID])
-    assert(parameters(1).isInstanceOf[java.sql.Array])
-    assert(parameters(1).asInstanceOf[java.sql.Array].getBaseTypeName == "numeric")
   }
 
   it should "handle String PropertyValueVectorComparisons" in { implicit session =>

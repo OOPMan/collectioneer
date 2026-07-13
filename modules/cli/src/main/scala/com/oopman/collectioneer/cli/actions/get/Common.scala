@@ -8,12 +8,11 @@ object Common:
   private val hexFormat = HexFormat.of()
 
   def propertyValueToSeqOfStrings(propertyValue: traits.entity.projected.PropertyValue): Seq[String] =
-    propertyValue.textValues ++
+    propertyValue.stringValues ++
     propertyValue.byteValues.map(hexFormat.formatHex) ++
-    propertyValue.smallintValues.map(_.toString) ++
+    propertyValue.shortValues.map(_.toString) ++
     propertyValue.intValues.map(_.toString) ++
-    propertyValue.bigintValues.map(_.toString()) ++
-    propertyValue.numericValues.map(_.toString()) ++
+    propertyValue.longValues.map(_.toString()) ++
     propertyValue.floatValues.map(_.toString) ++
     propertyValue.doubleValues.map(_.toString) ++
     propertyValue.booleanValues.map(_.toString) ++

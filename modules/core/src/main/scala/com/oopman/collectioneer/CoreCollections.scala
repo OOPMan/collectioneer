@@ -21,9 +21,9 @@ enum CoreCollections(val collection: Collection):
     pk = CoreCollectionUUIDs.root,
     propertyValues = Map(
       CoreProperties.name ->
-        projected.PropertyValue(textValues = List("Root")),
+        projected.PropertyValue(stringValues = List("Root")),
       CoreProperties.description ->
-        projected.PropertyValue(textValues = List("The Root Collection under which all other Collections should reside"))
+        projected.PropertyValue(stringValues = List("The Root Collection under which all other Collections should reside"))
     )
   ))
 
@@ -35,9 +35,9 @@ enum CoreCollections(val collection: Collection):
   case properties extends CoreCollections(projected.Collection(
     pk = CoreCollectionUUIDs.properties,
     propertyValues = Map(
-      CoreProperties.name -> projected.PropertyValue(textValues = "Properties" :: Nil),
+      CoreProperties.name -> projected.PropertyValue(stringValues = "Properties" :: Nil),
       CoreProperties.description ->
-        projected.PropertyValue(textValues = "A secondary root Collection. Collections beneath this one are used to group Properties" :: Nil)
+        projected.PropertyValue(stringValues = "A secondary root Collection. Collections beneath this one are used to group Properties" :: Nil)
     )
   ))
   /**
@@ -50,9 +50,9 @@ enum CoreCollections(val collection: Collection):
     pk = CoreCollectionUUIDs.commonProperties,
     propertyValues = Map(
       CoreProperties.name ->
-        projected.PropertyValue(textValues = List("Common Properties")),
+        projected.PropertyValue(stringValues = List("Common Properties")),
       CoreProperties.description ->
-        projected.PropertyValue(textValues = List("A Collection of Properties automatically available to all other Collections")
+        projected.PropertyValue(stringValues = List("A Collection of Properties automatically available to all other Collections")
       )
     )
   ))
@@ -71,8 +71,8 @@ enum CoreCollections(val collection: Collection):
     ).map(_.property),
     propertyValues = Map(
       CoreProperties.name ->
-        projected.PropertyValue(textValues = "Properties of Properties" :: Nil),
+        projected.PropertyValue(stringValues = "Properties of Properties" :: Nil),
       CoreProperties.description ->
-        projected.PropertyValue(textValues = "A Collection of Properties that are only for use as Properties of other Properties" :: Nil)
+        projected.PropertyValue(stringValues = "A Collection of Properties that are only for use as Properties of other Properties" :: Nil)
     )
   ))

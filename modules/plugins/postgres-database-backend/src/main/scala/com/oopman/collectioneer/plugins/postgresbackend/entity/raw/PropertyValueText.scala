@@ -8,10 +8,10 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 class PropertyValueVarcharSQLSyntaxSupport(override val tableName: String)
-extends PropertyValueSQLSyntaxSupport[raw.PropertyValueText](tableName):
-  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueText])(rs: WrappedResultSet): raw.PropertyValueText =
+extends PropertyValueSQLSyntaxSupport[raw.PropertyValueString](tableName):
+  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueString])(rs: WrappedResultSet): raw.PropertyValueString =
     // TODO: Implement properly
-    raw.PropertyValueText(
+    raw.PropertyValueString(
       collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )

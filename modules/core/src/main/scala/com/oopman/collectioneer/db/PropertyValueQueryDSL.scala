@@ -40,11 +40,11 @@ object PropertyValueQueryDSL:
     case or extends LogicalOperator
 
   type ScalarValues =
-    BigInt | Boolean | Array[Byte] | LocalDate | Double | Float | Short | Int | io.circe.Json | BigDecimal | String |
+    Long | Boolean | Array[Byte] | LocalDate | Double | Float | Short | Int | io.circe.Json | String |
     LocalTime | ZonedDateTime | UUID
   type VectorValues =
-    Seq[BigInt] | Seq[Boolean] | Seq[Array[Byte]] | Seq[LocalDate] | Seq[Double] | Seq[Float] | Seq[Short] | Seq[Int] |
-    Seq[io.circe.Json] | Seq[BigDecimal] | Seq[String] | Seq[LocalTime] | Seq[ZonedDateTime] | Seq[UUID]
+    Seq[Long] | Seq[Boolean] | Seq[Array[Byte]] | Seq[LocalDate] | Seq[Double] | Seq[Float] | Seq[Short] | Seq[Int] |
+    Seq[io.circe.Json] | Seq[String] | Seq[LocalTime] | Seq[ZonedDateTime] | Seq[UUID]
   type Values = ScalarValues | VectorValues
   type Operand = Property | Values | Comparison
 

@@ -8,12 +8,11 @@ import java.util.UUID
 
 object PropertyValue extends projected.PropertyValue:
   private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValue needs to be replaced")
-  def textValues: Seq[String] = reject
+  def stringValues: Seq[String] = reject
   def byteValues: Seq[Array[Byte]] = reject
-  def smallintValues: Seq[Short] = reject
+  def shortValues: Seq[Short] = reject
   def intValues: Seq[Int] = reject
-  def bigintValues: Seq[BigInt] = reject
-  def numericValues: Seq[BigDecimal] = reject
+  def longValues: Seq[Long] = reject
   def floatValues: Seq[Float] = reject
   def doubleValues: Seq[Double] = reject
   def booleanValues: Seq[Boolean] = reject
@@ -22,7 +21,7 @@ object PropertyValue extends projected.PropertyValue:
   def timestampValues: Seq[ZonedDateTime] = reject
   def uuidValues: Seq[UUID] = reject
   def jsonValues: Seq[Json] = reject
-  def projectedCopyWith(textValues: Seq[String], byteValues: Seq[Array[Byte]], smallintValues: Seq[Short], intValues: Seq[Int],
-                        bigintValues: Seq[BigInt], numericValues: Seq[BigDecimal], floatValues: Seq[Float], doubleValues: Seq[Double],
-                        booleanValues: Seq[Boolean], dateValues: Seq[LocalDate], timeValues: Seq[LocalTime], timestampValues: Seq[ZonedDateTime],
+  def projectedCopyWith(textValues: Seq[String], byteValues: Seq[Array[Byte]], shortValues: Seq[Short], intValues: Seq[Int],
+                        longValues: Seq[Long], floatValues: Seq[Float], doubleValues: Seq[Double], booleanValues: Seq[Boolean], 
+                        dateValues: Seq[LocalDate], timeValues: Seq[LocalTime], timestampValues: Seq[ZonedDateTime],
                         uuidValues: Seq[UUID], jsonValues: Seq[Json]): projected.PropertyValue = reject

@@ -152,7 +152,7 @@ create table property_collection
         foreign key (collection_pk) references collection(pk)
 );
 
-create table property_value_text
+create table property_value_string
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
@@ -186,12 +186,12 @@ create table property_value_bytes
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_smallint
+create table property_value_short
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     property_pk uuid not null,
-    property_value smallint not null,
+    property_value int2 not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
@@ -208,7 +208,7 @@ create table property_value_int
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     property_pk uuid not null,
-    property_value int not null,
+    property_value int4 not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
@@ -220,12 +220,12 @@ create table property_value_int
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_bigint
+create table property_value_long
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     property_pk uuid not null,
-    property_value bigint not null,
+    property_value int8 not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
@@ -237,29 +237,12 @@ create table property_value_bigint
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_numeric
-(
-    pk uuid not null default gen_random_uuid(),
-    collection_pk uuid not null,
-    property_pk uuid not null,
-    property_value numeric not null,
-    index int not null default 0,
-    created timestamp with time zone not null default now(),
-    modified timestamp with time zone not null default now(),
-    constraint property_value_numeric_pk
-        primary key (pk),
-    constraint property_value_numeric_collection_pk_fk
-        foreign key (collection_pk) references collection(pk),
-    constraint property_value_numeric_property_pk_fk
-        foreign key (property_pk) references property(pk)
-);
-
 create table property_value_float
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     property_pk uuid not null,
-    property_value real not null,
+    property_value float4 not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
@@ -276,7 +259,7 @@ create table property_value_double
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
     property_pk uuid not null,
-    property_value double precision not null,
+    property_value float8 not null,
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),

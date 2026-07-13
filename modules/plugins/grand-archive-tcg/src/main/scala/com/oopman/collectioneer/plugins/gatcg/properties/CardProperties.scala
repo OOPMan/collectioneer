@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object CardPropertiesUUIDs:
@@ -79,19 +79,19 @@ enum CardProperties(val property: projected.Property):
   case memoryCost extends CardProperties(Property(
     pk = CardPropertiesUUIDs.memoryCost,
     propertyName = "Memory Cost",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case reserveCost extends CardProperties(Property(
     pk = CardPropertiesUUIDs.reserveCost,
     propertyName = "Reserve Cost",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case level extends CardProperties(Property(
     pk = CardPropertiesUUIDs.level,
     propertyName = "Level",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case speed extends CardProperties(Property(
@@ -109,18 +109,18 @@ enum CardProperties(val property: projected.Property):
   case power extends CardProperties(Property(
     pk = CardPropertiesUUIDs.power,
     propertyName = "Power",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case life extends CardProperties(Property(
     pk = CardPropertiesUUIDs.life,
     propertyName = "Life",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case durability extends CardProperties(Property(
     pk = CardPropertiesUUIDs.durability,
     propertyName = "Durability",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty

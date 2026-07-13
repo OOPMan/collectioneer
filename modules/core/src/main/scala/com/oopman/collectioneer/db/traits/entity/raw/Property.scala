@@ -6,10 +6,9 @@ import java.util.UUID
 enum PropertyType:
   case text extends PropertyType
   case bytes extends PropertyType
-  case smallint extends PropertyType
+  case short extends PropertyType
   case int extends PropertyType
-  case bigint extends PropertyType
-  case numeric extends PropertyType
+  case long extends PropertyType
   case float extends PropertyType
   case double extends PropertyType
   case boolean extends PropertyType

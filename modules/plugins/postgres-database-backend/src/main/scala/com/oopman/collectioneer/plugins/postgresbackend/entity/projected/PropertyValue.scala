@@ -1,13 +1,11 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 
-import com.oopman.collectioneer.db.entity.projected.{Collection, Property, PropertyValue}
 import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
 import com.oopman.collectioneer.db.{entity, traits}
-import io.circe.*
 import io.circe.parser.*
 import scalikejdbc.WrappedResultSet
 
-import java.time.{LocalDate, LocalTime, ZonedDateTime, ZoneId}
+import java.time.ZoneId
 import java.util.UUID
 
 object PropertyValue:
@@ -16,10 +14,9 @@ object PropertyValue:
     entity.projected.PropertyValue(
       Utils.resultSetArrayToListOf[String](rs, "property_value_text"),
       Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes"),
-      Utils.resultSetArrayToListOf[Short](rs, "property_value_smallint"),
+      Utils.resultSetArrayToListOf[Short](rs, "property_value_short"),
       Utils.resultSetArrayToListOf[Int](rs, "property_value_int"),
-      Utils.resultSetArrayToListOf[Long](rs, "property_value_bigint").map(BigInt.apply),
-      Utils.resultSetArrayToListOf[java.math.BigDecimal](rs, "property_value_numeric").map(BigDecimal.javaBigDecimal2bigDecimal),
+      Utils.resultSetArrayToListOf[Long](rs, "property_value_long"),
       Utils.resultSetArrayToListOf[Float](rs, "property_value_float"),
       Utils.resultSetArrayToListOf[Double](rs, "property_value_double"),
       Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean"),
@@ -40,23 +37,20 @@ object PropertyValue:
 
   // TODO: Move this?
   def toRawPropertyValues(propertyPK: UUID, collectionPK: UUID, propertyValue: traits.entity.projected.PropertyValue): Seq[traits.entity.raw.PropertyValue[?]] =
-    propertyValue.textValues.zipWithIndex.map((stringValue, index) => entity.raw.PropertyValueText(
+    propertyValue.stringValues.zipWithIndex.map((stringValue, index) => entity.raw.PropertyValueString(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = stringValue, index = index
     )) ++
     propertyValue.byteValues.zipWithIndex.map((byteValues, index) => entity.raw.PropertyValueBytes(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = byteValues, index = index
     )) ++
-    propertyValue.smallintValues.zipWithIndex.map((intValue, index) => entity.raw.PropertyValueSmallint(
+    propertyValue.shortValues.zipWithIndex.map((intValue, index) => entity.raw.PropertyValueShort(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = intValue, index = index
     )) ++
     propertyValue.intValues.zipWithIndex.map((intValue, index) => entity.raw.PropertyValueInt(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = intValue, index = index
     )) ++
-    propertyValue.bigintValues.zipWithIndex.map((bigIntValue, index) => entity.raw.PropertyValueBigInt(
+    propertyValue.longValues.zipWithIndex.map((bigIntValue, index) => entity.raw.PropertyValueLong(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = bigIntValue, index = index
-    )) ++
-    propertyValue.numericValues.zipWithIndex.map((numericValue, index) => entity.raw.PropertyValueBigDecimal(
-      collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = numericValue, index = index
     )) ++
     propertyValue.floatValues.zipWithIndex.map((floatValue, index) => entity.raw.PropertyValueFloat(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = floatValue, index = index

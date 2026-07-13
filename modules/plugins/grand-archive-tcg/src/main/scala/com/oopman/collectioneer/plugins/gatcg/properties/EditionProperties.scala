@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 /**
@@ -69,7 +69,7 @@ enum EditionProperties(val property: projected.Property):
   case rarity extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.rarity,
     propertyName = "Rarity",
-    propertyTypes = PropertyType.smallint :: Nil,
+    propertyTypes = PropertyType.short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case effect extends EditionProperties(Property(

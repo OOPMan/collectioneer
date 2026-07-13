@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.traits.entity.raw
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
-case class PropertyValueBigDecimal
+case class PropertyValueLong
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
@@ -13,29 +13,8 @@ case class PropertyValueBigDecimal
   index: Int = 0,
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValue: BigDecimal = BigDecimal.valueOf(Double.MinValue),
-) extends raw.PropertyValueBigDecimal:
-  
-  def rawCopyWith(pk: UUID, 
-                  collectionPK: UUID, 
-                  propertyPK: UUID, 
-                  index: Int, 
-                  created: ZonedDateTime, 
-                  modified: ZonedDateTime, 
-                  propertyValue: BigDecimal): raw.PropertyValueBigDecimal =
-    copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
-
-
-case class PropertyValueBigInt
-(
-  pk: UUID = UUID.randomUUID(),
-  collectionPK: UUID,
-  propertyPK: UUID,
-  index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValue: BigInt = BigInt.int2bigInt(Int.MinValue),
-) extends raw.PropertyValueBigInt:
+  propertyValue: Long = Long.MinValue,
+) extends raw.PropertyValueLong:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
@@ -43,7 +22,7 @@ case class PropertyValueBigInt
                   index: Int,
                   created: ZonedDateTime,
                   modified: ZonedDateTime,
-                  propertyValue: BigInt): raw.PropertyValueBigInt =
+                  propertyValue: Long): raw.PropertyValueLong =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 case class PropertyValueBoolean
@@ -186,7 +165,7 @@ case class PropertyValueJSON
                   propertyValue: io.circe.Json): raw.PropertyValueJSON =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
-case class PropertyValueSmallint
+case class PropertyValueShort
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
@@ -195,7 +174,7 @@ case class PropertyValueSmallint
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: Short = Short.MinValue,
-) extends raw.PropertyValueSmallint:
+) extends raw.PropertyValueShort:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
@@ -203,10 +182,10 @@ case class PropertyValueSmallint
                   index: Int,
                   created: ZonedDateTime,
                   modified: ZonedDateTime,
-                  propertyValue: Short): raw.PropertyValueSmallint =
+                  propertyValue: Short): raw.PropertyValueShort =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
-case class PropertyValueText
+case class PropertyValueString
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
@@ -215,7 +194,7 @@ case class PropertyValueText
   created: ZonedDateTime = ZonedDateTime.now(),
   modified: ZonedDateTime = ZonedDateTime.now(),
   propertyValue: String = "",
-) extends raw.PropertyValueText:
+) extends raw.PropertyValueString:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
@@ -223,7 +202,7 @@ case class PropertyValueText
                   index: Int,
                   created: ZonedDateTime,
                   modified: ZonedDateTime,
-                  propertyValue: String): raw.PropertyValueText =
+                  propertyValue: String): raw.PropertyValueString =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 case class PropertyValueTime

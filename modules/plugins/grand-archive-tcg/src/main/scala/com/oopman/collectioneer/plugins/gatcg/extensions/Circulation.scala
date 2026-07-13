@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.plugins.gatcg.extensions
 
 import com.oopman.collectioneer.CoreProperties
-import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.db.entity.projected.{Collection, PropertyValue}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.plugins.gatcg.Models
 import com.oopman.collectioneer.plugins.gatcg.properties.{CirculationProperties, CommonProperties}
 
@@ -15,11 +15,11 @@ object Circulation:
       pk = UUID.nameUUIDFromBytes (s"GATCG-circulation-${circulation.edition_id}-${circulation.uuid}".getBytes),
       virtual = true,
       propertyValues = Map(
-        CoreProperties.name -> PropertyValue(textValues = circulation.name ++: Nil),
+        CoreProperties.name -> PropertyValue(stringValues = circulation.name ++: Nil),
         CommonProperties.isGATCGCollection -> PropertyValue (booleanValues = true :: Nil),
         CommonProperties.isGATCGCirculation -> PropertyValue(booleanValues = true :: Nil),
         CirculationProperties.foil -> PropertyValue(booleanValues = circulation.foil.getOrElse(false) :: Nil),
         CirculationProperties.population -> PropertyValue(intValues = circulation.population :: Nil),
-        CirculationProperties.populationOperator -> PropertyValue(textValues = circulation.population_operator :: Nil)
+        CirculationProperties.populationOperator -> PropertyValue(stringValues = circulation.population_operator :: Nil)
       )
     )

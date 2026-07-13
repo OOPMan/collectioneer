@@ -37,10 +37,9 @@ class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntax
 
 object PropertyValueVarcharQueries extends PropertyValueQueries(raw.PropertyValueText)
 object PropertyValueVarbinaryQueries extends PropertyValueQueries(raw.PropertyValueBytes)
-object PropertyValueSmallintQueries extends PropertyValueQueries(raw.PropertyValueSmallint)
+object PropertyValueShortQueries extends PropertyValueQueries(raw.PropertyValueShort)
 object PropertyValueIntQueries extends PropertyValueQueries(raw.PropertyValueInt)
-object PropertyValueBigintQueries extends PropertyValueQueries(raw.PropertyValueBigint)
-object PropertyValueNumericQueries extends PropertyValueQueries(raw.PropertyValueBigDecimal)
+object PropertyValueLongQueries extends PropertyValueQueries(raw.PropertyValueLong)
 object PropertyValueFloatQueries extends PropertyValueQueries(raw.PropertyValueFloat)
 object PropertyValueDoubleQueries extends PropertyValueQueries(raw.PropertyValueDouble)
 object PropertyValueBooleanQueries extends PropertyValueQueries(raw.PropertyValueBoolean)
@@ -68,10 +67,9 @@ object PropertyValueQueries:
   def propertyValueQueryObjects = List(
     PropertyValueVarcharQueries,
     PropertyValueVarbinaryQueries,
-    PropertyValueSmallintQueries,
+    PropertyValueShortQueries,
     PropertyValueIntQueries,
-    PropertyValueBigintQueries,
-    PropertyValueNumericQueries,
+    PropertyValueLongQueries,
     PropertyValueFloatQueries,
     PropertyValueDoubleQueries,
     PropertyValueBooleanQueries,

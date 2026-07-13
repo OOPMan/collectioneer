@@ -5,29 +5,17 @@ import com.oopman.collectioneer.db.traits.entity.raw
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
-object PropertyValueBigDecimal extends raw.PropertyValueBigDecimal:
-  private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueBigDecimal needs to be replaced")
+object PropertyValueLong extends raw.PropertyValueLong:
+  private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueLong needs to be replaced")
   def pk: UUID = reject
   def collectionPK: UUID = reject
   def propertyPK: UUID = reject
   def index: Int = reject
   def created: ZonedDateTime = reject
   def modified: ZonedDateTime = reject
-  def propertyValue: BigDecimal = reject
+  def propertyValue: Long = reject
   def rawCopyWith(pk: UUID, collectionPK: UUID, propertyPK: UUID, index: Int, created: ZonedDateTime,
-                           modified: ZonedDateTime, propertyValue: BigDecimal): raw.PropertyValueBigDecimal = reject
-
-object PropertyValueBigInt extends raw.PropertyValueBigInt:
-  private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueBigInt needs to be replaced")
-  def pk: UUID = reject
-  def collectionPK: UUID = reject
-  def propertyPK: UUID = reject
-  def index: Int = reject
-  def created: ZonedDateTime = reject
-  def modified: ZonedDateTime = reject
-  def propertyValue: BigInt = reject
-  def rawCopyWith(pk: UUID, collectionPK: UUID, propertyPK: UUID, index: Int, created: ZonedDateTime,
-                           modified: ZonedDateTime, propertyValue: BigInt): raw.PropertyValueBigInt = reject
+                           modified: ZonedDateTime, propertyValue: Long): raw.PropertyValueLong = reject
 
 object PropertyValueBoolean extends raw.PropertyValueBoolean:
   private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueBoolean needs to be replaced")
@@ -113,7 +101,7 @@ object PropertyValueJSON extends raw.PropertyValueJSON:
   def rawCopyWith(pk: UUID, collectionPK: UUID, propertyPK: UUID, index: Int, created: ZonedDateTime,
                            modified: ZonedDateTime, propertyValue: io.circe.Json): raw.PropertyValueJSON = reject
 
-object PropertyValueSmallint extends raw.PropertyValueSmallint:
+object PropertyValueShort extends raw.PropertyValueShort:
   private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueSmallint needs to be replaced")
   def pk: UUID = reject
   def collectionPK: UUID = reject
@@ -123,9 +111,9 @@ object PropertyValueSmallint extends raw.PropertyValueSmallint:
   def modified: ZonedDateTime = reject
   def propertyValue: Short = reject
   def rawCopyWith(pk: UUID, collectionPK: UUID, propertyPK: UUID, index: Int, created: ZonedDateTime,
-                           modified: ZonedDateTime, propertyValue: Short): raw.PropertyValueSmallint = reject
+                           modified: ZonedDateTime, propertyValue: Short): raw.PropertyValueShort = reject
 
-object PropertyValueText extends raw.PropertyValueText:
+object PropertyValueString extends raw.PropertyValueString:
   private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueText needs to be replaced")
   def pk: UUID = reject
   def collectionPK: UUID = reject
@@ -135,7 +123,7 @@ object PropertyValueText extends raw.PropertyValueText:
   def modified: ZonedDateTime = reject
   def propertyValue: String = reject
   def rawCopyWith(pk: UUID, collectionPK: UUID, propertyPK: UUID, index: Int, created: ZonedDateTime,
-                           modified: ZonedDateTime, propertyValue: String): raw.PropertyValueText = reject
+                           modified: ZonedDateTime, propertyValue: String): raw.PropertyValueString = reject
 
 object PropertyValueTime extends raw.PropertyValueTime:
   private def reject: Nothing = throw new RuntimeException("Placeholder PropertyValueTime needs to be replaced")

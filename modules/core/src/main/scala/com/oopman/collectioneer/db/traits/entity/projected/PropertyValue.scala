@@ -6,12 +6,11 @@ import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
 trait PropertyValue:
-  def textValues: Seq[String]
+  def stringValues: Seq[String]
   def byteValues: Seq[Array[Byte]]
-  def smallintValues: Seq[Short]
+  def shortValues: Seq[Short]
   def intValues: Seq[Int]
-  def bigintValues: Seq[BigInt]
-  def numericValues: Seq[BigDecimal]
+  def longValues: Seq[Long]
   def floatValues: Seq[Float]
   def doubleValues: Seq[Double]
   def booleanValues: Seq[Boolean]
@@ -21,12 +20,11 @@ trait PropertyValue:
   def uuidValues: Seq[UUID]
   def jsonValues: Seq[io.circe.Json]
   
-  def projectedCopyWith(textValues: Seq[String] = textValues,
+  def projectedCopyWith(stringValues: Seq[String] = stringValues,
                         byteValues: Seq[Array[Byte]] = byteValues,
-                        smallintValues: Seq[Short] = smallintValues,
+                        shortValues: Seq[Short] = shortValues,
                         intValues: Seq[Int] = intValues,
-                        bigintValues: Seq[BigInt] = bigintValues,
-                        numericValues: Seq[BigDecimal] = numericValues,
+                        longValues: Seq[Long] = longValues,
                         floatValues: Seq[Float] = floatValues,
                         doubleValues: Seq[Double] = doubleValues,
                         booleanValues: Seq[Boolean] = booleanValues,

@@ -4,12 +4,12 @@ import com.oopman.collectioneer.CoreCollections
 import com.oopman.collectioneer.db.SortDirection
 import com.oopman.collectioneer.db.entity.raw.{Collection, Relationship}
 import com.oopman.collectioneer.db.traits.entity.raw.RelationshipType.{ChildOf, SourceOfPropertiesAndPropertyValues}
+import com.oopman.collectioneer.db.traits.entity.raw.given
 import com.oopman.collectioneer.plugins.postgresbackend.dao.raw.CollectionDAOImpl
 import com.oopman.collectioneer.plugins.postgresbackend.test.{BaseFunSuite, Fixtures}
-import com.oopman.collectioneer.db.traits.entity.raw.given
-
 import io.circe.*
 import io.circe.parser.*
+
 import java.time.{LocalDate, LocalTime, ZonedDateTime}
 import java.util.UUID
 
@@ -101,7 +101,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   it should "return a List of raw Collections objects matching the supplied Constraints (all parameters filled)" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val expectedCollectionPKs = List(
       childCofRootB, childBofRootB, childAofRootB, childCofRootA, childBofRootA, childAofRootA
     ).map(_.pk)
@@ -124,7 +124,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueScalarComparisons)" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       (textProperty like "%1%") or (textProperty equalTo "6")
     ))
@@ -134,7 +134,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsB.length == 1)
     val collectionsC = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      smallintProperty notEqualTo 2.toShort
+      shortProperty notEqualTo 2.toShort
     ))
     assert(collectionsC.length == 5)
     val collectionsD = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
@@ -143,15 +143,10 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsD.length == 3)
     val collectionsE = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      bigintProperty gte BigInt(1),
-      bigintProperty lte BigInt(5)
+      longProperty gte 1L,
+      longProperty lte 5L
     ))
     assert(collectionsE.length == 5)
-    val collectionsF = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      ((numericProperty gte BigDecimal(1.1)) and (numericProperty lte BigDecimal(2.2))) or
-      ((numericProperty gte BigDecimal(5.5)) and (numericProperty lte BigDecimal(6.6)))
-    ))
-    assert(collectionsF.length == 4)
     val collectionsG = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       floatProperty notEqualTo 1f,
       floatProperty notEqualTo 2f
@@ -202,7 +197,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
   it should "return a List of raw Collections objects matching the supplied Constraints (PropertyValueVectorComparisons)" in { implicit session =>
     import com.oopman.collectioneer.db.PropertyValueQueryDSL.*
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       textProperty equalToAny Seq("1", "6")
     ))
@@ -212,7 +207,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsB.length == 2)
     val collectionsC = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      smallintProperty notEqualToAny Seq(2.toShort, 3.toShort)
+      shortProperty notEqualToAny Seq(2.toShort, 3.toShort)
     ))
     assert(collectionsC.length == 6)
     val collectionsD = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
@@ -220,13 +215,9 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
     ))
     assert(collectionsD.length == 3)
     val collectionsE = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      bigintProperty lteAny Seq(BigInt(5), BigInt(4))
+      longProperty lteAny Seq(5L, 4L)
     ))
     assert(collectionsE.length == 5)
-    val collectionsF = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
-      numericProperty gtAny Seq(BigDecimal(1.1), BigDecimal(3.3))
-    ))
-    assert(collectionsF.length == 5)
     val collectionsG = CollectionDAOImpl.getAllMatchingConstraints(comparisons = Seq(
       floatProperty notEqualToAll Seq(1f, 2f)
     ))
@@ -275,7 +266,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
 
   it should "return a List of raw Collections objects matching the supplied constraints (ParentCollections)" in { implicit session =>
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(parentCollectionPKs = Some(Seq(rootA.pk)))
     assert(collectionsA.length == 3)
     assertResult(Set(childAofRootA.pk, childBofRootA.pk, childCofRootA.pk))(collectionsA.map(_.pk).toSet)
@@ -283,7 +274,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
 
   it should "return a List of raw Collections objects matching the supplied constraints (Collections)" in { implicit session =>
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(collectionPKs = Some(Seq(
       rootA.pk, childCofRootA.pk, rootB.pk, childAofRootB.pk
     )))
@@ -293,7 +284,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
 
   it should "return a List of raw Collections objects matching the supplied constraints (SortProperties)" in { implicit session =>
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val expectedCollectionPKs = List(
       childCofRootB, childBofRootB, childAofRootB, childCofRootA, childBofRootA, childAofRootA
     ).map(_.pk)
@@ -307,7 +298,7 @@ class RawCollectionDAOImplSpec extends BaseFunSuite:
 
   it should "return a List of raw Collections objects matching the supplied constraints (Offset)" in { implicit session =>
     val fixtures = new Fixtures()
-    import fixtures._
+    import fixtures.*
     val collectionsA = CollectionDAOImpl.getAllMatchingConstraints(
       parentCollectionPKs = Some(Seq(rootA.pk, rootB.pk)),
       offset = Some(3)

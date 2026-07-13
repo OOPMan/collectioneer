@@ -21,7 +21,7 @@ object PropertyValueQueryDSLSupport:
     }
   }
 
-  private val `Seq[BigInt]` = TypeCase[Seq[BigInt]]
+  private val `Seq[Long]` = TypeCase[Seq[Long]]
   private val `Seq[Boolean]` = TypeCase[Seq[Boolean]]
   private val `Seq[Array[Byte]]` = TypeCase[Seq[Array[Byte]]]
   private val `Seq[LocalDate]` = TypeCase[Seq[LocalDate]]
@@ -30,7 +30,6 @@ object PropertyValueQueryDSLSupport:
   private val `Seq[Int]` = TypeCase[Seq[Int]]
   private val `Seq[Short]` = TypeCase[Seq[Short]]
   private val `Seq[io.circe.Json]` = TypeCase[Seq[io.circe.Json]]
-  private val `Seq[BigDecimal]` = TypeCase[Seq[BigDecimal]]
   private val `Seq[LocalTime]` = TypeCase[Seq[LocalTime]]
   private val `Seq[ZonedDateTime]` = TypeCase[Seq[ZonedDateTime]]
   private val `Seq[UUID]` = TypeCase[Seq[UUID]]
@@ -39,9 +38,9 @@ object PropertyValueQueryDSLSupport:
   protected trait ToSQLArray[T]:
     extension (seq: Seq[T]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array
 
-  given ToSQLArray[BigInt] with
-    extension (seq: Seq[BigInt]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("BIGINT", seq.toArray)
+  given ToSQLArray[Long] with
+    extension (seq: Seq[Long]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
+      session.connection.createArrayOf("INT8", seq.toArray)
 
   given ToSQLArray[Boolean] with
     extension (seq: Seq[Boolean]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
@@ -57,28 +56,24 @@ object PropertyValueQueryDSLSupport:
 
   given ToSQLArray[Double] with
     extension (seq: Seq[Double]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("DOUBLE", seq.toArray)
+      session.connection.createArrayOf("FLOAT8", seq.toArray)
 
   given ToSQLArray[Float] with
     extension (seq: Seq[Float]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("REAL", seq.toArray)
+      session.connection.createArrayOf("FLOAT4", seq.toArray)
 
   given ToSQLArray[Int] with
     extension (seq: Seq[Int]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("INT", seq.toArray)
+      session.connection.createArrayOf("INT4", seq.toArray)
 
   given ToSQLArray[Short] with
     extension (seq: Seq[Short]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("SMALLINT", seq.toArray)
+      session.connection.createArrayOf("INT2", seq.toArray)
 
   given ToSQLArray[io.circe.Json] with
     extension (seq: Seq[io.circe.Json]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
       val jsonStrings = seq.map(json => json.spaces2)
       session.connection.createArrayOf("VARCHAR", jsonStrings.toArray)
-
-  given ToSQLArray[BigDecimal] with
-    extension (seq: Seq[BigDecimal]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("NUMERIC", seq.toArray)
 
   given ToSQLArray[LocalTime] with
     extension (seq: Seq[LocalTime]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
@@ -164,7 +159,7 @@ object PropertyValueQueryDSLSupport:
 
     case PropertyValueVectorComparison(lhs, operator, rhs) =>
       val values = rhs match {
-        case `Seq[BigInt]`(seq) => seq.toSQLArray
+        case `Seq[Long]`(seq) => seq.toSQLArray
         case `Seq[Boolean]`(seq) => seq.toSQLArray
         case `Seq[Array[Byte]]`(seq) => seq.toSQLArray
         case `Seq[LocalDate]`(seq) => seq.toSQLArray
@@ -173,7 +168,6 @@ object PropertyValueQueryDSLSupport:
         case `Seq[Int]`(seq) => seq.toSQLArray
         case `Seq[Short]`(seq) => seq.toSQLArray
         case `Seq[io.circe.Json]`(seq) => seq.toSQLArray
-        case `Seq[BigDecimal]`(seq) => seq.toSQLArray
         case `Seq[LocalTime]`(seq) => seq.toSQLArray
         case `Seq[ZonedDateTime]`(seq) => seq.toSQLArray
         case `Seq[UUID]`(seq) => seq.toSQLArray
