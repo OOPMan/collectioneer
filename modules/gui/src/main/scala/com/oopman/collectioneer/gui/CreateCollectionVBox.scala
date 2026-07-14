@@ -185,7 +185,7 @@ abstract class CreateCollectionVBox(parentCollectionPK: UUID) extends VBox:
           case p: ProjectedProperty => Some(p)
           case _ => None
         }
-        collection.propertyValues(CoreProperties.name).textValues.head -> projectedProperties
+        collection.propertyValues(CoreProperties.name).stringValues.head -> projectedProperties
 
 //    val propertiesByPropertyGroup = collections
 //      .map(collection => collection.propertyValues(CoreProperties.name).textValues.head -> collection.properties.filterNot(property => property == CoreProperties.name || property == CoreProperties.description))

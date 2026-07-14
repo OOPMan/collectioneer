@@ -1,6 +1,6 @@
 package com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 sealed trait PropertyValue[T]:
@@ -8,16 +8,16 @@ sealed trait PropertyValue[T]:
   def collectionPK: UUID
   def propertyPK: UUID
   def index: Int
-  def created: ZonedDateTime
-  def modified: ZonedDateTime
+  def created: OffsetDateTime
+  def modified: OffsetDateTime
   def propertyValue: T
   
   def rawCopyWith(pk: UUID = pk,
                   collectionPK: UUID = collectionPK,
                   propertyPK: UUID = propertyPK,
                   index: Int = index,
-                  created: ZonedDateTime = created,
-                  modified: ZonedDateTime = modified,
+                  created: OffsetDateTime = created,
+                  modified: OffsetDateTime = modified,
                   propertyValue: T = propertyValue): PropertyValue[T]
 
 trait PropertyValueString extends PropertyValue[String]
@@ -28,8 +28,8 @@ trait PropertyValueLong extends PropertyValue[Long]
 trait PropertyValueFloat extends PropertyValue[Float]
 trait PropertyValueDouble extends PropertyValue[Double]
 trait PropertyValueBoolean extends PropertyValue[Boolean]
-trait PropertyValueDate extends PropertyValue[LocalDate]
-trait PropertyValueTime extends PropertyValue[LocalTime]
-trait PropertyValueTimestamp extends PropertyValue[ZonedDateTime]
+trait PropertyValueLocalDate extends PropertyValue[LocalDate]
+trait PropertyValueLocalTime extends PropertyValue[LocalTime]
+trait PropertyValueOffsetDateTime extends PropertyValue[OffsetDateTime]
 trait PropertyValueUUID extends PropertyValue[UUID]
 trait PropertyValueJSON extends PropertyValue[io.circe.Json]

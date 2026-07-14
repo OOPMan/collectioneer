@@ -1,22 +1,22 @@
 package com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 enum PropertyType:
-  case text extends PropertyType
-  case bytes extends PropertyType
-  case short extends PropertyType
-  case int extends PropertyType
-  case long extends PropertyType
-  case float extends PropertyType
-  case double extends PropertyType
-  case boolean extends PropertyType
-  case date extends PropertyType
-  case time extends PropertyType
-  case timestamp extends PropertyType
-  case uuid extends PropertyType
-  case json extends PropertyType
+  case String extends PropertyType
+  case Bytes extends PropertyType
+  case Short extends PropertyType
+  case Int extends PropertyType
+  case Long extends PropertyType
+  case Float extends PropertyType
+  case Double extends PropertyType
+  case Boolean extends PropertyType
+  case LocalDate extends PropertyType
+  case LocalTime extends PropertyType
+  case OffsetDateTime extends PropertyType
+  case UUID extends PropertyType
+  case JSON extends PropertyType
 
 
 trait Property:
@@ -24,15 +24,15 @@ trait Property:
   def propertyName: String
   def propertyTypes: Seq[PropertyType]
   def deleted: Boolean
-  def created: ZonedDateTime
-  def modified: ZonedDateTime
+  def created: OffsetDateTime
+  def modified: OffsetDateTime
 
   def rawCopyWith(pk: UUID = pk,
                   propertyName: String = propertyName,
                   propertyTypes: Seq[PropertyType] = propertyTypes,
                   deleted: Boolean = deleted,
-                  created: ZonedDateTime = created,
-                  modified: ZonedDateTime = modified): Property
+                  created: OffsetDateTime = created,
+                  modified: OffsetDateTime = modified): Property
 
   override def equals(obj: Any): Boolean = obj match {
     case property: Property => pk.equals(property.pk)

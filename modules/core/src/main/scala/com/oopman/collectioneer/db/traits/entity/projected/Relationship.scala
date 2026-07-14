@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.traits.entity.projected
 
 import com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 trait Relationship extends raw.Relationship:
@@ -13,7 +13,7 @@ trait Relationship extends raw.Relationship:
                         collectionPK: UUID = collectionPK,
                         relatedCollectionPK: UUID = relatedCollectionPK,
                         index: Int = index,
-                        created: ZonedDateTime = created,
-                        modified: ZonedDateTime = modified,
+                        created: OffsetDateTime = created,
+                        modified: OffsetDateTime = modified,
                         collection: raw.Collection = collection,
                         relatedCollection: raw.Collection = relatedCollection): Relationship

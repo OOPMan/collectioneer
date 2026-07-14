@@ -27,8 +27,8 @@ object PropertyCollection extends SQLSyntaxSupport[raw.PropertyCollection]:
       collectionPK = UUID.fromString(rs.string(collectionPKColumn)),
       index = rs.int(indexColumn),
       propertyCollectionRelationshipType = traits.entity.raw.PropertyCollectionRelationshipType.valueOf(rs.string(propertyCollectionRelationshipTypeColumn)),
-      created = rs.dateTime(createdColumn),
-      modified = rs.dateTime(modifiedColumn)
+      created = rs.offsetDateTime(createdColumn),
+      modified = rs.offsetDateTime(modifiedColumn)
     )
 
   def propertyCollectionSeqToBatchUpsertSeq(propertyCollections: Seq[traits.entity.raw.PropertyCollection]): Seq[Seq[Any]] =

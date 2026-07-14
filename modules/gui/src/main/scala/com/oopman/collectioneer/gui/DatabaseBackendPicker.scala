@@ -2,14 +2,14 @@ package com.oopman.collectioneer.gui
 
 import com.oopman.collectioneer.Injection
 import com.oopman.collectioneer.db.DatabaseBackendPlugin
-import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
 import com.oopman.collectioneer.gui.GUIConfigManager
-import scalafx.scene.Node
-import scalafx.scene.control.{Button, ChoiceBox, Label, ProgressIndicator}
-import scalafx.scene.layout.{BorderPane, HBox}
+import com.oopman.collectioneer.plugins.DatabaseBackendGUIPlugin
 import scalafx.Includes.*
 import scalafx.collections.ObservableBuffer
 import scalafx.concurrent.Task
+import scalafx.scene.Node
+import scalafx.scene.control.{Button, ChoiceBox, Label, ProgressIndicator}
+import scalafx.scene.layout.{BorderPane, HBox}
 import scalafx.util.StringConverter
 
 object DatabaseBackendPicker:
@@ -69,7 +69,8 @@ object DatabaseBackendPicker:
     bottom = new HBox:
       children = Seq(backButton, connectButton, progressIndicator)
 
-  private def getSelectedPlugin: Option[DatabaseBackendGUIPlugin] = Option(pluginChoiceBox.selectionModel().getSelectedItem)
+  private def getSelectedPlugin: Option[DatabaseBackendGUIPlugin] =
+    Option(pluginChoiceBox.selectionModel().getSelectedItem)
 
   def getNode(backButtonVisible: Boolean = true): Node =
     backButton.visible = backButtonVisible

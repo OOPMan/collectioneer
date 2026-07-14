@@ -37,7 +37,7 @@ class MainView extends LazyLogging:
         .getOrElse((cell, collection) => {
           val text = collection.propertyValues
             .find((property, pv) => property == CoreProperties.name)
-            .flatMap((property, pv) => pv.textValues.headOption)
+            .flatMap((property, pv) => pv.stringValues.headOption)
             .getOrElse(collection.pk.toString)
           cell.text = text
         })

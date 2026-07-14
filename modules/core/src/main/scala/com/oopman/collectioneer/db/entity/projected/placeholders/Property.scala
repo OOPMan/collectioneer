@@ -1,9 +1,8 @@
 package com.oopman.collectioneer.db.entity.projected.placeholders
 
-import com.oopman.collectioneer.db.traits.entity.projected
-import com.oopman.collectioneer.db.traits.entity.raw
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 object Property extends projected.Property:
@@ -12,10 +11,10 @@ object Property extends projected.Property:
   def propertyName: String = reject
   def propertyTypes: Seq[raw.PropertyType] = reject
   def deleted: Boolean = reject
-  def created: ZonedDateTime = reject
-  def modified: ZonedDateTime = reject
+  def created: OffsetDateTime = reject
+  def modified: OffsetDateTime = reject
   def propertyValues: Map[raw.Property, projected.PropertyValue] = reject
   def rawCopyWith(pk: UUID, propertyName: String, propertyTypes: Seq[raw.PropertyType], deleted: Boolean,
-                           created: ZonedDateTime, modified: ZonedDateTime): projected.Property = reject
+                           created: OffsetDateTime, modified: OffsetDateTime): projected.Property = reject
   def projectedCopyWith(pk: UUID, propertyName: String, propertyTypes: Seq[raw.PropertyType], deleted: Boolean,
-                        created: ZonedDateTime, modified: ZonedDateTime, propertyValues: Map[raw.Property, projected.PropertyValue]): projected.Property = reject
+                        created: OffsetDateTime, modified: OffsetDateTime, propertyValues: Map[raw.Property, projected.PropertyValue]): projected.Property = reject

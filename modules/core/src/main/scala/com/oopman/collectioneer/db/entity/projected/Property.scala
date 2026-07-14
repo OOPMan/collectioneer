@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.db.entity.projected
 
 import com.oopman.collectioneer.db.entity
-import com.oopman.collectioneer.db.traits.entity.{raw, projected}
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 case class Property
@@ -12,8 +12,8 @@ case class Property
   propertyName: String = "",
   propertyTypes: Seq[raw.PropertyType] = Nil,
   deleted: Boolean = false,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValues: Map[raw.Property, projected.PropertyValue] = Map.empty,
 ) extends projected.Property:
 
@@ -21,8 +21,8 @@ case class Property
                   propertyName: String = propertyName,
                   propertyTypes: Seq[raw.PropertyType] = propertyTypes,
                   deleted: Boolean = deleted,
-                  created: ZonedDateTime = created,
-                  modified: ZonedDateTime = modified): raw.Property =
+                  created: OffsetDateTime = created,
+                  modified: OffsetDateTime = modified): raw.Property =
     entity.raw.Property(
       pk = pk, 
       propertyName = propertyName, 
@@ -36,8 +36,8 @@ case class Property
                         propertyName: String = propertyName,
                         propertyTypes: Seq[raw.PropertyType] = propertyTypes,
                         deleted: Boolean = deleted,
-                        created: ZonedDateTime = created,
-                        modified: ZonedDateTime = modified,
+                        created: OffsetDateTime = created,
+                        modified: OffsetDateTime = modified,
                         propertyValues: Map[raw.Property, projected.PropertyValue] = propertyValues): projected.Property =
     copy(
       pk = pk, 

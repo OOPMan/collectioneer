@@ -1,7 +1,6 @@
 package com.oopman.collectioneer.plugins.postgresbackend.queries.raw
 
 import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
-import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.raw.PropertyValue
 import com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 import scalikejdbc.*
@@ -35,7 +34,7 @@ class PropertyValueQueries[T <: PropertyValue[?]](val pv: PropertyValueSQLSyntax
           AND property_pk = ANY (?::uuid[])
        """
 
-object PropertyValueVarcharQueries extends PropertyValueQueries(raw.PropertyValueText)
+object PropertyValueVarcharQueries extends PropertyValueQueries(raw.PropertyValueString)
 object PropertyValueVarbinaryQueries extends PropertyValueQueries(raw.PropertyValueBytes)
 object PropertyValueShortQueries extends PropertyValueQueries(raw.PropertyValueShort)
 object PropertyValueIntQueries extends PropertyValueQueries(raw.PropertyValueInt)
@@ -43,9 +42,9 @@ object PropertyValueLongQueries extends PropertyValueQueries(raw.PropertyValueLo
 object PropertyValueFloatQueries extends PropertyValueQueries(raw.PropertyValueFloat)
 object PropertyValueDoubleQueries extends PropertyValueQueries(raw.PropertyValueDouble)
 object PropertyValueBooleanQueries extends PropertyValueQueries(raw.PropertyValueBoolean)
-object PropertyValueDateQueries extends PropertyValueQueries(raw.PropertyValueDate)
-object PropertyValueTimeQueries extends PropertyValueQueries(raw.PropertyValueTime)
-object PropertyValueTimestampQueries extends PropertyValueQueries(raw.PropertyValueTimestamp)
+object PropertyValueLocalDateQueries extends PropertyValueQueries(raw.PropertyValueLocalDate)
+object PropertyValueLocalTimeQueries extends PropertyValueQueries(raw.PropertyValueLocalTime)
+object PropertyValueOffsetDateTimeQueries extends PropertyValueQueries(raw.PropertyValueOffsetDateTime)
 object PropertyValueUUIDQueries extends PropertyValueQueries(raw.PropertyValueUUID)
 object PropertyValueJSONQueries extends PropertyValueQueries(raw.PropertyValueJSON):
   override def insert: SQL[Nothing, NoExtractor] =
@@ -73,9 +72,9 @@ object PropertyValueQueries:
     PropertyValueFloatQueries,
     PropertyValueDoubleQueries,
     PropertyValueBooleanQueries,
-    PropertyValueDateQueries,
-    PropertyValueTimeQueries,
-    PropertyValueTimestampQueries,
+    PropertyValueLocalDateQueries,
+    PropertyValueLocalTimeQueries,
+    PropertyValueOffsetDateTimeQueries,
     PropertyValueUUIDQueries,
     PropertyValueJSONQueries
   )

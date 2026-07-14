@@ -1,8 +1,6 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
-import com.oopman.collectioneer.db.traits.entity.raw
-
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 trait PropertyValue:
@@ -14,9 +12,9 @@ trait PropertyValue:
   def floatValues: Seq[Float]
   def doubleValues: Seq[Double]
   def booleanValues: Seq[Boolean]
-  def dateValues: Seq[LocalDate]
-  def timeValues: Seq[LocalTime]
-  def timestampValues: Seq[ZonedDateTime]
+  def localDateValues: Seq[LocalDate]
+  def localTimeValues: Seq[LocalTime]
+  def offsetDateTimeValues: Seq[OffsetDateTime]
   def uuidValues: Seq[UUID]
   def jsonValues: Seq[io.circe.Json]
   
@@ -28,9 +26,9 @@ trait PropertyValue:
                         floatValues: Seq[Float] = floatValues,
                         doubleValues: Seq[Double] = doubleValues,
                         booleanValues: Seq[Boolean] = booleanValues,
-                        dateValues: Seq[LocalDate] = dateValues,
-                        timeValues: Seq[LocalTime] = timeValues,
-                        timestampValues: Seq[ZonedDateTime] = timestampValues,
+                        localDateValues: Seq[LocalDate] = localDateValues,
+                        localTimeValues: Seq[LocalTime] = localTimeValues,
+                        offsetDateTimeValues: Seq[OffsetDateTime] = offsetDateTimeValues,
                         uuidValues: Seq[UUID] = uuidValues,
                         jsonValues: Seq[io.circe.Json] = jsonValues
                        ): PropertyValue

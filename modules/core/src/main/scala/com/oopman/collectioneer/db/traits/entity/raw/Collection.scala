@@ -2,21 +2,21 @@ package com.oopman.collectioneer.db.traits.entity.raw
 
 import com.oopman.collectioneer.db.traits
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 trait Collection:
   def pk: UUID
   def virtual: Boolean
   def deleted: Boolean
-  def created: ZonedDateTime
-  def modified: ZonedDateTime
+  def created: OffsetDateTime
+  def modified: OffsetDateTime
   
   def rawCopyWith(pk: UUID = pk,
                   virtual: Boolean = virtual,
                   deleted: Boolean = deleted,
-                  created: ZonedDateTime = created,
-                  modified: ZonedDateTime = modified): Collection
+                  created: OffsetDateTime = created,
+                  modified: OffsetDateTime = modified): Collection
 
   override def equals(obj: Any): Boolean = obj match {
     case collection: Collection => pk.equals(collection.pk)

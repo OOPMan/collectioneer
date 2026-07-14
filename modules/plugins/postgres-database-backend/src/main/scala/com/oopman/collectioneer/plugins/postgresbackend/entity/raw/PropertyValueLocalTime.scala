@@ -4,16 +4,15 @@ import com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
 import scalikejdbc.*
 
-import java.time.{LocalTime, ZonedDateTime}
 import java.util.UUID
 
 class PropertyValueTimeSQLSyntaxSupport(override val tableName: String)
-extends PropertyValueSQLSyntaxSupport[raw.PropertyValueTime](tableName):
-  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueTime])(rs: WrappedResultSet): raw.PropertyValueTime =
+extends PropertyValueSQLSyntaxSupport[raw.PropertyValueLocalTime](tableName):
+  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueLocalTime])(rs: WrappedResultSet): raw.PropertyValueLocalTime =
     // TODO: Implement properly
-    raw.PropertyValueTime(
+    raw.PropertyValueLocalTime(
       collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 
-object PropertyValueTime extends PropertyValueTimeSQLSyntaxSupport("PROPERTY_VALUE_TIME")
+object PropertyValueLocalTime extends PropertyValueTimeSQLSyntaxSupport("PROPERTY_VALUE_LOCALTIME")

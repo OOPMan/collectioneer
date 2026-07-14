@@ -108,8 +108,7 @@ create table relationship_collection
   denote whether it has been marked as Deleted.
  */
 create type property_type as enum(
-    'text', 'bytes', 'smallint', 'int', 'bigint', 'numeric', 'float', 'double', 'boolean', 'date', 'time', 'timestamp',
-    'uuid', 'json'
+    'String', 'Bytes', 'Short', 'Int', 'Long', 'Float', 'Double', 'Boolean', 'LocalDate', 'LocalTime', 'OffsetDateTime', 'UUID', 'JSON'
 );
 create table property
 (
@@ -229,11 +228,11 @@ create table property_value_long
     index int not null default 0,
     created timestamp with time zone not null default now(),
     modified timestamp with time zone not null default now(),
-    constraint property_value_bigint_pk
+    constraint property_value_long_pk
         primary key (pk),
-    constraint property_value_bigint_collection_pk_fk
+    constraint property_value_long_collection_pk_fk
         foreign key (collection_pk) references collection(pk),
-    constraint property_value_bigint_property_pk_fk
+    constraint property_value_long_property_pk_fk
         foreign key (property_pk) references property(pk)
 );
 
@@ -288,7 +287,7 @@ create table property_value_boolean
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_date
+create table property_value_localdate
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
@@ -305,7 +304,7 @@ create table property_value_date
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_time
+create table property_value_localtime
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,
@@ -322,7 +321,7 @@ create table property_value_time
         foreign key (property_pk) references property(pk)
 );
 
-create table property_value_timestamp
+create table property_value_offsetdatetime
 (
     pk uuid not null default gen_random_uuid(),
     collection_pk uuid not null,

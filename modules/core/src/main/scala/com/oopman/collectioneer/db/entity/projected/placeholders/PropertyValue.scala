@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.entity.projected.placeholders
 import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 import io.circe.Json
 
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 object PropertyValue extends projected.PropertyValue:
@@ -16,12 +16,12 @@ object PropertyValue extends projected.PropertyValue:
   def floatValues: Seq[Float] = reject
   def doubleValues: Seq[Double] = reject
   def booleanValues: Seq[Boolean] = reject
-  def dateValues: Seq[LocalDate] = reject
-  def timeValues: Seq[LocalTime] = reject
-  def timestampValues: Seq[ZonedDateTime] = reject
+  def localDateValues: Seq[LocalDate] = reject
+  def localTimeValues: Seq[LocalTime] = reject
+  def offsetDateTimeValues: Seq[OffsetDateTime] = reject
   def uuidValues: Seq[UUID] = reject
   def jsonValues: Seq[Json] = reject
   def projectedCopyWith(textValues: Seq[String], byteValues: Seq[Array[Byte]], shortValues: Seq[Short], intValues: Seq[Int],
                         longValues: Seq[Long], floatValues: Seq[Float], doubleValues: Seq[Double], booleanValues: Seq[Boolean], 
-                        dateValues: Seq[LocalDate], timeValues: Seq[LocalTime], timestampValues: Seq[ZonedDateTime],
+                        dateValues: Seq[LocalDate], timeValues: Seq[LocalTime], timestampValues: Seq[OffsetDateTime],
                         uuidValues: Seq[UUID], jsonValues: Seq[Json]): projected.PropertyValue = reject

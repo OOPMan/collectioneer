@@ -8,7 +8,7 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 object Collections:
@@ -18,8 +18,8 @@ object Collections:
     propertyName: String,
     propertyTypes: Seq[String],
     deleted: Boolean,
-    created: ZonedDateTime,
-    modified: ZonedDateTime
+    created: OffsetDateTime,
+    modified: OffsetDateTime
   )
 
   case class CollectionWithPropertyValues
@@ -27,8 +27,8 @@ object Collections:
     pk: UUID = UUID.randomUUID(),
     virtual: Boolean = false,
     deleted: Boolean = false,
-    created: ZonedDateTime = ZonedDateTime.now(),
-    modified: ZonedDateTime = ZonedDateTime.now(),
+    created: OffsetDateTime = OffsetDateTime.now(),
+    modified: OffsetDateTime = OffsetDateTime.now(),
     properties: Seq[Property] = Nil,
     relatedProperties: Seq[Property] = Nil,
     propertyValues: Map[String, Seq[String]] = Map()

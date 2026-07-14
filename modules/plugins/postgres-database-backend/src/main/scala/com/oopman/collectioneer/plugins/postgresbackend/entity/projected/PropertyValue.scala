@@ -5,7 +5,7 @@ import com.oopman.collectioneer.db.{entity, traits}
 import io.circe.parser.*
 import scalikejdbc.WrappedResultSet
 
-import java.time.ZoneId
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 object PropertyValue:
@@ -20,9 +20,9 @@ object PropertyValue:
       Utils.resultSetArrayToListOf[Float](rs, "property_value_float"),
       Utils.resultSetArrayToListOf[Double](rs, "property_value_double"),
       Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean"),
-      Utils.resultSetArrayToListOf[java.sql.Date](rs, "property_value_date").map(_.toLocalDate),
-      Utils.resultSetArrayToListOf[java.sql.Time](rs, "property_value_time").map(_.toLocalTime),
-      Utils.resultSetArrayToListOf[java.sql.Timestamp](rs, "property_value_timestamp").map(_.toLocalDateTime.atZone(ZoneId.systemDefault)),
+      Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date"),
+      Utils.resultSetArrayToListOf[LocalTime](rs, "property_value_time"),
+      Utils.resultSetArrayToListOf[OffsetDateTime](rs, "property_value_timestamp"),
       Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid"),
       Utils.resultSetArrayToListOf[String](rs, "property_value_json").map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
     )
@@ -61,13 +61,13 @@ object PropertyValue:
     propertyValue.booleanValues.zipWithIndex.map((booleanValue, index) => entity.raw.PropertyValueBoolean(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = booleanValue, index = index
     )) ++
-    propertyValue.dateValues.zipWithIndex.map((dateValue, index) => entity.raw.PropertyValueDate(
+    propertyValue.localDateValues.zipWithIndex.map((dateValue, index) => entity.raw.PropertyValueLocalDate(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = dateValue, index = index
     )) ++
-    propertyValue.timeValues.zipWithIndex.map((timeValue, index) => entity.raw.PropertyValueTime(
+    propertyValue.localTimeValues.zipWithIndex.map((timeValue, index) => entity.raw.PropertyValueLocalTime(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = timeValue, index = index
     )) ++
-    propertyValue.timestampValues.zipWithIndex.map((timestampValue, index) => entity.raw.PropertyValueTimestamp(
+    propertyValue.offsetDateTimeValues.zipWithIndex.map((timestampValue, index) => entity.raw.PropertyValueOffsetDateTime(
       collectionPK = collectionPK, propertyPK = propertyPK, propertyValue = timestampValue, index = index
     )) ++
     propertyValue.uuidValues.zipWithIndex.map((uuidValue, index) => entity.raw.PropertyValueUUID(

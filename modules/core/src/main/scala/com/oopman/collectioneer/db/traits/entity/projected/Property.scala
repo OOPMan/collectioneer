@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.traits.entity.projected
 
 import com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 trait Property extends raw.Property:
@@ -12,8 +12,8 @@ trait Property extends raw.Property:
                         propertyName: String = propertyName,
                         propertyTypes: Seq[raw.PropertyType] = propertyTypes,
                         deleted: Boolean = deleted,
-                        created: ZonedDateTime = created,
-                        modified: ZonedDateTime = modified,
+                        created: OffsetDateTime = created,
+                        modified: OffsetDateTime = modified,
                         propertyValues: Map[raw.Property, PropertyValue] = propertyValues): Property
 
 

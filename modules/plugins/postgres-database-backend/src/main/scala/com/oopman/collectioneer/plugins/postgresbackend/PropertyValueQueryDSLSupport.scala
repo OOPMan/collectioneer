@@ -7,7 +7,7 @@ import scalikejdbc.*
 import shapeless3.typeable.{TypeCase, Typeable}
 
 import java.sql
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 
@@ -31,7 +31,7 @@ object PropertyValueQueryDSLSupport:
   private val `Seq[Short]` = TypeCase[Seq[Short]]
   private val `Seq[io.circe.Json]` = TypeCase[Seq[io.circe.Json]]
   private val `Seq[LocalTime]` = TypeCase[Seq[LocalTime]]
-  private val `Seq[ZonedDateTime]` = TypeCase[Seq[ZonedDateTime]]
+  private val `Seq[OffsetDateTime]` = TypeCase[Seq[OffsetDateTime]]
   private val `Seq[UUID]` = TypeCase[Seq[UUID]]
   private val `Seq[String]` = TypeCase[Seq[String]]
 
@@ -79,9 +79,9 @@ object PropertyValueQueryDSLSupport:
     extension (seq: Seq[LocalTime]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
       session.connection.createArrayOf("TIME", seq.toArray)
 
-  given ToSQLArray[ZonedDateTime] with
-    extension (seq: Seq[ZonedDateTime]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
-      session.connection.createArrayOf("TIMESTAMP", seq.toArray)
+  given ToSQLArray[OffsetDateTime] with
+    extension (seq: Seq[OffsetDateTime]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
+      session.connection.createArrayOf("TIMESTAMP WITH TIME ZONE", seq.toArray)
 
   given ToSQLArray[UUID] with
     extension (seq: Seq[UUID]) def toSQLArray(implicit session: DBSession = AutoSession): sql.Array =
@@ -118,10 +118,17 @@ object PropertyValueQueryDSLSupport:
   }
 
   def propertyTypeToScalarCast(propertyType: PropertyType): String = propertyType match
-    case PropertyType.bytes => "bytea"
-    case PropertyType.float => "real"
-    case PropertyType.double => "double precision"
-    case PropertyType.json => "jsonb"
+    case PropertyType.String          => "text"
+    case PropertyType.Bytes           => "bytea"
+    case PropertyType.Short           => "int2"
+    case PropertyType.Int             => "int4"
+    case PropertyType.Long            => "int8"
+    case PropertyType.Float           => "float4"
+    case PropertyType.Double          => "float8"
+    case PropertyType.LocalDate       => "date"
+    case PropertyType.LocalTime       => "time"
+    case PropertyType.OffsetDateTime  => "timestamp with time zone"
+    case PropertyType.JSON            => "jsonb"
     case _ => propertyType.toString
 
   def propertyTypeToVectorCast(propertyType: PropertyType): String =
@@ -169,7 +176,7 @@ object PropertyValueQueryDSLSupport:
         case `Seq[Short]`(seq) => seq.toSQLArray
         case `Seq[io.circe.Json]`(seq) => seq.toSQLArray
         case `Seq[LocalTime]`(seq) => seq.toSQLArray
-        case `Seq[ZonedDateTime]`(seq) => seq.toSQLArray
+        case `Seq[OffsetDateTime]`(seq) => seq.toSQLArray
         case `Seq[UUID]`(seq) => seq.toSQLArray
         case `Seq[String]`(seq) => seq.toSQLArray
         case _ => session.connection.createArrayOf("VARCHAR", Array.empty) // Included to suppress compiler warnings

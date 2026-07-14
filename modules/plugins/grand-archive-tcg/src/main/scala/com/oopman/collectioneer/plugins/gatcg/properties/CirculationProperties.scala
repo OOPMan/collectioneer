@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object CirculationPropertyUUIDs:
@@ -19,25 +19,25 @@ enum CirculationProperties(val property: projected.Property):
   case foil extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.foil,
     propertyName = "Foil",
-    propertyTypes = PropertyType.boolean :: Nil,
+    propertyTypes = PropertyType.Boolean :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case population extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.population,
     propertyName = "Population",
-    propertyTypes = PropertyType.int :: Nil,
+    propertyTypes = PropertyType.Int :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case populationOperator extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.populationOperator,
     propertyName = "Population Operator",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case uuid extends CirculationProperties(Property(
     pk = CirculationPropertyUUIDs.uuid,
     propertyName = "UUID",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
 

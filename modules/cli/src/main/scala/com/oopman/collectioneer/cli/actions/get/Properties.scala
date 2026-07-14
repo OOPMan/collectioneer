@@ -7,7 +7,7 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 object Properties:
@@ -17,8 +17,8 @@ object Properties:
     propertyName: String,
     propertyTypes: Seq[String],
     deleted: Boolean,
-    created: ZonedDateTime,
-    modified: ZonedDateTime,
+    created: OffsetDateTime,
+    modified: OffsetDateTime,
     properties: Map[String, Seq[String]]
   )
   case class GetPropertiesResult

@@ -16,8 +16,8 @@ object Common:
     propertyValue.floatValues.map(_.toString) ++
     propertyValue.doubleValues.map(_.toString) ++
     propertyValue.booleanValues.map(_.toString) ++
-    propertyValue.dateValues.map(_.toString) ++
-    propertyValue.timeValues.map(_.toString) ++
-    propertyValue.timestampValues.map(_.toString) ++
+    propertyValue.localDateValues.map(_.toString) ++
+    propertyValue.localTimeValues.map(_.toString) ++
+    propertyValue.offsetDateTimeValues.map(_.toString) ++
     propertyValue.uuidValues.map(_.toString) ++
     propertyValue.jsonValues.map(_.spaces2)

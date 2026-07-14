@@ -31,74 +31,74 @@ enum EditionProperties(val property: projected.Property):
   case editionUID extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.editionUID,
     propertyName = "Edition UID",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   // TODO: We can probably remove this or mark it has hidden
   case cardUID extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.cardUID,
     propertyName = "Card UID",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case collectorNumber extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.collectorNumber,
     propertyName = "Collector Number",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case illustrator extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.illustrator,
     propertyName = "Artist",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case image extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.image,
     propertyName = "Image",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case slug extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.slug,
     propertyName = "Slug",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   // TODO: Add a property for storing downloaded image data?
   case rarity extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.rarity,
     propertyName = "Rarity",
-    propertyTypes = PropertyType.short :: Nil,
+    propertyTypes = PropertyType.Short :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case effect extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effect,
     propertyName = "Effect",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case effectRaw extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.effectRaw,
     propertyName = "Raw Effect",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty,
   )) with HasProperty
   case flavourText extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.flavourText,
     propertyName = "Flavour text",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case configuration extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.configuration,
     propertyName = "Configuration",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case orientation extends EditionProperties(Property(
     pk = EditionPropertiesUUIDs.orientation,
     propertyName = "Orientation",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty

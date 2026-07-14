@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object SetPropertiesUUIDs:
@@ -17,12 +17,12 @@ enum SetProperties(val property: projected.Property):
   case prefix extends SetProperties(Property(
     pk = SetPropertiesUUIDs.prefix,
     propertyName = "Set Prefix",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty
   case language extends SetProperties(Property(
     pk = SetPropertiesUUIDs.language,
     propertyName = "Set Language",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.visibleGATCGProperty
   )) with HasProperty

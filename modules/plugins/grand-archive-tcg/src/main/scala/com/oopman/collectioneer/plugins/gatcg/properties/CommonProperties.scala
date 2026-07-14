@@ -23,7 +23,7 @@ private object CommonPropertiesUUIDs:
 private val isGATCGProperty = Property(
   pk = CommonPropertiesUUIDs.isGATCGProperty,
   propertyName = "Is GATCG Property",
-  propertyTypes = List(PropertyType.boolean),
+  propertyTypes = List(PropertyType.Boolean),
   propertyValues = Map(
     CoreProperties.minValues -> PropertyValue(shortValues = List(1)),
     CoreProperties.maxValues -> PropertyValue(shortValues = List(1))
@@ -38,66 +38,66 @@ enum CommonProperties(val property: projected.Property) :
   case isGATCGCollection extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGCollection,
     propertyName = "Is GATCG Collection",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGSet extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGSet,
     propertyName = "Is GATCG Set",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGSetCollection extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGSetCollection,
     propertyName = "Is GATCG Set Collection",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGCardCollection extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGCardCollection,
     propertyName = "Is GATCG Card Collection",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGCard extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGCard,
     propertyName = "Is GATCG Card",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGInnerCard extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGInnerCard,
     propertyName = "Is GATCG Inner Card",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGEdition extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGEdition,
     propertyName = "Is GATCG Edition",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGInnerEdition extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGInnerEdition,
     propertyName = "Is GATCG Inner Edition",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGCirculation extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGCirculation,
     propertyName = "Is GATCG Circulation",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGRule extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGRule,
     propertyName = "Is GATCG Rule",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty
   case isGATCGReference extends CommonProperties(Property(
     pk = CommonPropertiesUUIDs.isGATCGReference,
     propertyName = "Is GATCG Reference",
-    propertyTypes = List(PropertyType.boolean),
+    propertyTypes = List(PropertyType.Boolean),
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty

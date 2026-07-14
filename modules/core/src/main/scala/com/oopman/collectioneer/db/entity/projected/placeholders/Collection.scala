@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.entity.projected.placeholders
 import com.oopman.collectioneer.db.entity.projected.Collection
 import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 object Collection extends projected.Collection:
@@ -14,9 +14,9 @@ object Collection extends projected.Collection:
   def pk: UUID = reject
   def virtual: Boolean = reject
   def deleted: Boolean = reject
-  def created: ZonedDateTime = reject
-  def modified: ZonedDateTime = reject
-  def rawCopyWith(pk: UUID, virtual: Boolean, deleted: Boolean, created: ZonedDateTime, modified: ZonedDateTime): raw.Collection = reject
-  def projectedCopyWith(pk: UUID, virtual: Boolean, deleted: Boolean, created: ZonedDateTime, modified: ZonedDateTime,
+  def created: OffsetDateTime = reject
+  def modified: OffsetDateTime = reject
+  def rawCopyWith(pk: UUID, virtual: Boolean, deleted: Boolean, created: OffsetDateTime, modified: OffsetDateTime): raw.Collection = reject
+  def projectedCopyWith(pk: UUID, virtual: Boolean, deleted: Boolean, created: OffsetDateTime, modified: OffsetDateTime,
                         properties: Seq[raw.Property], relatedProperties: Seq[raw.Property],
                         propertyValues: Map[raw.Property, projected.PropertyValue]): Collection = reject

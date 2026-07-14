@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.entity.raw
 
 import com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 case class PropertyValueLong
@@ -11,8 +11,8 @@ case class PropertyValueLong
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Long = Long.MinValue,
 ) extends raw.PropertyValueLong:
 
@@ -20,8 +20,8 @@ case class PropertyValueLong
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Long): raw.PropertyValueLong =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -31,8 +31,8 @@ case class PropertyValueBoolean
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Boolean = false,
 ) extends raw.PropertyValueBoolean:
 
@@ -40,8 +40,8 @@ case class PropertyValueBoolean
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Boolean): raw.PropertyValueBoolean =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -51,8 +51,8 @@ case class PropertyValueBytes
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Array[Byte] = Array.empty,
 ) extends raw.PropertyValueBytes:
 
@@ -60,29 +60,29 @@ case class PropertyValueBytes
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Array[Byte]): raw.PropertyValueBytes =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
-case class PropertyValueDate
+case class PropertyValueLocalDate
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: LocalDate = LocalDate.now(),
-) extends raw.PropertyValueDate:
+) extends raw.PropertyValueLocalDate:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
-                  propertyValue: LocalDate): raw.PropertyValueDate =
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
+                  propertyValue: LocalDate): raw.PropertyValueLocalDate =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 case class PropertyValueDouble
@@ -91,8 +91,8 @@ case class PropertyValueDouble
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Double = Double.MinValue,
 ) extends raw.PropertyValueDouble:
 
@@ -100,8 +100,8 @@ case class PropertyValueDouble
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Double): raw.PropertyValueDouble =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -111,8 +111,8 @@ case class PropertyValueFloat
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Float = Float.MinValue,
 ) extends raw.PropertyValueFloat:
 
@@ -120,8 +120,8 @@ case class PropertyValueFloat
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Float): raw.PropertyValueFloat =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -131,8 +131,8 @@ case class PropertyValueInt
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Int = Int.MinValue,
 ) extends raw.PropertyValueInt:
 
@@ -140,8 +140,8 @@ case class PropertyValueInt
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Int): raw.PropertyValueInt =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -151,8 +151,8 @@ case class PropertyValueJSON
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: io.circe.Json = io.circe.Json.Null,
 ) extends raw.PropertyValueJSON:
 
@@ -160,8 +160,8 @@ case class PropertyValueJSON
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: io.circe.Json): raw.PropertyValueJSON =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -171,8 +171,8 @@ case class PropertyValueShort
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: Short = Short.MinValue,
 ) extends raw.PropertyValueShort:
 
@@ -180,8 +180,8 @@ case class PropertyValueShort
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: Short): raw.PropertyValueShort =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
@@ -191,8 +191,8 @@ case class PropertyValueString
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: String = "",
 ) extends raw.PropertyValueString:
 
@@ -200,49 +200,49 @@ case class PropertyValueString
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: String): raw.PropertyValueString =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
-case class PropertyValueTime
+case class PropertyValueLocalTime
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: LocalTime = LocalTime.now(),
-) extends raw.PropertyValueTime:
+) extends raw.PropertyValueLocalTime:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
-                  propertyValue: LocalTime): raw.PropertyValueTime =
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
+                  propertyValue: LocalTime): raw.PropertyValueLocalTime =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
-case class PropertyValueTimestamp
+case class PropertyValueOffsetDateTime
 (
   pk: UUID = UUID.randomUUID(),
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
-  propertyValue: ZonedDateTime = ZonedDateTime.now(),
-) extends raw.PropertyValueTimestamp:
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
+  propertyValue: OffsetDateTime = OffsetDateTime.now(),
+) extends raw.PropertyValueOffsetDateTime:
 
   def rawCopyWith(pk: UUID,
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
-                  propertyValue: ZonedDateTime): raw.PropertyValueTimestamp =
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
+                  propertyValue: OffsetDateTime): raw.PropertyValueOffsetDateTime =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 
 case class PropertyValueUUID
@@ -251,8 +251,8 @@ case class PropertyValueUUID
   collectionPK: UUID,
   propertyPK: UUID,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now(),
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now(),
   propertyValue: UUID = UUID.randomUUID(),
 ) extends raw.PropertyValueUUID:
 
@@ -260,8 +260,8 @@ case class PropertyValueUUID
                   collectionPK: UUID,
                   propertyPK: UUID,
                   index: Int,
-                  created: ZonedDateTime,
-                  modified: ZonedDateTime,
+                  created: OffsetDateTime,
+                  modified: OffsetDateTime,
                   propertyValue: UUID): raw.PropertyValueUUID =
     copy(pk = pk, collectionPK = collectionPK, propertyPK = propertyPK, index = index, created = created, modified = modified, propertyValue = propertyValue)
 

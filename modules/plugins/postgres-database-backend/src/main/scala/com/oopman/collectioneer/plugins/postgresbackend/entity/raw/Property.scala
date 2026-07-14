@@ -34,8 +34,8 @@ object Property extends SQLSyntaxSupport[raw.Property]:
       propertyName = rs.string(propertyNameColumn),
       propertyTypes = propertyTypes,
       deleted = rs.boolean(deletedColumn),
-      created = rs.zonedDateTime(createdColumn),
-      modified = rs.zonedDateTime(modifiedColmn)
+      created = rs.offsetDateTime(createdColumn),
+      modified = rs.offsetDateTime(modifiedColmn)
     )
 
   def propertiesSeqToBatchInsertSeq(properties: Seq[traits.entity.raw.Property]): Seq[Seq[Any]] =

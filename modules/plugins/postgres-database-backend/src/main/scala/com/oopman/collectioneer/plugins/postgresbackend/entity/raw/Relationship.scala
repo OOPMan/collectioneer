@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.raw
 
 import com.oopman.collectioneer.db.entity.raw
-import com.oopman.collectioneer.db.traits.entity.raw.{Relationship, HasTopLevelCollectionPKAndLevel, RelationshipType}
+import com.oopman.collectioneer.db.traits.entity.raw.{HasTopLevelCollectionPKAndLevel, Relationship, RelationshipType}
 import scalikejdbc.*
 
 import java.util.UUID
@@ -19,8 +19,8 @@ object Relationship extends SQLSyntaxSupport[raw.Relationship]:
       relatedCollectionPK = UUID.fromString(rs.string("related_collection_pk")), 
       relationshipType = RelationshipType.valueOf(rs.string("relationship_type")),
       index = rs.int("index"), 
-      created = rs.dateTime("created"), 
-      modified = rs.dateTime("modified")
+      created = rs.offsetDateTime("created"),
+      modified = rs.offsetDateTime("modified")
     )
     
   def wrappedResultSetToRelationshipAndHasTopLevelCollectionPKAndLevel(rs: WrappedResultSet): Relationship & HasTopLevelCollectionPKAndLevel =
@@ -30,8 +30,8 @@ object Relationship extends SQLSyntaxSupport[raw.Relationship]:
       relatedCollectionPK = UUID.fromString(rs.string("related_collection_pk")),
       relationshipType = RelationshipType.valueOf(rs.string("relationship_type")),
       index = rs.int("index"),
-      created = rs.dateTime("created"),
-      modified = rs.dateTime("modified")
+      created = rs.offsetDateTime("created"),
+      modified = rs.offsetDateTime("modified")
     ) with HasTopLevelCollectionPKAndLevel(
       topLevelCollectionPK = UUID.fromString(rs.string("top_level_collection_pk")),
       level = rs.int("level")

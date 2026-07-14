@@ -3,7 +3,7 @@ package com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.db.traits
 import com.oopman.collectioneer.db.traits.entity.raw.Relationship
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 case class Relationship
@@ -13,16 +13,16 @@ case class Relationship
   relatedCollectionPK: UUID,
   relationshipType: traits.entity.raw.RelationshipType = traits.entity.raw.RelationshipType.ChildOf,
   index: Int = 0,
-  created: ZonedDateTime = ZonedDateTime.now(),
-  modified: ZonedDateTime = ZonedDateTime.now()
+  created: OffsetDateTime = OffsetDateTime.now(),
+  modified: OffsetDateTime = OffsetDateTime.now()
 ) extends traits.entity.raw.Relationship:
 
   def rawCopyWith(pk: UUID = pk,
                   collectionPK: UUID = collectionPK,
                   relatedCollectionPK: UUID = relatedCollectionPK,
                   index: Int = index,
-                  created: ZonedDateTime = created,
-                  modified: ZonedDateTime = modified): Relationship =
+                  created: OffsetDateTime = created,
+                  modified: OffsetDateTime = modified): Relationship =
     copy(
       pk = pk, 
       collectionPK = collectionPK, 

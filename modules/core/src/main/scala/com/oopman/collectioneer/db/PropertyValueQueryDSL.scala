@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db
 
 import com.oopman.collectioneer.db.traits.entity.raw.Property
 
-import java.time.{LocalDate, LocalTime, ZonedDateTime}
+import java.time.{LocalDate, LocalTime, OffsetDateTime}
 import java.util.UUID
 
 
@@ -41,10 +41,10 @@ object PropertyValueQueryDSL:
 
   type ScalarValues =
     Long | Boolean | Array[Byte] | LocalDate | Double | Float | Short | Int | io.circe.Json | String |
-    LocalTime | ZonedDateTime | UUID
+    LocalTime | OffsetDateTime | UUID
   type VectorValues =
     Seq[Long] | Seq[Boolean] | Seq[Array[Byte]] | Seq[LocalDate] | Seq[Double] | Seq[Float] | Seq[Short] | Seq[Int] |
-    Seq[io.circe.Json] | Seq[String] | Seq[LocalTime] | Seq[ZonedDateTime] | Seq[UUID]
+    Seq[io.circe.Json] | Seq[String] | Seq[LocalTime] | Seq[OffsetDateTime] | Seq[UUID]
   type Values = ScalarValues | VectorValues
   type Operand = Property | Values | Comparison
 

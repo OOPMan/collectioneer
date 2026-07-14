@@ -41,9 +41,9 @@ object PropertyValueDAOImpl extends scalikejdbc.traits.dao.projected.ScalikeProp
         case pv: traits.entity.raw.PropertyValueFloat => (pv, postgresbackend.queries.raw.PropertyValueFloatQueries.insert)
         case pv: traits.entity.raw.PropertyValueDouble => (pv, postgresbackend.queries.raw.PropertyValueDoubleQueries.insert)
         case pv: traits.entity.raw.PropertyValueBoolean => (pv, postgresbackend.queries.raw.PropertyValueBooleanQueries.insert)
-        case pv: traits.entity.raw.PropertyValueDate => (pv, postgresbackend.queries.raw.PropertyValueDateQueries.insert)
-        case pv: traits.entity.raw.PropertyValueTime => (pv, postgresbackend.queries.raw.PropertyValueTimeQueries.insert)
-        case pv: traits.entity.raw.PropertyValueTimestamp => (pv, postgresbackend.queries.raw.PropertyValueTimestampQueries.insert)
+        case pv: traits.entity.raw.PropertyValueLocalDate => (pv, postgresbackend.queries.raw.PropertyValueLocalDateQueries.insert)
+        case pv: traits.entity.raw.PropertyValueLocalTime => (pv, postgresbackend.queries.raw.PropertyValueLocalTimeQueries.insert)
+        case pv: traits.entity.raw.PropertyValueOffsetDateTime => (pv, postgresbackend.queries.raw.PropertyValueOffsetDateTimeQueries.insert)
         case pv: traits.entity.raw.PropertyValueUUID => (pv, postgresbackend.queries.raw.PropertyValueUUIDQueries.insert)
         case pv: traits.entity.raw.PropertyValueJSON => (pv, postgresbackend.queries.raw.PropertyValueJSONQueries.insert)
       }

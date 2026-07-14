@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object SetCardPropertiesUUIDs:
@@ -16,6 +16,6 @@ enum SetCardProperties(val property: projected.Property):
   case primaryEditionUID extends SetCardProperties(Property(
     pk = SetCardPropertiesUUIDs.primaryEditionUID,
     propertyName = "Primary Edition UID",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.invisibleGATCGProperty
   )) with HasProperty

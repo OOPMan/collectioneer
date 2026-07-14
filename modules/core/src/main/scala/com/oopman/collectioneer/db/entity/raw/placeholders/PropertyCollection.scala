@@ -2,7 +2,7 @@ package com.oopman.collectioneer.db.entity.raw.placeholders
 
 import com.oopman.collectioneer.db.traits.entity.raw
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 object PropertyCollection extends raw.PropertyCollection:
@@ -11,9 +11,9 @@ object PropertyCollection extends raw.PropertyCollection:
   override def collectionPK: UUID = reject
   override def index: Int = reject
   override def propertyCollectionRelationshipType: raw.PropertyCollectionRelationshipType = reject
-  override def created: ZonedDateTime = reject
-  override def modified: ZonedDateTime = reject
+  override def created: OffsetDateTime = reject
+  override def modified: OffsetDateTime = reject
   override def rawCopyWith(propertyPK: UUID, collectionPK: UUID, index: Int, propertyCollectionRelationshipType: raw.PropertyCollectionRelationshipType, 
-                           created: ZonedDateTime, modified: ZonedDateTime): raw.PropertyCollection = reject
+                           created: OffsetDateTime, modified: OffsetDateTime): raw.PropertyCollection = reject
 
 

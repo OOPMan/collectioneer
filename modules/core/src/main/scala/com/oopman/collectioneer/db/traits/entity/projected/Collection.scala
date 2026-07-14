@@ -1,8 +1,8 @@
 package com.oopman.collectioneer.db.traits.entity.projected
 
-import com.oopman.collectioneer.db.traits.entity.{raw, projected}
+import com.oopman.collectioneer.db.traits.entity.{projected, raw}
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 trait Collection extends raw.Collection:
@@ -15,8 +15,8 @@ trait Collection extends raw.Collection:
   def projectedCopyWith(pk: UUID = pk,
                         virtual: Boolean = virtual,
                         deleted: Boolean = deleted,
-                        created: ZonedDateTime = created,
-                        modified: ZonedDateTime = modified,
+                        created: OffsetDateTime = created,
+                        modified: OffsetDateTime = modified,
                         properties: Seq[raw.Property] =  properties,
                         relatedProperties: Seq[raw.Property] = relatedProperties,
                         propertyValues: Map[raw.Property, projected.PropertyValue] = propertyValues): Collection

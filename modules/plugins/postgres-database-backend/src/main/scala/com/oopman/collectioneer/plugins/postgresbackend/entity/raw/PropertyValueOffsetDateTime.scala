@@ -4,16 +4,15 @@ import com.oopman.collectioneer.db.entity.raw
 import com.oopman.collectioneer.db.scalikejdbc.entity.raw.PropertyValueSQLSyntaxSupport
 import scalikejdbc.*
 
-import java.time.ZonedDateTime
 import java.util.UUID
 
 class PropertyValueTimestampSQLSyntaxSupport(override val tableName: String)
-extends PropertyValueSQLSyntaxSupport[raw.PropertyValueTimestamp](tableName):
-  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueTimestamp])(rs: WrappedResultSet): raw.PropertyValueTimestamp =
+extends PropertyValueSQLSyntaxSupport[raw.PropertyValueOffsetDateTime](tableName):
+  override def apply(pv: scalikejdbc.ResultName[raw.PropertyValueOffsetDateTime])(rs: WrappedResultSet): raw.PropertyValueOffsetDateTime =
     // TODO: Implement properly
-    raw.PropertyValueTimestamp(
+    raw.PropertyValueOffsetDateTime(
       collectionPK = UUID.randomUUID(),
       propertyPK = UUID.randomUUID(),
     )
 
-object PropertyValueTimestamp extends PropertyValueTimestampSQLSyntaxSupport("PROPERTY_VALUE_TIMESTAMP")
+object PropertyValueOffsetDateTime extends PropertyValueTimestampSQLSyntaxSupport("PROPERTY_VALUE_OFFSETDATETIME")

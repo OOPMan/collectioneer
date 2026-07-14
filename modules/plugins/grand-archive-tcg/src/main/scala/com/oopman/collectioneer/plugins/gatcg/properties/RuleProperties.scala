@@ -1,9 +1,9 @@
 package com.oopman.collectioneer.plugins.gatcg.properties
 
 import com.oopman.collectioneer.db.entity.projected.Property
-import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.db.traits.entity.projected
 import com.oopman.collectioneer.db.traits.entity.projected.HasProperty
+import com.oopman.collectioneer.db.traits.entity.raw.PropertyType
 import com.oopman.collectioneer.given
 
 private object RulePropertiesUUIDs:
@@ -16,6 +16,6 @@ enum RuleProperties(val property: projected.Property):
   case dateAdded extends RuleProperties(Property(
     pk = RulePropertiesUUIDs.dateAdded,
     propertyName = "Date Added",
-    propertyTypes = PropertyType.text :: Nil,
+    propertyTypes = PropertyType.String :: Nil,
     propertyValues = PropertyValues.singleValue ++ PropertyValues.visibleGATCGProperty
   )) with HasProperty

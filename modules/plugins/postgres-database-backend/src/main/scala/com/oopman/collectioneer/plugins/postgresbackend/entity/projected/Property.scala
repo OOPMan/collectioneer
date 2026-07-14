@@ -1,7 +1,7 @@
 package com.oopman.collectioneer.plugins.postgresbackend.entity.projected
 
-import com.oopman.collectioneer.db.{traits, entity}
 import com.oopman.collectioneer.db.scalikejdbc.entity.Utils
+import com.oopman.collectioneer.db.{entity, traits}
 import scalikejdbc.*
 
 import java.util.UUID
@@ -21,7 +21,7 @@ object Property extends SQLSyntaxSupport[entity.projected.Property]:
       propertyName = rs.string(p.propertyName),
       propertyTypes = propertyType,
       deleted = rs.boolean(p.deleted),
-      created = rs.zonedDateTime(p.created),
-      modified = rs.zonedDateTime(p.modified),
+      created = rs.offsetDateTime(p.created),
+      modified = rs.offsetDateTime(p.modified),
       propertyValues = propertyValues,
     )
