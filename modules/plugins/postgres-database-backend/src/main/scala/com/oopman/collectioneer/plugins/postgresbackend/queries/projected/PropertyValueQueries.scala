@@ -68,27 +68,27 @@ object PropertyValueQueries:
             GROUP BY top_level_collection_pk, property_pk
           ),
           cte7($cte7ColumnsSQLSyntax) AS ($cte7InnerSQLSyntax),
-          cte8(top_level_collection_pk, related_collection_pk, property_pk, property_value_long, property_value_boolean, property_value_bytes, property_value_date,
+          cte8(top_level_collection_pk, related_collection_pk, property_pk, property_value_long, property_value_boolean, property_value_bytes, property_value_localdate,
                property_value_double, property_value_float, property_value_int, property_value_json,
-               property_value_short, property_value_string, property_value_time, property_value_timestamp, property_value_uuid
+               property_value_short, property_value_string, property_value_localtime, property_value_offsetdatetime, property_value_uuid
               ) AS (
               SELECT
                   cte6.top_level_collection_pk,
                   cte6.related_collection_pk,
                   cte6.property_pk,
-                  array_remove(array_agg(cte7.property_value_long     ORDER BY cte7.index), NULL) AS property_value_long,
-                  array_remove(array_agg(cte7.property_value_boolean    ORDER BY cte7.index), NULL) AS property_value_boolean,
-                  array_remove(array_agg(cte7.property_value_bytes      ORDER BY cte7.index), NULL) AS property_value_bytes,
-                  array_remove(array_agg(cte7.property_value_date       ORDER BY cte7.index), NULL) AS property_value_date,
-                  array_remove(array_agg(cte7.property_value_double     ORDER BY cte7.index), NULL) AS property_value_double,
-                  array_remove(array_agg(cte7.property_value_float      ORDER BY cte7.index), NULL) AS property_value_float,
-                  array_remove(array_agg(cte7.property_value_int        ORDER BY cte7.index), NULL) AS property_value_int,
-                  array_remove(array_agg(cte7.property_value_json       ORDER BY cte7.index), NULL) AS property_value_json,
-                  array_remove(array_agg(cte7.property_value_short   ORDER BY cte7.index), NULL) AS property_value_short,
-                  array_remove(array_agg(cte7.property_value_string       ORDER BY cte7.index), NULL) AS property_value_string,
-                  array_remove(array_agg(cte7.property_value_time       ORDER BY cte7.index), NULL) AS property_value_time,
-                  array_remove(array_agg(cte7.property_value_timestamp  ORDER BY cte7.index), NULL) AS property_value_timestamp,
-                  array_remove(array_agg(cte7.property_value_uuid       ORDER BY cte7.index), NULL) AS property_value_uuid
+                  array_remove(array_agg(cte7.property_value_long             ORDER BY cte7.index), NULL) AS property_value_long,
+                  array_remove(array_agg(cte7.property_value_boolean          ORDER BY cte7.index), NULL) AS property_value_boolean,
+                  array_remove(array_agg(cte7.property_value_bytes            ORDER BY cte7.index), NULL) AS property_value_bytes,
+                  array_remove(array_agg(cte7.property_value_localdate        ORDER BY cte7.index), NULL) AS property_value_localdate,
+                  array_remove(array_agg(cte7.property_value_double           ORDER BY cte7.index), NULL) AS property_value_double,
+                  array_remove(array_agg(cte7.property_value_float            ORDER BY cte7.index), NULL) AS property_value_float,
+                  array_remove(array_agg(cte7.property_value_int              ORDER BY cte7.index), NULL) AS property_value_int,
+                  array_remove(array_agg(cte7.property_value_json             ORDER BY cte7.index), NULL) AS property_value_json,
+                  array_remove(array_agg(cte7.property_value_short            ORDER BY cte7.index), NULL) AS property_value_short,
+                  array_remove(array_agg(cte7.property_value_string           ORDER BY cte7.index), NULL) AS property_value_string,
+                  array_remove(array_agg(cte7.property_value_localtime        ORDER BY cte7.index), NULL) AS property_value_localtime,
+                  array_remove(array_agg(cte7.property_value_offsetdatetime   ORDER BY cte7.index), NULL) AS property_value_offsetdatetime,
+                  array_remove(array_agg(cte7.property_value_uuid             ORDER BY cte7.index), NULL) AS property_value_uuid
               FROM cte6
               LEFT JOIN cte7 ON (
                   cte6.property_pk = cte7.property_pk AND
@@ -101,15 +101,15 @@ object PropertyValueQueries:
               cte8.property_value_long,
               cte8.property_value_boolean,
               cte8.property_value_bytes,
-              cte8.property_value_date,
+              cte8.property_value_localdate,
               cte8.property_value_double,
               cte8.property_value_float,
               cte8.property_value_int,
               cte8.property_value_json,
               cte8.property_value_short,
               cte8.property_value_string,
-              cte8.property_value_time,
-              cte8.property_value_timestamp,
+              cte8.property_value_localtime,
+              cte8.property_value_offsetdatetime,
               cte8.property_value_uuid,
               cte8.top_level_collection_pk,
               cte8.related_collection_pk
@@ -150,23 +150,23 @@ object PropertyValueQueries:
           ),
           cte3($cte3ColumnsSQLSyntax) AS ($cte3InnerSQLSyntax),
           cte4(collection_pk, property_pk, property_value_long, property_value_boolean, property_value_bytes,
-               property_value_date, property_value_double, property_value_float, property_value_int, property_value_json,
-               property_value_short, property_value_string, property_value_time, property_value_timestamp, property_value_uuid) AS (
+               property_value_localdate, property_value_double, property_value_float, property_value_int, property_value_json,
+               property_value_short, property_value_string, property_value_localtime, property_value_offsetdatetime, property_value_uuid) AS (
               SELECT cte3.collection_pk,
                      cte3.property_pk,
-                     array_remove(array_agg(cte3.property_value_long        ORDER BY cte3.index), NULL) AS property_value_long,
-                     array_remove(array_agg(cte3.property_value_boolean     ORDER BY cte3.index), NULL) AS property_value_boolean,
-                     array_remove(array_agg(cte3.property_value_bytes       ORDER BY cte3.index), NULL) AS property_value_bytes,
-                     array_remove(array_agg(cte3.property_value_date        ORDER BY cte3.index), NULL) AS property_value_date,
-                     array_remove(array_agg(cte3.property_value_double      ORDER BY cte3.index), NULL) AS property_value_double,
-                     array_remove(array_agg(cte3.property_value_float       ORDER BY cte3.index), NULL) AS property_value_float,
-                     array_remove(array_agg(cte3.property_value_int         ORDER BY cte3.index), NULL) AS property_value_int,
-                     array_remove(array_agg(cte3.property_value_json        ORDER BY cte3.index), NULL) AS property_value_json,
-                     array_remove(array_agg(cte3.property_value_short       ORDER BY cte3.index), NULL) AS property_value_short,
-                     array_remove(array_agg(cte3.property_value_string      ORDER BY cte3.index), NULL) AS property_value_string,
-                     array_remove(array_agg(cte3.property_value_time        ORDER BY cte3.index), NULL) AS property_value_time,
-                     array_remove(array_agg(cte3.property_value_timestamp   ORDER BY cte3.index), NULL) AS property_value_timestamp,
-                     array_remove(array_agg(cte3.property_value_uuid        ORDER BY cte3.index), NULL) AS property_value_uuid
+                     array_remove(array_agg(cte3.property_value_long              ORDER BY cte3.index), NULL) AS property_value_long,
+                     array_remove(array_agg(cte3.property_value_boolean           ORDER BY cte3.index), NULL) AS property_value_boolean,
+                     array_remove(array_agg(cte3.property_value_bytes             ORDER BY cte3.index), NULL) AS property_value_bytes,
+                     array_remove(array_agg(cte3.property_value_localdate         ORDER BY cte3.index), NULL) AS property_value_localdate,
+                     array_remove(array_agg(cte3.property_value_double            ORDER BY cte3.index), NULL) AS property_value_double,
+                     array_remove(array_agg(cte3.property_value_float             ORDER BY cte3.index), NULL) AS property_value_float,
+                     array_remove(array_agg(cte3.property_value_int               ORDER BY cte3.index), NULL) AS property_value_int,
+                     array_remove(array_agg(cte3.property_value_json              ORDER BY cte3.index), NULL) AS property_value_json,
+                     array_remove(array_agg(cte3.property_value_short             ORDER BY cte3.index), NULL) AS property_value_short,
+                     array_remove(array_agg(cte3.property_value_string            ORDER BY cte3.index), NULL) AS property_value_string,
+                     array_remove(array_agg(cte3.property_value_localtime         ORDER BY cte3.index), NULL) AS property_value_localtime,
+                     array_remove(array_agg(cte3.property_value_offsetdatetime    ORDER BY cte3.index), NULL) AS property_value_offsetdatetime,
+                     array_remove(array_agg(cte3.property_value_uuid              ORDER BY cte3.index), NULL) AS property_value_uuid
               FROM cte3
               GROUP BY cte3.collection_pk, cte3.property_pk
           )
@@ -176,15 +176,15 @@ object PropertyValueQueries:
               property_value_long,
               property_value_boolean,
               property_value_bytes,
-              property_value_date,
+              property_value_localdate,
               property_value_double,
               property_value_float,
               property_value_int,
               property_value_json,
               property_value_short,
               property_value_string,
-              property_value_time,
-              property_value_timestamp,
+              property_value_localtime,
+              property_value_offsetdatetime,
               property_value_uuid
           FROM cte4;
        """

@@ -12,7 +12,7 @@ object PropertyValue:
 
   def generatePropertyValueData(rs: WrappedResultSet): traits.entity.projected.PropertyValue =
     entity.projected.PropertyValue(
-      Utils.resultSetArrayToListOf[String](rs, "property_value_text"),
+      Utils.resultSetArrayToListOf[String](rs, "property_value_string"),
       Utils.resultSetArrayToListOf[Array[Byte]](rs, "property_value_bytes"),
       Utils.resultSetArrayToListOf[Short](rs, "property_value_short"),
       Utils.resultSetArrayToListOf[Int](rs, "property_value_int"),
@@ -20,9 +20,9 @@ object PropertyValue:
       Utils.resultSetArrayToListOf[Float](rs, "property_value_float"),
       Utils.resultSetArrayToListOf[Double](rs, "property_value_double"),
       Utils.resultSetArrayToListOf[Boolean](rs, "property_value_boolean"),
-      Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_date"),
-      Utils.resultSetArrayToListOf[LocalTime](rs, "property_value_time"),
-      Utils.resultSetArrayToListOf[OffsetDateTime](rs, "property_value_timestamp"),
+      Utils.resultSetArrayToListOf[LocalDate](rs, "property_value_localdate"),
+      Utils.resultSetArrayToListOf[LocalTime](rs, "property_value_localtime"),
+      Utils.resultSetArrayToListOf[OffsetDateTime](rs, "property_value_offsetdatetime"),
       Utils.resultSetArrayToListOf[UUID](rs, "property_value_uuid"),
       Utils.resultSetArrayToListOf[String](rs, "property_value_json").map(parse).map(_.toOption).filter(_.isDefined).map(_.get)
     )
