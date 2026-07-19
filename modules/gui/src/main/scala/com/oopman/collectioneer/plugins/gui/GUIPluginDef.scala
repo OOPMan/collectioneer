@@ -1,20 +1,32 @@
 package com.oopman.collectioneer.plugins.gui
 
 import com.oopman.collectioneer.Plugin
-import com.oopman.collectioneer.plugins.gui.controls.{IntPropertyValueEditorGUIPlugin, SmallintPropertyValueEditorGUIPlugin, TextPropertyValueEditorGUIPlugin}
+import com.oopman.collectioneer.plugins.gui.controls.*
 import com.oopman.collectioneer.plugins.{GUIPlugin, PropertyValueEditorGUIPlugin}
 import izumi.distage.plugins.PluginDef
 
 object GUIPluginDef extends PluginDef:
   many[PropertyValueEditorGUIPlugin]
-    .add[TextPropertyValueEditorGUIPlugin]
+    .add[StringPropertyValueEditorGUIPlugin]
+    .add[ShortPropertyValueEditorGUIPlugin]
     .add[IntPropertyValueEditorGUIPlugin]
-    .add[SmallintPropertyValueEditorGUIPlugin]
+    .add[LongPropertyValueEditorGUIPlugin]
+    .add[FloatPropertyValueEditorGUIPlugin]
+    .add[DoublePropertyValueEditorGUIPlugin]
+    .add[BooleanPropertyValueEditorGUIPlugin]
   many[GUIPlugin]
-    .add[TextPropertyValueEditorGUIPlugin]
+    .add[StringPropertyValueEditorGUIPlugin]
+    .add[ShortPropertyValueEditorGUIPlugin]
     .add[IntPropertyValueEditorGUIPlugin]
-    .add[SmallintPropertyValueEditorGUIPlugin]
+    .add[LongPropertyValueEditorGUIPlugin]
+    .add[FloatPropertyValueEditorGUIPlugin]
+    .add[DoublePropertyValueEditorGUIPlugin]
+    .add[BooleanPropertyValueEditorGUIPlugin]
   many[Plugin]
-    .add[TextPropertyValueEditorGUIPlugin]
+    .add[StringPropertyValueEditorGUIPlugin]
+    .add[ShortPropertyValueEditorGUIPlugin]
     .add[IntPropertyValueEditorGUIPlugin]
-    .add[SmallintPropertyValueEditorGUIPlugin]
+    .add[LongPropertyValueEditorGUIPlugin]
+    .add[FloatPropertyValueEditorGUIPlugin]
+    .add[DoublePropertyValueEditorGUIPlugin]
+    .add[BooleanPropertyValueEditorGUIPlugin]
